@@ -1,27 +1,61 @@
-# Dnd
+# Basic Notes
 
-This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 6.2.3.
+dnd decision tree
 
-## Development server
+metrics
+- combat
+	- short (1), medium (3), long (7)
+		- ave damage per combat 
+			- low ac opponents (11)
+			- high ac opponents (20)
+		- ave healing per combat
+			- small party (3)
+			- large party (7)
+	- armor class
+- finesse: help in non-combat situations
+	- dificulty class: easy (10), hard (20), nearly impossible (30)
+		- informational (int, wis): arcana, history, investigation, nature, religion, insight
+		- influence (cha) : deception, intimidation, persuasion
+		- interaction (wis, dex): medicine, perception, sleight of hand, stealth, survival, acrobatics, performance
+	- num languages
+	- num societies allowed in
+		- acolyte: places and people who share your religion...
+		- criminal: criminal contact --> get information
 
-Run `ng serve` for a dev server. Navigate to `http://localhost:4200/`. The app will automatically reload if you change any of the source files.
 
-## Code scaffolding
 
-Run `ng generate component component-name` to generate a new component. You can also use `ng generate directive|pipe|service|class|guard|interface|enum|module`.
+constraints
+skills
+- class 
+{
+	"rogue": 4
+}
 
-## Build
 
-Run `ng build` to build the project. The build artifacts will be stored in the `dist/` directory. Use the `--prod` flag for a production build.
+questions
+- how to handle varient skill checks e.g. strength for intimidation
+- multiclassing
 
-## Running unit tests
+decision variables
+- (10) race
+- (10) class
+	- default ability score effects
+- (5)(10) ability (str, const, dex, int, char, wis) (-5, -4, -3, -2, -1, +1, +2, +3, +4, +5)
+	- standard set (15, 14, 13, 12, 10, 8)
+	- point buy, start at 8, get 27 points 
+		8	-->  0
+		9	-->  1
+		10	-->  2
+		11	-->  3
+		12	-->  4
+		13	-->  5
+		14	-->  7
+		15	-->  9
+- skills 
+	- 
+- background
 
-Run `ng test` to execute the unit tests via [Karma](https://karma-runner.github.io).
 
-## Running end-to-end tests
-
-Run `ng e2e` to execute the end-to-end tests via [Protractor](http://www.protractortest.org/).
-
-## Further help
-
-To get more help on the Angular CLI use `ng help` or go check out the [Angular CLI README](https://github.com/angular/angular-cli/blob/master/README.md).
+gather data
+- spells		https://github.com/eepMoody/open5e/blob/master/data/spells/spells.json
+- tables		https://github.com/BTMorton/dnd-5e-srd/tree/master/json

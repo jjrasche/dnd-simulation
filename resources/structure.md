@@ -1,19 +1,20 @@
 # Structure
 
 ## Build
-Allows for chosing options in a character build
-- View portion displaying choices and options
+Allows users to choose options in a character build
+- A UI displays choices and options
 - Rules engine determining what choices are possible
 
 ## Tactics
 A model for deciding which action a build will take given a specific scenario
-- Inputs: charcter Build, env Environment
-- Output: action Action = a particular decision the character makes, may want to limit this to fighting options for now 
+- Inputs: initiator Build, env Environment
+- Output: action Action = a particular decision the character makes, may want to limit this to Attack actions for now 
 
 ## Action
 ### Analysis
 Rules engine determining what actions are possible. Given
-- Inputs: character Build, previousActions Action[]
+- Inputs: initiator Build, target Build, env Environment, previousActions Action[]
+    - may want to limit this to initiator and previousActions to simplify this for now
 - Output: availableActions Action[]
 ### Effect
 Handles execution of an action
@@ -24,6 +25,7 @@ Handles execution of an action
 Provides call to low level statisticall methods
 - Dice roll probabilities
 - Damage averages
+- Roll outcomes
 
 ## Encounter
 Reflects an interaction between two or more builds

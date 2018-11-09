@@ -37,7 +37,7 @@ Average healing done per encounter
 
 
 
-decision variables
+## decision variables that dictate metric values
 - (10) race
 - (10) class
 	- default ability score effects

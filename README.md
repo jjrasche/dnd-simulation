@@ -13,6 +13,7 @@ rules Engine TODO
 
 ## Questions
 Q: how to handle varient skill checks e.g. strength for intimidation
+
 Q: should test for multiclassing
 
 

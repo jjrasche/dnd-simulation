@@ -16,6 +16,11 @@ Q: how to handle varient skill checks e.g. strength for intimidation
 
 Q: should test for multiclassing
 
+Q: how does the environment interact with characters: torch light in dark, fog, terrain costs
+
+## Considerations
+- bonuses to ability checks
+
 
 ## External Resources
 [example of spell json](https://github.com/eepMoody/open5e/blob/master/data/spells/spells.json)

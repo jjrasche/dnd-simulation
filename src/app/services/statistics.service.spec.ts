@@ -43,7 +43,7 @@ describe('StatisticsService', () => {
   });
   
   it("average d8  averageOutcome(die)", () => {
-    let actual = service.average(Die.d8)
+    let actual = service.average(Die.D8)
     expect(actual).toEqual(4.5);
   });
 });

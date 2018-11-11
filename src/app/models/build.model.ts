@@ -32,6 +32,7 @@ export class Build {
       * damage: number
       * temporaryHitPoints: number
       * languages: Language[]
+      * money: Money 
       */
 
      /** calculated traits: accounts for all temporary or permanent aspects of the build affecting the trait. Does not consider environment factors.
@@ -52,22 +53,31 @@ export class Build {
        * skillMdoifier(skill)
        * throwModifier(ability)
        * proficiencyBonus()
+       * proficiency(equipment: Equipment)
        * initiative()
-       * vision()
+       * darkVision()
        * speed()
        * hitpoints()
        * languages()
        */
 
       /** How to dynamically apply build choice's and current state's affect on calculated traits? 
-       * examples:
-       *    
-       * applySpells()
-       * applyFeats()
-       * applyConditions()
-       * applyProficiency()
-       * applyEquipment() -- some armor has disadvantage on stealth
-       * apply
+       * change agents
+       *    applySpells() 
+       *    applyFeats()
+       *    applyConditions()
+       *    applyProficiency()
+       *    applyTraits()  -- Damage Resistance  === resistance to the dragon type
+       *    applyEquipment() -- some armor has disadvantage on stealth
+       * 
+       * example
+       *    call to darkVision()
+       *    initialize to race.darkVision
+       *    applySpells() -- iterate over spells invoking their modification on a copy of build return the modified build
+       *    ...
+       *    ...
+       *    return buildCopy.darkVision
+       * 
        */
 
     

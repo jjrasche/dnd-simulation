@@ -73,6 +73,11 @@ export interface WeaponObject extends EquipmentObject {
     // properties:  TODO codify interaction bewteen weapon.properties and action
 };
 
+// type t: { [key in WeaponEnum]: WeaponObject }
+
+// type effect = (n: Build) => Build;
+
+
 export const Weapon: { [key in WeaponEnum]: WeaponObject } = {
     Club: {
         weaponCategory: WeaponCategory.SimpleMelee,

@@ -1,7 +1,7 @@
 import { Skill } from "../skill.enum";
 import { Die } from "../die.enum";
 import { DamageTypeObject, DamageType } from "../damageType.enum";
-import { Equipment } from "./equipment.enum";
+import { EquipmentObject } from "./equipment.enum";
 
 export enum ToolEnum {
     AlchemistSupplies = "AlchemistSupplies",
@@ -44,7 +44,7 @@ export enum ToolCategory {
     OtherTools = "OtherTools",
 }
 
-export interface ToolObject extends Equipment {
+export interface ToolObject extends EquipmentObject {
     category: ToolCategory;
 };
 

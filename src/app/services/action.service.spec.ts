@@ -13,6 +13,9 @@ describe('ActionService', () => {
     expect(service).toBeTruthy();
   });
 
+  // availableSpellActions(initiator Build, currentState Build) return all Spell Actions available
+  // availableAttackActions(initiator Build, currentState Build) return all Spell Actions available
+
   // possibleActions(initiator Build, target Build, env Environment, previousActions Action[]) returns set of possible actions
   /**
    * Attack

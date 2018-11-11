@@ -22,14 +22,14 @@ export enum LanguageEnum {
     Undercommon = "Undercommon",
 }
 
-export interface LanguageInfo {
+export interface LanguageObject {
     type: LanguageType;
     typicalSpeakers: String[];
     script: LanguageEnum;
 }
 
 // TODO: test that langauge deepspeech script logic is fine with null value
-export const Language: { [key in LanguageEnum]: LanguageInfo } = {
+export const Language: { [key in LanguageEnum]: LanguageObject } = {
     Common: { type: LanguageType.Standard, typicalSpeakers: ["Humans"], script: LanguageEnum.Common },
     Dwarvish: { type: LanguageType.Standard, typicalSpeakers: ["Dwarves"], script: LanguageEnum.Dwarvish },
     Elvish: { type: LanguageType.Standard, typicalSpeakers: ["Elves"], script: LanguageEnum.Elvish },
@@ -49,7 +49,7 @@ export const Language: { [key in LanguageEnum]: LanguageInfo } = {
 
 }
 
-export function findLanguageEnumByLanguageInfo(classInfo: LanguageInfo): LanguageEnum {
+export function findLanguageEnumByLanguageInfo(classInfo: LanguageObject): LanguageEnum {
     let keys = Object.keys(Language);
     for (let index = 0; index < keys.length; index++) {
         const languageEnum = keys[index] as LanguageEnum;

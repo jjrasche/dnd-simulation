@@ -1,4 +1,7 @@
 import { Skill, SkillObject } from "./skill.enum";
+import { settings, BuildAffectingObject } from "../models/common";
+import { AbilityObject, Ability } from "./ability.enum";
+import { Build } from "../models/build.model";
 
 // Limits the possible Classes to the ones listed below and allows for type safety.
 export enum ClassEnum {
@@ -7,6 +10,7 @@ export enum ClassEnum {
     Cleric = "Cleric",
     Druid = "Druid",
     Fighter = "Fighter",
+    Monk = "Monk",
     Paladin = "Paladin",
     Ranger = "Ranger",
     Rogue = "Rogue",
@@ -16,9 +20,20 @@ export enum ClassEnum {
 };
 
 // Enforces form of return object from so you can do `Class.Bard.numSkills`
-export interface ClassObject {
-    skillOptions: Array<SkillObject>;
-    numSkills: number;
+export class ClassObject implements BuildAffectingObject  {
+    skill: settings<SkillObject>;
+    savingThrows: AbilityObject[];
+    // default effect without any alteration
+    effect(b: Build): void {
+        // apply skills
+        if (this.savingThrows) {
+            Object.keys(Ability).forEach(key => b.savingThrow[key] = this.savingThrows[key]);
+        }        
+        // apply saving throws
+        if (this.skill) {
+            Object.keys(Skill).forEach(key => b.skill[key] = this.skill[key]);
+        }
+    };
 };
 
 /**
@@ -27,15 +42,64 @@ export interface ClassObject {
  * Class.Bard (good) Class.Fairy (fails)
  */
 export const Class: { [key in ClassEnum]: ClassObject } = {
-    Barbarian: { skillOptions: [Skill.AnimalHandling, Skill.Athletics, Skill.Intimidation, Skill.Nature, Skill.Perception, Skill.Survival], numSkills: 2 },
-    Bard: { skillOptions: [Skill.Athletics, Skill.Acrobatics, Skill.SleightOfHand, Skill.Stealth, Skill.Arcana, Skill.History, Skill.Investigation, Skill.Nature, Skill.Religion, Skill.AnimalHandling, Skill.Insight, Skill.Medicine, Skill.Perception, Skill.Survival, Skill.Deception, Skill.Intimidation, Skill.Performance, Skill.Persuasion], numSkills: 3 },
-    Cleric: { skillOptions: [Skill.History, Skill.Insight, Skill.Medicine, Skill.Persuasion, Skill.Religion], numSkills: 2 },
-    Druid: { skillOptions: [Skill.Acrobatics, Skill.AnimalHandling, Skill.Athletics, Skill.History, Skill.Insight, Skill.Intimidation, Skill.Perception, Skill.Survival], numSkills: 2 },
-    Fighter: { skillOptions: [Skill.Acrobatics, Skill.Athletics, Skill.History, Skill.Insight, Skill.Religion, Skill.Stealth], numSkills: 2 },
-    Paladin: { skillOptions: [Skill.Athletics, Skill.Insight, Skill.Intimidation, Skill.Medicine, Skill.Persuasion, Skill.Religion], numSkills: 2 },
-    Ranger: { skillOptions: [Skill.AnimalHandling, Skill.Athletics, Skill.Insight, Skill.Investigation, Skill.Nature, Skill.Perception, Skill.Stealth, Skill.Survival], numSkills: 3 },
-    Rogue: { skillOptions: [Skill.Acrobatics, Skill.Athletics, Skill.Deception, Skill.Insight, Skill.Intimidation, Skill.Investigation, Skill.Perception, Skill.Performance, Skill.Persuasion, Skill.SleightOfHand, Skill.Stealth], numSkills: 4 },
-    Sorcerer: { skillOptions: [Skill.Arcana, Skill.Deception, Skill.Insight, Skill.Intimidation, Skill.Persuasion, Skill.Religion], numSkills: 2 },
-    Warlock: { skillOptions: [Skill.Arcana, Skill.Deception, Skill.History, Skill.Intimidation, Skill.Investigation, Skill.Nature, Skill.Religion], numSkills: 2 },
-    Wizard: { skillOptions: [Skill.Arcana, Skill.History, Skill.Insight, Skill.Investigation, Skill.Medicine, Skill.Religion], numSkills: 2 },
+    Barbarian: {
+        skill: { inherent: null, selectable: [{ num: 2, options: [Skill.AnimalHandling, Skill.Athletics, Skill.Intimidation, Skill.Nature, Skill.Perception, Skill.Survival] }] },
+        savingThrows: [Ability.Strength, Ability.Constitution],
+        effect: ClassObject.prototype.effect,
+    },
+    Bard: {
+        skill: { inherent: null, selectable: [{ num: 3, options: [Skill.Athletics, Skill.Acrobatics, Skill.SleightOfHand, Skill.Stealth, Skill.Arcana, Skill.History, Skill.Investigation, Skill.Nature, Skill.Religion, Skill.AnimalHandling, Skill.Insight, Skill.Medicine, Skill.Perception, Skill.Survival, Skill.Deception, Skill.Intimidation, Skill.Performance, Skill.Persuasion] }] },
+        savingThrows: [Ability.Dexterity, Ability.Charisma],
+        effect: ClassObject.prototype.effect,
+    },
+    Cleric: {
+        skill: { inherent: null, selectable: [{ num: 2, options: [Skill.History, Skill.Insight, Skill.Medicine, Skill.Persuasion, Skill.Religion] }] },
+        savingThrows: [Ability.Wisdom, Ability.Charisma],
+        effect: ClassObject.prototype.effect,
+    },
+    Druid: {
+        skill: { inherent: null, selectable: [{ num: 2, options: [Skill.Acrobatics, Skill.AnimalHandling, Skill.Athletics, Skill.History, Skill.Insight, Skill.Intimidation, Skill.Perception, Skill.Survival] }] },
+        savingThrows: [Ability.Intelligence, Ability.Wisdom],
+        effect: ClassObject.prototype.effect,
+    },
+    Fighter: {
+        skill: { inherent: null, selectable: [{ num: 2, options: [Skill.Acrobatics, Skill.Athletics, Skill.History, Skill.Insight, Skill.Religion, Skill.Stealth] }] },
+        savingThrows: [Ability.Strength, Ability.Constitution],
+        effect: ClassObject.prototype.effect,
+    },
+    Monk: {
+        skill: { inherent: null, selectable: [{ num: 2, options: [Skill.Acrobatics, Skill.Athletics, Skill.History, Skill.Insight, Skill.Religion, Skill.Stealth] }] },
+        savingThrows: [Ability.Strength, Ability.Dexterity],
+        effect: ClassObject.prototype.effect,
+    },
+    Paladin: {
+        skill: { inherent: null, selectable: [{ num: 2, options: [Skill.Athletics, Skill.Insight, Skill.Intimidation, Skill.Medicine, Skill.Persuasion, Skill.Religion] }] },
+        savingThrows: [Ability.Wisdom, Ability.Charisma],
+        effect: ClassObject.prototype.effect,
+    },
+    Ranger: {
+        skill: { inherent: null, selectable: [{ num: 3, options: [Skill.AnimalHandling, Skill.Athletics, Skill.Insight, Skill.Investigation, Skill.Nature, Skill.Perception, Skill.Stealth, Skill.Survival] }] },
+        savingThrows: [Ability.Strength, Ability.Dexterity],
+        effect: ClassObject.prototype.effect,
+    },
+    Rogue: {
+        skill: { inherent: null, selectable: [{ num: 4, options: [Skill.Acrobatics, Skill.Athletics, Skill.Deception, Skill.Insight, Skill.Intimidation, Skill.Investigation, Skill.Perception, Skill.Performance, Skill.Persuasion, Skill.SleightOfHand, Skill.Stealth] }] },
+        savingThrows: [Ability.Dexterity, Ability.Intelligence],
+        effect: ClassObject.prototype.effect,
+    },
+    Sorcerer: {
+        skill: { inherent: null, selectable: [{ num: 2, options: [Skill.Arcana, Skill.Deception, Skill.Insight, Skill.Intimidation, Skill.Persuasion, Skill.Religion] }] },
+        savingThrows: [Ability.Constitution, Ability.Charisma],
+        effect: ClassObject.prototype.effect,
+    },
+    Warlock: {
+        skill: { inherent: null, selectable: [{ num: 2, options: [Skill.Arcana, Skill.Deception, Skill.History, Skill.Intimidation, Skill.Investigation, Skill.Nature, Skill.Religion] }] },
+        savingThrows: [Ability.Wisdom, Ability.Charisma],
+        effect: ClassObject.prototype.effect,
+    },
+    Wizard: {
+        skill: { inherent: null, selectable: [{ num: 2, options: [Skill.Arcana, Skill.History, Skill.Insight, Skill.Investigation, Skill.Medicine, Skill.Religion] }] },
+        savingThrows: [Ability.Intelligence, Ability.Wisdom],
+        effect: ClassObject.prototype.effect,
+    },
 };

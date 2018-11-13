@@ -1,5 +1,5 @@
-import { AffectingObject } from "../models/action.model";
 import { Build } from "../models/build.model";
+import { BuildAffectingObject } from "../models/common";
 
 export enum SpellEnum {
     AcidArrow = "AcidArrow",
@@ -325,7 +325,7 @@ export enum SpellEnum {
 /**
  * Spells affect Builds
  */
-export class SpellObject implements AffectingObject<Build> {
+export class SpellObject implements BuildAffectingObject {
     description: string;
     // duration:    // should handle removing itself from the build
     // damage:

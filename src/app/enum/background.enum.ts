@@ -1,7 +1,6 @@
-import { AffectingObject } from "../models/action.model";
 import { Build } from "../models/build.model";
 import { SkillObject, Skill } from "./skill.enum";
-import { settings } from "../models/common";
+import { settings, BuildAffectingObject } from "../models/common";
 
 export enum BackgroundEnum {
     Acolyte = "Acolyte",
@@ -19,7 +18,7 @@ export enum BackgroundEnum {
     Urchin = "Urchin",
 }
 
-export class BackgroundObject implements AffectingObject<Build> {
+export class BackgroundObject implements BuildAffectingObject {
     description: string;
     skill: settings<SkillObject>;
 
@@ -27,7 +26,7 @@ export class BackgroundObject implements AffectingObject<Build> {
     effect(b: Build): void {
         // apply proficiency bonus
         let origVale = b.skill;
-        this.skill.inherint.forEach(skill => {
+        this.skill.inherent.forEach(skill => {
             b.skill[skill.enum] = true;
         });
         console.log(`value was '${JSON.stringify(origVale)}' now '${JSON.stringify(b.skill)}'`);
@@ -37,67 +36,67 @@ export class BackgroundObject implements AffectingObject<Build> {
 export const Background: { [key in BackgroundEnum]: BackgroundObject } = {
     Acolyte: {
         description: "",
-        skill: { inherint: [Skill.Insight, Skill.Religion], selectable: null },
+        skill: { inherent: [Skill.Insight, Skill.Religion], selectable: null },
         effect: BackgroundObject.prototype.effect,
     },
     Charlatan: {
         description: "",
-        skill: { inherint: [Skill.Deception, Skill.SleightOfHand], selectable: null },
+        skill: { inherent: [Skill.Deception, Skill.SleightOfHand], selectable: null },
         effect: BackgroundObject.prototype.effect,
     },
     Criminal: {
         description: "",
-        skill: { inherint: [Skill.Deception, Skill.Stealth], selectable: null },
+        skill: { inherent: [Skill.Deception, Skill.Stealth], selectable: null },
         effect: BackgroundObject.prototype.effect,
     },
     Entertainer: {
         description: "",
-        skill: { inherint: [Skill.Acrobatics, Skill.Performance], selectable: null },
+        skill: { inherent: [Skill.Acrobatics, Skill.Performance], selectable: null },
         effect: BackgroundObject.prototype.effect,
     },
     Folk: {
         description: "",
-        skill: { inherint: [Skill.AnimalHandling, Skill.Survival], selectable: null },
+        skill: { inherent: [Skill.AnimalHandling, Skill.Survival], selectable: null },
         effect: BackgroundObject.prototype.effect,
     },
     Guild: {
         description: "",
-        skill: { inherint: [Skill.Insight, Skill.Persuasion], selectable: null },
+        skill: { inherent: [Skill.Insight, Skill.Persuasion], selectable: null },
         effect: BackgroundObject.prototype.effect,
     },
     Hermit: {
         description: "",
-        skill: { inherint: [Skill.Medicine, Skill.Religion], selectable: null },
+        skill: { inherent: [Skill.Medicine, Skill.Religion], selectable: null },
         effect: BackgroundObject.prototype.effect,
     },
     Noble: {
         description: "",
-        skill: { inherint: [Skill.History, Skill.Persuasion], selectable: null },
+        skill: { inherent: [Skill.History, Skill.Persuasion], selectable: null },
         effect: BackgroundObject.prototype.effect,
     },
     Outlander: {
         description: "",
-        skill: { inherint: [Skill.Athletics, Skill.Survival], selectable: null },
+        skill: { inherent: [Skill.Athletics, Skill.Survival], selectable: null },
         effect: BackgroundObject.prototype.effect,
     },
     Sage: {
         description: "",
-        skill: { inherint: [Skill.Arcana, Skill.History], selectable: null },
+        skill: { inherent: [Skill.Arcana, Skill.History], selectable: null },
         effect: BackgroundObject.prototype.effect,
     },
     Sailor: {
         description: "",
-        skill: { inherint: [Skill.Athletics, Skill.Perception], selectable: null },
+        skill: { inherent: [Skill.Athletics, Skill.Perception], selectable: null },
         effect: BackgroundObject.prototype.effect,
     },
     Soldier: {
         description: "",
-        skill: { inherint: [Skill.Athletics, Skill.Intimidation], selectable: null },
+        skill: { inherent: [Skill.Athletics, Skill.Intimidation], selectable: null },
         effect: BackgroundObject.prototype.effect,
     },
     Urchin: {
         description: "",
-        skill: { inherint: [Skill.SleightOfHand, Skill.Stealth], selectable: null },
+        skill: { inherent: [Skill.SleightOfHand, Skill.Stealth], selectable: null },
         effect: BackgroundObject.prototype.effect,
     },
 }

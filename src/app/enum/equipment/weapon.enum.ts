@@ -1,8 +1,9 @@
-import { Skill } from "../skill.enum";
 import { Die } from "../die.enum";
-import { DamageTypeObject, DamageType, DieDamage, AmountDamage } from "../damage.enum";
+import { DamageType, DieDamage, AmountDamage } from "../damage.enum";
 import { EquipmentObject } from "./equipment.enum";
 import { WeaponPropertyObject, WeaponProperty } from "./weaponProperty.enum";
+import { BuildAffectingObject } from "src/app/models/common";
+import { Build } from "src/app/models/build.model";
 
 export enum WeaponEnum {
     Club = "Club",
@@ -56,11 +57,18 @@ export interface Range {
     long: number
 }
 
-export interface WeaponObject extends EquipmentObject {
+export class WeaponObject extends EquipmentObject implements BuildAffectingObject {
     weaponCategory: WeaponCategory;
     range: Range;
     damage: DieDamage | AmountDamage;   // TODO: test handling of difference here
-    properties: WeaponPropertyObject[]
+    properties: WeaponPropertyObject[] = [];
+
+    effect(b: Build): void {
+        // apply weapon properties
+        if (this.properties) {
+            Object.keys(this.properties).forEach(key => WeaponPropertyObject[key].effect(b));
+        }
+    };
 };
 
 export const Weapon: { [key in WeaponEnum]: WeaponObject } = {
@@ -72,6 +80,7 @@ export const Weapon: { [key in WeaponEnum]: WeaponObject } = {
         damage: { numDie: 1, die: Die.D4, type: DamageType.Bludgeoning },
         description: null,
         properties: [WeaponProperty.Light, WeaponProperty.Monk],
+        effect: WeaponObject.prototype.effect,
     },
     Dagger: {
         weaponCategory: WeaponCategory.SimpleMelee,
@@ -81,6 +90,7 @@ export const Weapon: { [key in WeaponEnum]: WeaponObject } = {
         damage: { numDie: 1, die: Die.D4, type: DamageType.Piercing },
         description: null,
         properties: [WeaponProperty.Finesse, WeaponProperty.Light, WeaponProperty.Thrown, WeaponProperty.Monk],
+        effect: WeaponObject.prototype.effect,
     },
     Greatclub: {
         weaponCategory: WeaponCategory.SimpleMelee,
@@ -90,6 +100,7 @@ export const Weapon: { [key in WeaponEnum]: WeaponObject } = {
         damage: { numDie: 1, die: Die.D8, type: DamageType.Bludgeoning },
         description: null,
         properties: [WeaponProperty.TwoHanded],
+        effect: WeaponObject.prototype.effect,
     },
     Handaxe: {
         weaponCategory: WeaponCategory.SimpleMelee,
@@ -99,6 +110,7 @@ export const Weapon: { [key in WeaponEnum]: WeaponObject } = {
         damage: { numDie: 1, die: Die.D6, type: DamageType.Slashing },
         description: null,
         properties: [WeaponProperty.Light, WeaponProperty.Thrown, WeaponProperty.Monk],
+        effect: WeaponObject.prototype.effect,
     },
     Javelin: {
         weaponCategory: WeaponCategory.SimpleMelee,
@@ -108,6 +120,7 @@ export const Weapon: { [key in WeaponEnum]: WeaponObject } = {
         damage: { numDie: 1, die: Die.D6, type: DamageType.Piercing },
         description: null,
         properties: [WeaponProperty.Thrown, WeaponProperty.Monk],
+        effect: WeaponObject.prototype.effect,
     },
     LightHammer: {
         weaponCategory: WeaponCategory.SimpleMelee,
@@ -117,6 +130,7 @@ export const Weapon: { [key in WeaponEnum]: WeaponObject } = {
         damage: { numDie: 1, die: Die.D4, type: DamageType.Bludgeoning },
         description: null,
         properties: [WeaponProperty.Light, WeaponProperty.Thrown, WeaponProperty.Monk],
+        effect: WeaponObject.prototype.effect,
     },
     Mace: {
         weaponCategory: WeaponCategory.SimpleMelee,
@@ -126,6 +140,7 @@ export const Weapon: { [key in WeaponEnum]: WeaponObject } = {
         damage: { numDie: 1, die: Die.D6, type: DamageType.Bludgeoning },
         description: null,
         properties: [WeaponProperty.Monk],
+        effect: WeaponObject.prototype.effect,
     },
     Quarterstaff: {
         weaponCategory: WeaponCategory.SimpleMelee,
@@ -135,6 +150,7 @@ export const Weapon: { [key in WeaponEnum]: WeaponObject } = {
         damage: { numDie: 1, die: Die.D6, type: DamageType.Bludgeoning },
         description: null,
         properties: [WeaponProperty.Versatile, WeaponProperty.Monk],
+        effect: WeaponObject.prototype.effect,
     },
     Sickle: {
         weaponCategory: WeaponCategory.SimpleMelee,
@@ -144,6 +160,7 @@ export const Weapon: { [key in WeaponEnum]: WeaponObject } = {
         damage: { numDie: 1, die: Die.D4, type: DamageType.Slashing },
         description: null,
         properties: [WeaponProperty.Light, WeaponProperty.Monk],
+        effect: WeaponObject.prototype.effect,
     },
     Spear: {
         weaponCategory: WeaponCategory.SimpleMelee,
@@ -153,6 +170,7 @@ export const Weapon: { [key in WeaponEnum]: WeaponObject } = {
         damage: { numDie: 1, die: Die.D4, type: DamageType.Piercing },
         description: null,
         properties: [WeaponProperty.Thrown, WeaponProperty.Versatile, WeaponProperty.Monk],
+        effect: WeaponObject.prototype.effect,
     },
     CrossbowLight: {
         weaponCategory: WeaponCategory.SimpleRange,
@@ -162,6 +180,7 @@ export const Weapon: { [key in WeaponEnum]: WeaponObject } = {
         damage: { numDie: 1, die: Die.D8, type: DamageType.Piercing },
         description: null,
         properties: [WeaponProperty.Ammunition, WeaponProperty.Loading, WeaponProperty.TwoHanded],
+        effect: WeaponObject.prototype.effect,
     },
     Dart: {
         weaponCategory: WeaponCategory.SimpleRange,
@@ -171,6 +190,7 @@ export const Weapon: { [key in WeaponEnum]: WeaponObject } = {
         damage: { numDie: 1, die: Die.D4, type: DamageType.Piercing },
         description: null,
         properties: [WeaponProperty.Finesse, WeaponProperty.Thrown],
+        effect: WeaponObject.prototype.effect,
     },
     Shortbow: {
         weaponCategory: WeaponCategory.SimpleRange,
@@ -180,6 +200,7 @@ export const Weapon: { [key in WeaponEnum]: WeaponObject } = {
         damage: { numDie: 1, die: Die.D6, type: DamageType.Piercing },
         description: null,
         properties: [WeaponProperty.Ammunition, WeaponProperty.TwoHanded],
+        effect: WeaponObject.prototype.effect,
     },
     Sling: {
         weaponCategory: WeaponCategory.SimpleRange,
@@ -189,6 +210,7 @@ export const Weapon: { [key in WeaponEnum]: WeaponObject } = {
         damage: { numDie: 1, die: Die.D4, type: DamageType.Bludgeoning },
         description: null,
         properties: [WeaponProperty.Ammunition],
+        effect: WeaponObject.prototype.effect,
     },
     Battleaxe: {
         weaponCategory: WeaponCategory.MartialMelee,
@@ -198,6 +220,7 @@ export const Weapon: { [key in WeaponEnum]: WeaponObject } = {
         damage: { numDie: 1, die: Die.D8, type: DamageType.Slashing },
         description: null,
         properties: [WeaponProperty.Versatile],
+        effect: WeaponObject.prototype.effect,
     },
     Flail: {
         weaponCategory: WeaponCategory.MartialMelee,
@@ -207,6 +230,7 @@ export const Weapon: { [key in WeaponEnum]: WeaponObject } = {
         damage: { numDie: 1, die: Die.D8, type: DamageType.Bludgeoning },
         description: null,
         properties: [],
+        effect: WeaponObject.prototype.effect,
     },
     Glaive: {
         weaponCategory: WeaponCategory.MartialMelee,
@@ -216,6 +240,7 @@ export const Weapon: { [key in WeaponEnum]: WeaponObject } = {
         damage: { numDie: 1, die: Die.D10, type: DamageType.Slashing },
         description: null,
         properties: [WeaponProperty.Heavy, WeaponProperty.Reach, WeaponProperty.TwoHanded],
+        effect: WeaponObject.prototype.effect,
     },
     Greataxe: {
         weaponCategory: WeaponCategory.MartialMelee,
@@ -225,6 +250,7 @@ export const Weapon: { [key in WeaponEnum]: WeaponObject } = {
         damage: { numDie: 1, die: Die.D12, type: DamageType.Slashing },
         description: null,
         properties: [WeaponProperty.Heavy, WeaponProperty.TwoHanded],
+        effect: WeaponObject.prototype.effect,
     },
     Greatsword: {
         weaponCategory: WeaponCategory.MartialMelee,
@@ -234,6 +260,7 @@ export const Weapon: { [key in WeaponEnum]: WeaponObject } = {
         damage: { numDie: 2, die: Die.D6, type: DamageType.Slashing },
         description: null,
         properties: [WeaponProperty.Heavy, WeaponProperty.TwoHanded],
+        effect: WeaponObject.prototype.effect,
     },
     Halberd: {
         weaponCategory: WeaponCategory.MartialMelee,
@@ -243,6 +270,7 @@ export const Weapon: { [key in WeaponEnum]: WeaponObject } = {
         damage: { numDie: 1, die: Die.D10, type: DamageType.Slashing },
         description: null,
         properties: [WeaponProperty.Heavy, WeaponProperty.Reach, WeaponProperty.TwoHanded],
+        effect: WeaponObject.prototype.effect,
     },
     Lance: {
         weaponCategory: WeaponCategory.MartialMelee,
@@ -252,6 +280,7 @@ export const Weapon: { [key in WeaponEnum]: WeaponObject } = {
         damage: { numDie: 1, die: Die.D12, type: DamageType.Piercing },
         description: null,
         properties: [WeaponProperty.Reach, WeaponProperty.Special],
+        effect: WeaponObject.prototype.effect,
     },
     Longsword: {
         weaponCategory: WeaponCategory.MartialMelee,
@@ -261,6 +290,7 @@ export const Weapon: { [key in WeaponEnum]: WeaponObject } = {
         damage: { numDie: 1, die: Die.D8, type: DamageType.Slashing },
         description: null,
         properties: [WeaponProperty.Versatile],
+        effect: WeaponObject.prototype.effect,
     },
     Maul: {
         weaponCategory: WeaponCategory.MartialMelee,
@@ -270,6 +300,7 @@ export const Weapon: { [key in WeaponEnum]: WeaponObject } = {
         damage: { numDie: 2, die: Die.D6, type: DamageType.Bludgeoning },
         description: null,
         properties: [WeaponProperty.Heavy, WeaponProperty.TwoHanded],
+        effect: WeaponObject.prototype.effect,
     },
     Morningstar: {
         weaponCategory: WeaponCategory.MartialMelee,
@@ -279,6 +310,7 @@ export const Weapon: { [key in WeaponEnum]: WeaponObject } = {
         damage: { numDie: 1, die: Die.D8, type: DamageType.Piercing },
         description: null,
         properties: [],
+        effect: WeaponObject.prototype.effect,
     },
     Pike: {
         weaponCategory: WeaponCategory.MartialMelee,
@@ -288,6 +320,7 @@ export const Weapon: { [key in WeaponEnum]: WeaponObject } = {
         damage: { numDie: 1, die: Die.D10, type: DamageType.Piercing },
         description: null,
         properties: [WeaponProperty.Heavy, WeaponProperty.Reach, WeaponProperty.TwoHanded],
+        effect: WeaponObject.prototype.effect,
     },
     Rapier: {
         weaponCategory: WeaponCategory.MartialMelee,
@@ -297,6 +330,7 @@ export const Weapon: { [key in WeaponEnum]: WeaponObject } = {
         damage: { numDie: 1, die: Die.D8, type: DamageType.Piercing },
         description: null,
         properties: [WeaponProperty.Finesse],
+        effect: WeaponObject.prototype.effect,
     },
     Scimitar: {
         weaponCategory: WeaponCategory.MartialMelee,
@@ -306,6 +340,7 @@ export const Weapon: { [key in WeaponEnum]: WeaponObject } = {
         damage: { numDie: 1, die: Die.D6, type: DamageType.Slashing },
         description: null,
         properties: [WeaponProperty.Finesse, WeaponProperty.Light],
+        effect: WeaponObject.prototype.effect,
     },
     Shortsword: {
         weaponCategory: WeaponCategory.MartialMelee,
@@ -315,6 +350,7 @@ export const Weapon: { [key in WeaponEnum]: WeaponObject } = {
         damage: { numDie: 1, die: Die.D6, type: DamageType.Piercing },
         description: null,
         properties: [WeaponProperty.Finesse, WeaponProperty.Light, WeaponProperty.Monk],
+        effect: WeaponObject.prototype.effect,
     },
     Trident: {
         weaponCategory: WeaponCategory.MartialMelee,
@@ -324,6 +360,7 @@ export const Weapon: { [key in WeaponEnum]: WeaponObject } = {
         damage: { numDie: 1, die: Die.D6, type: DamageType.Slashing },
         description: null,
         properties: [WeaponProperty.Thrown, WeaponProperty.Versatile],
+        effect: WeaponObject.prototype.effect,
     },
     WarPick: {
         weaponCategory: WeaponCategory.MartialMelee,
@@ -333,6 +370,7 @@ export const Weapon: { [key in WeaponEnum]: WeaponObject } = {
         damage: { numDie: 1, die: Die.D8, type: DamageType.Piercing },
         description: null,
         properties: [],
+        effect: WeaponObject.prototype.effect,
     },
     Warhammer: {
         weaponCategory: WeaponCategory.MartialMelee,
@@ -342,6 +380,7 @@ export const Weapon: { [key in WeaponEnum]: WeaponObject } = {
         damage: { numDie: 1, die: Die.D8, type: DamageType.Bludgeoning },
         description: null,
         properties: [WeaponProperty.Versatile],
+        effect: WeaponObject.prototype.effect,
     },
     Whip: {
         weaponCategory: WeaponCategory.MartialMelee,
@@ -351,6 +390,7 @@ export const Weapon: { [key in WeaponEnum]: WeaponObject } = {
         damage: { numDie: 1, die: Die.D4, type: DamageType.Slashing },
         description: null,
         properties: [WeaponProperty.Finesse, WeaponProperty.Reach],
+        effect: WeaponObject.prototype.effect,
     },
     Blowgun: {
         weaponCategory: WeaponCategory.MartialRange,
@@ -360,6 +400,7 @@ export const Weapon: { [key in WeaponEnum]: WeaponObject } = {
         damage: { amount: 1, type: DamageType.Piercing },
         description: null,
         properties: [WeaponProperty.Ammunition, WeaponProperty.Loading],
+        effect: WeaponObject.prototype.effect,
     },
     CrossbowHand: {
         weaponCategory: WeaponCategory.MartialRange,
@@ -369,6 +410,7 @@ export const Weapon: { [key in WeaponEnum]: WeaponObject } = {
         damage: { numDie: 1, die: Die.D6, type: DamageType.Piercing },
         description: null,
         properties: [WeaponProperty.Ammunition, WeaponProperty.Light, WeaponProperty.Loading],
+        effect: WeaponObject.prototype.effect,
     },
     CrossbowHeavy: {
         weaponCategory: WeaponCategory.MartialRange,
@@ -378,6 +420,7 @@ export const Weapon: { [key in WeaponEnum]: WeaponObject } = {
         damage: { numDie: 1, die: Die.D10, type: DamageType.Piercing },
         description: null,
         properties: [WeaponProperty.Ammunition, WeaponProperty.Light, WeaponProperty.Loading, WeaponProperty.TwoHanded],
+        effect: WeaponObject.prototype.effect,
     },
     Longbow: {
         weaponCategory: WeaponCategory.MartialRange,
@@ -387,6 +430,7 @@ export const Weapon: { [key in WeaponEnum]: WeaponObject } = {
         damage: { numDie: 1, die: Die.D8, type: DamageType.Piercing },
         description: null,
         properties: [WeaponProperty.Ammunition, WeaponProperty.Heavy, WeaponProperty.TwoHanded],
+        effect: WeaponObject.prototype.effect,
     },
     Net: {
         weaponCategory: WeaponCategory.MartialRange,
@@ -396,5 +440,6 @@ export const Weapon: { [key in WeaponEnum]: WeaponObject } = {
         damage: { amount: 0, type: DamageType.Slashing },
         description: null,
         properties: [WeaponProperty.Thrown, WeaponProperty.Special],
+        effect: WeaponObject.prototype.effect,
     },
 };

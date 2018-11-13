@@ -19,3 +19,6 @@ export const Ability: { [key in AbilityEnum]: AbilityObject } = {
     Wisdom: { description: "Wisdom reflects how attuned you are to the world around you and represents perceptiveness and intuition. A Wisdom check might reflect an effort to read body language, understand someone’s feelings, notice things about the environment, or care for an injured person. The Animal Handling, Insight, Medicine, Perception, and Survival skills reflect aptitude in certain kinds of Wisdom checks." },
     Charisma: { description: "Charisma measures your ability to interact effectively with others. It includes such factors as confidence and eloquence, and it can represent a charming or commanding personality. A Charisma check might arise when you try to influence or entertain others, when you try to make an impression or tell a convincing lie, or when you are navigating a tricky social situation. The Deception, Intimidation, Performance, and Persuasion skills reflect aptitude in certain kinds of Charisma checks." },
 }
+
+export const defaultAbilityScore = { Strength: 0, Dexterity: 0, Constitution: 0, Intelligence: 0, Wisdom: 0, Charisma: 0 }; 
+export const defaultSavingThrow = { Strength: false, Dexterity: false, Constitution: false, Intelligence: false, Wisdom: false, Charisma: false }; 

@@ -31,7 +31,7 @@ describe('ObjectManipulation', () => {
         console.log(copy.class)
 
         expect(b).not.toBe(copy);
-        expect(b.race.languages.inherint).toEqual(copy.race.languages.inherint);
+        expect(b.race.languages.inherent).toEqual(copy.race.languages.inherent);
     });
 });
 

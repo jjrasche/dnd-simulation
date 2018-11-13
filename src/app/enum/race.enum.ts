@@ -2,11 +2,11 @@ import { AbilityEnum, Ability } from "./ability.enum";
 import { Size } from "./size.enum";
 import { LanguageObject, Language } from "./language.enum";
 import { Build } from "../models/build.model";
-import { EquipmentObject, Equipment } from "./equipment/equipment.enum";
+import { EquipmentObject } from "./equipment/equipment.enum";
 import { Skill, SkillObject } from "./skill.enum";
-import { AffectingObject } from "../models/action.model";
 import { TraitObject, Trait } from "./trait.enum";
-import { settings } from "../models/common";
+import { settings, BuildAffectingObject } from "../models/common";
+import { Equipment } from "./equipment/equipment";
 
 export enum RaceEnum {
     Dwarf = "Dwarf",
@@ -26,7 +26,7 @@ export enum RaceEnum {
  * these effects change a copy of the build and return the desired stat. 
  */
 
-export class RaceObject implements AffectingObject<Build> {
+export class RaceObject implements BuildAffectingObject {
     abilityModifier: { [ability in AbilityEnum]: number };
     size: Size;
     equipmentProficiency: settings<EquipmentObject>;
@@ -41,6 +41,9 @@ export class RaceObject implements AffectingObject<Build> {
         if (b.ability != null && this.abilityModifier != null) {
             Object.keys(Ability).forEach(key => b.ability[key] += this.abilityModifier[key]);
         }
+        // apply traits
+
+        // apply speed
     };
 }
 
@@ -50,11 +53,11 @@ export const Race: { [key in RaceEnum]: RaceObject } = {
         size: Size.Medium,
         speed: 30,
         equipmentProficiency: {
-            inherint: [Equipment.Battleaxe, Equipment.Handaxe, Equipment.LightHammer, Equipment.Warhammer],
+            inherent: [Equipment.Battleaxe, Equipment.Handaxe, Equipment.LightHammer, Equipment.Warhammer],
             selectable: [{ num: 1, options: [Equipment.SmithTools, Equipment.BrewerSupplies, Equipment.MasonTools] }]
         },
         skillProficiency: null,
-        languages: { inherint: [Language.Common, Language.Dwarvish], selectable: null },
+        languages: { inherent: [Language.Common, Language.Dwarvish], selectable: null },
         traits: [Trait.Darkvision, Trait.DwarvenResilience, Trait.Stonecunning],
         effect: RaceObject.prototype.effect,
     },
@@ -63,8 +66,8 @@ export const Race: { [key in RaceEnum]: RaceObject } = {
         size: Size.Medium,
         speed: 30,
         equipmentProficiency: null,
-        skillProficiency: { inherint: [Skill.Perception], selectable: null },
-        languages: { inherint: [Language.Common, Language.Elvish], selectable: null },
+        skillProficiency: { inherent: [Skill.Perception], selectable: null },
+        languages: { inherent: [Language.Common, Language.Elvish], selectable: null },
         traits: [Trait.Darkvision, Trait.FeyAncestry, Trait.Trance],
         effect: RaceObject.prototype.effect,
     },
@@ -74,7 +77,7 @@ export const Race: { [key in RaceEnum]: RaceObject } = {
         speed: 25,
         equipmentProficiency: null,
         skillProficiency: null,
-        languages: { inherint: [Language.Common, Language.Halfling], selectable: null },
+        languages: { inherent: [Language.Common, Language.Halfling], selectable: null },
         traits: [Trait.Brave, Trait.HalflingNimbleness, Trait.Lucky],
         effect: RaceObject.prototype.effect,
 
@@ -86,7 +89,7 @@ export const Race: { [key in RaceEnum]: RaceObject } = {
         equipmentProficiency: null,
         skillProficiency: null,
         languages: {
-            inherint: [Language.Common],
+            inherent: [Language.Common],
             selectable: [{ num: 1, options: [Language.Abyssal, Language.Celestial, Language.DeepSpeech, Language.Draconic, Language.Dwarvish, Language.Elvish, Language.Giant, Language.Gnomish, Language.Goblin, Language.Halfling, Language.Infernal, Language.Orc, Language.Primordial, Language.Sylvan, Language.Undercommon] }]
         },
         traits: [],
@@ -98,7 +101,7 @@ export const Race: { [key in RaceEnum]: RaceObject } = {
         speed: 30,
         equipmentProficiency: null,
         skillProficiency: null,
-        languages: { inherint: [Language.Common, Language.Draconic], selectable: null },
+        languages: { inherent: [Language.Common, Language.Draconic], selectable: null },
         traits: [Trait.DraconicAncestry, Trait.BreathWeapon, Trait.DamageResistance],
         effect: RaceObject.prototype.effect,
     },
@@ -108,7 +111,7 @@ export const Race: { [key in RaceEnum]: RaceObject } = {
         speed: 25,
         equipmentProficiency: null,
         skillProficiency: null,
-        languages: { inherint: [Language.Common, Language.Gnomish], selectable: null },
+        languages: { inherent: [Language.Common, Language.Gnomish], selectable: null },
         traits: [Trait.Darkvision, Trait.GnomeCunning],
         effect: RaceObject.prototype.effect,
     },
@@ -119,7 +122,7 @@ export const Race: { [key in RaceEnum]: RaceObject } = {
         equipmentProficiency: null,
         skillProficiency: null,
         languages: {
-            inherint: [Language.Common, , Language.Elvish,],
+            inherent: [Language.Common, , Language.Elvish,],
             selectable: [{ num: 1, options: [Language.Abyssal, Language.Celestial, Language.DeepSpeech, Language.Draconic, Language.Dwarvish, Language.Giant, Language.Gnomish, Language.Goblin, Language.Halfling, Language.Infernal, Language.Orc, Language.Primordial, Language.Sylvan, Language.Undercommon] }]
         },
         traits: [Trait.Darkvision, Trait.FeyAncestry, Trait.SkillVersatility],
@@ -130,8 +133,8 @@ export const Race: { [key in RaceEnum]: RaceObject } = {
         size: Size.Medium,
         speed: 30,
         equipmentProficiency: null,
-        skillProficiency: { inherint: [Skill.Intimidation], selectable: null },
-        languages: { inherint: [Language.Common, Language.Orc], selectable: null },
+        skillProficiency: { inherent: [Skill.Intimidation], selectable: null },
+        languages: { inherent: [Language.Common, Language.Orc], selectable: null },
         traits: [Trait.Darkvision, Trait.SavageAttacks, Trait.RelentlessEndurance],
         effect: RaceObject.prototype.effect,
 
@@ -142,7 +145,7 @@ export const Race: { [key in RaceEnum]: RaceObject } = {
         speed: 30,
         equipmentProficiency: null,
         skillProficiency: null,
-        languages: { inherint: [Language.Common, Language.Infernal], selectable: null },
+        languages: { inherent: [Language.Common, Language.Infernal], selectable: null },
         traits: [Trait.Darkvision, Trait.HellishResistance, Trait.InfernalLegacy],
         effect: RaceObject.prototype.effect,
     },

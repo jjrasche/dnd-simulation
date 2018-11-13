@@ -1,6 +1,3 @@
-import { Weapon, WeaponEnum, WeaponObject } from "./weapon.enum";
-import { Tool, ToolEnum, ToolObject } from "./tools.enum";
-
 export enum EquipmentCategory {
     Gear = "Gear",
     Armor = "Armor",
@@ -9,10 +6,10 @@ export enum EquipmentCategory {
     Weapon = "Weapon",
 
 }
-export interface EquipmentObject {
+export abstract class EquipmentObject {
     cost: number;   // gold standard e.g. 1 copper = .01 cost
     weight: number;
     description: String;
-};
-
-export const Equipment: { [key in WeaponEnum | ToolEnum]: WeaponObject | ToolObject } = { ...Weapon, ...Tool } ;
+    inUse?: boolean = false;     // attempting to implement the concept that a Build having access to many e.g. weapons, but only able to use a limited number per round
+}
+    

@@ -1,5 +1,7 @@
+import { Build } from "./build.model";
+
 export interface settings<T> {
-    inherint: Array<T>;
+    inherent: Array<T>;
     selectable: optionalSettings<T>[];
 }
 
@@ -10,4 +12,15 @@ export interface optionalSettings<T> {
 
 export abstract class EnumBased {
     enum?: string
+}
+
+/**
+ * An object that has an effect that can modify some property on the build.
+ */
+export interface BuildAffectingObject {
+    effect(b: Build): void;
+}
+
+export interface ActionableObject {
+    can: (b: Build) => boolean;
 }

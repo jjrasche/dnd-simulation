@@ -1,5 +1,5 @@
-import { AffectingObject } from "../models/action.model";
 import { Build } from "../models/build.model";
+import { BuildAffectingObject } from "../models/common";
 
 export enum TraitEnum {
     Darkvision = "Darkvision",
@@ -31,11 +31,10 @@ export enum TraitEnum {
     InfernalLegacy = "InfernalLegacy",
 }
 
-export class TraitObject implements AffectingObject<Build> {
+export class TraitObject implements BuildAffectingObject{
     description: string;
 
     effect(b: Build): void {
-        console.log("default effect")
     };
 }
 

@@ -1,20 +1,19 @@
-import { AbilityScores } from "./ability.model";
 import { ClassObject } from "../enum/class.enum";
-import { RaceObject, Race } from "../enum/race.enum";
+import { RaceObject } from "../enum/race.enum";
 import { SpellObject } from "../enum/spell.enum";
-import { SkillEnum, Skill, defaultSkill } from "../enum/skill.enum";
+import { SkillEnum, defaultSkill } from "../enum/skill.enum";
 import { LevelObject } from "../enum/level.enum";
-import { Condition } from "selenium-webdriver";
 import { ConditionObject } from "../enum/money.enum";
-import { AbilityEnum, Ability, defaultAbility } from "../enum/ability.enum";
-import { copyBuild, Factory } from "../utils/objectManipulation";
+import { AbilityEnum, defaultAbilityScore, defaultSavingThrow } from "../enum/ability.enum";
+import { copyBuild } from "../utils/objectManipulation";
 import { LanguageObject } from "../enum/language.enum";
 import { BackgroundObject } from "../enum/background.enum";
+import { EquipmentObject } from "../enum/equipment/equipment.enum";
 
 /**
- * Anytime get is called on a property, this method is run 
+ * Anytime a property is retrieved, this method applies all modifying effects
  */
-var modifierCaller = {
+var handler = {
     get: function (build, prop) {
         let origValue = build[prop];
         // console.log(`1 getting property '${prop}' from build '${build.takeBase}'`);
@@ -22,45 +21,61 @@ var modifierCaller = {
             return origValue;
         }
 
+        // order of applying effects: race, class, background, level, conditions, spells, equipment
+
+
         let buildCopy = copyBuild(build);
         buildCopy.takeBase = true;
         // run all modifiers
         buildCopy.applyRace();
         buildCopy.applyBackground();
 
-
         // console.log(`2 getting property '${prop}' from build '${build.takeBase}'. value was '${JSON.stringify(origValue)}' now '${JSON.stringify(build[prop])}'`);
         // return buildProps[prop];
         return buildCopy[prop];
     }
+    // ,
+    // set: function (build, prop, value): boolean {
+    //     // consider situation where damage is an attack roll happens agianst a build Damage: {num: __, type: __}
+    //     console.log(`setting property '${JSON.stringify(prop)}' on build to '${JSON.stringify(value)}'`);
+    //     build[prop] = value;
+    //     return true
+    // }
 };
 
 export class Build {
     // build properties that involve an initial choice
-    level: LevelObject;
     race: RaceObject = null;
     class: ClassObject = null;
+    level: LevelObject;
     background: BackgroundObject = null;
-    ability: { [key in AbilityEnum]: number } = defaultAbility;
-    skill: { [key in SkillEnum]: boolean } = defaultSkill;
+    language: LanguageObject[]
+    maxHealth: number = 0;
+    ability: { [key in AbilityEnum]: number } = defaultAbilityScore;
+    skill: { [key in SkillEnum]: boolean } = defaultSkill;    
 
     // current state of build properties
+    equipment: EquipmentObject[];
     spellsInAffect: SpellObject[] = [];
     conditions: ConditionObject[] = [];
+    damage: number = 0;
 
     // calcualable properties
     darkVision: number = 0;
+    speed: number = 0;
+    proficiencyBonus: number = 0;
+    savingThrow: { [key in AbilityEnum]: boolean } = defaultSavingThrow;
+    armorClass: number = 10;
+
 
     constructor() {
-        return new Proxy(this, modifierCaller);
+        return new Proxy(this, handler);
     }
-
 
     /** accessing Build.<properties> while going through modifiers
      * I want to call Build.ability.Wisdom and return a value that starts with _abilityScores.Wisdom and is altered by modifiers
      *  Build.wisdom
      */
-
 
     /** permanent traits
      * name
@@ -98,15 +113,9 @@ export class Build {
       * - initiative(), returns modifier: number === dexMod
       * - darkVision(), returns number === race/class can be modified by spells Darkvision
       * - speed(), returns number === race/class can be modified by spells Haste, Slow
-      * - getMod(ability), returns modifier: number based on ability score
       * - hitpoints(), returns number === hitPoints - damage + temporaryHitPoints
       * 
       */
-
-      private _speed: number;
-      get speed(): number {
-        return this._speed;
-      }
 
       /** all traits
        * armorClass()

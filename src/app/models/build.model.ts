@@ -2,13 +2,14 @@ import { AbilityScores } from "./ability.model";
 import { ClassObject } from "../enum/class.enum";
 import { RaceObject, Race } from "../enum/race.enum";
 import { SpellObject } from "../enum/spell.enum";
-import { SkillEnum } from "../enum/skill.enum";
+import { SkillEnum, Skill, defaultSkill } from "../enum/skill.enum";
 import { LevelObject } from "../enum/level.enum";
 import { Condition } from "selenium-webdriver";
 import { ConditionObject } from "../enum/money.enum";
-import { AbilityEnum } from "../enum/ability.enum";
+import { AbilityEnum, Ability, defaultAbility } from "../enum/ability.enum";
 import { copyBuild, Factory } from "../utils/objectManipulation";
 import { LanguageObject } from "../enum/language.enum";
+import { BackgroundObject } from "../enum/background.enum";
 
 /**
  * Anytime get is called on a property, this method is run 
@@ -16,7 +17,7 @@ import { LanguageObject } from "../enum/language.enum";
 var modifierCaller = {
     get: function (build, prop) {
         let origValue = build[prop];
-        console.log(`1 getting property '${prop}' from build '${build.takeBase}'`);
+        // console.log(`1 getting property '${prop}' from build '${build.takeBase}'`);
         if (build.takeBase) {
             return origValue;
         }
@@ -24,30 +25,32 @@ var modifierCaller = {
         let buildCopy = copyBuild(build);
         buildCopy.takeBase = true;
         // run all modifiers
-        buildCopy.race.effect(buildCopy);
+        buildCopy.applyRace();
+        buildCopy.applyBackground();
 
 
-        console.log(`2 getting property '${prop}' from build '${build.takeBase}'. value was '${JSON.stringify(origValue)}' now '${JSON.stringify(build[prop])}'`);
+        // console.log(`2 getting property '${prop}' from build '${build.takeBase}'. value was '${JSON.stringify(origValue)}' now '${JSON.stringify(build[prop])}'`);
         // return buildProps[prop];
         return buildCopy[prop];
     }
 };
 
 export class Build {
-    // Workaround to get type safety and tie an object to the type
-    // can do Class.Bard.<property> instead of Class[ClassName.Bard].<property
-    takeBase: boolean = false;
-    race: RaceObject;
-    class: ClassObject;
-    spellsInAffect: SpellObject[];
-    skillProficiency: { [key in SkillEnum]: number };
+    // build properties that involve an initial choice
     level: LevelObject;
-    conditions: ConditionObject[];    
-    darkVision: number;
+    race: RaceObject = null;
+    class: ClassObject = null;
+    background: BackgroundObject = null;
+    ability: { [key in AbilityEnum]: number } = defaultAbility;
+    skill: { [key in SkillEnum]: boolean } = defaultSkill;
 
-    // variable that all modifiers alter  
-    public ability: { [key in AbilityEnum]: number };
-    
+    // current state of build properties
+    spellsInAffect: SpellObject[] = [];
+    conditions: ConditionObject[] = [];
+
+    // calcualable properties
+    darkVision: number = 0;
+
     constructor() {
         return new Proxy(this, modifierCaller);
     }
@@ -138,8 +141,32 @@ export class Build {
        * 
        */
 
+        private applyRace(): void {
+            if (this.race) {
+                if (this.race.effect) {
+                    this.race.effect(this);
+                } else {
+                    // console.log(`race '${this.race.toString()}' has no effect property`);
+                }
+            } else {
+                // console.log(`this build has no race property`);
+            }
+        }
+        private applyBackground(): void {
+            if (this.background) {
+                if (this.background.effect) {
+                    this.background.effect(this);
+                } else {
+                    console.log(`background '${this.background.toString()}' has no effect property`);
+                }
+            } else {
+                console.log(`this build has no background property`);
+            }
+        }
        private applyLevel(): Build {
             return this;
        }
-    
+     
+    // used to prevent looping when using getters within effects.
+    takeBase: boolean = false;
 }

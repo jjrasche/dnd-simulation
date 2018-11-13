@@ -1,6 +1,6 @@
 import { Skill } from "../skill.enum";
 import { Die } from "../die.enum";
-import { DamageTypeObject, DamageType } from "../damageType.enum";
+import { DamageTypeObject, DamageType, DieDamage, AmountDamage } from "../damage.enum";
 import { EquipmentObject } from "./equipment.enum";
 import { WeaponPropertyObject, WeaponProperty } from "./weaponProperty.enum";
 
@@ -54,17 +54,6 @@ export enum WeaponCategory {
 export interface Range {
     normal: number
     long: number
-}
-
-export interface DieDamage {
-    numDie: number;
-    die: Die;
-    type: DamageTypeObject
-}
-
-export interface AmountDamage {
-    amount: number;
-    type: DamageTypeObject
 }
 
 export interface WeaponObject extends EquipmentObject {

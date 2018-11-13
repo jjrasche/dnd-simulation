@@ -1,6 +1,6 @@
 import { Skill } from "../skill.enum";
 import { Die } from "../die.enum";
-import { DamageTypeObject, DamageType } from "../damageType.enum";
+import { DamageTypeObject, DamageType } from "../damage.enum";
 import { EquipmentObject } from "./equipment.enum";
 
 export enum ToolEnum {

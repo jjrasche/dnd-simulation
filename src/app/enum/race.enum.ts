@@ -1,12 +1,12 @@
 import { AbilityEnum, Ability } from "./ability.enum";
 import { Size } from "./size.enum";
-import { LanguageEnum, LanguageObject, Language } from "./language.enum";
+import { LanguageObject, Language } from "./language.enum";
 import { Build } from "../models/build.model";
 import { EquipmentObject, Equipment } from "./equipment/equipment.enum";
 import { Skill, SkillObject } from "./skill.enum";
 import { AffectingObject } from "../models/action.model";
-import { AbilityScores } from "../models/ability.model";
 import { TraitObject, Trait } from "./trait.enum";
+import { settings } from "../models/common";
 
 export enum RaceEnum {
     Dwarf = "Dwarf",
@@ -42,16 +42,6 @@ export class RaceObject implements AffectingObject<Build> {
             Object.keys(Ability).forEach(key => b.ability[key] += this.abilityModifier[key]);
         }
     };
-}
-
-interface settings<T> {
-    inherint: Array<T>;
-    selectable: optionalSettings<T>[];
-}
-
-interface optionalSettings<T> {
-    options: Array<T>;
-    num: number;
 }
 
 export const Race: { [key in RaceEnum]: RaceObject } = {

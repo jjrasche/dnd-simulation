@@ -8,6 +8,8 @@ import { Condition } from '../enum/condition.enum';
 import { ConditionObject } from '../enum/money.enum';
 import { Tool } from '../enum/equipment/tools.enum';
 import { TraitObject } from '../enum/trait.enum';
+import { BackgroundObject } from '../enum/background.enum';
+import { Skill } from '../enum/skill.enum';
 
 describe('BuildModel', () => {
 
@@ -82,40 +84,53 @@ describe('BuildModel', () => {
     //     let build = new Build();
     //     expect(build.darkVision).toEqual(10);
     // });
-    it("given a build with race specific and base ability, the result is the combination of both", () => {
-        let build = new Build();
-        build.ability = { Strength: 2, Dexterity: 1, Constitution: 2, Intelligence: 0, Wisdom: -3, Charisma: 0 };
+    // it("racial ability: given a build with race specific and base ability, the result is the combination of both", () => {
+    //     let build = new Build();
+    //     build.ability = { Strength: 2, Dexterity: 1, Constitution: 2, Intelligence: 0, Wisdom: -3, Charisma: 0 };
         
-        let race = new RaceObject();
-        race.abilityModifier = { Strength: 1, Dexterity: 1, Constitution: 2, Intelligence: 0, Wisdom: 0, Charisma: -1 };
-        race.effect = RaceObject.prototype.effect,
-        build.race = race;
+    //     let race = new RaceObject();
+    //     race.abilityModifier = { Strength: 1, Dexterity: 1, Constitution: 2, Intelligence: 0, Wisdom: 0, Charisma: -1 };
+    //     race.effect = RaceObject.prototype.effect,
+    //     build.race = race;
 
-        let expected = { Strength: 3, Dexterity:2, Constitution: 4, Intelligence: 0, Wisdom: -3, Charisma: -1 };
-        expect(build.ability).toEqual(expected);
-    });
-    it("given a build with a race based darkvision to 120 feet and spell with dark vision to 60 feet, build.darkVision returns 120", () => {
-        let build = new Build();
-        build.darkVision = 10;
+    //     let expected = { Strength: 3, Dexterity:2, Constitution: 4, Intelligence: 0, Wisdom: -3, Charisma: -1 };
+    //     expect(build.ability).toEqual(expected);
+    // });
+    // it("racial trait: given a build with a race based darkvision to 120 feet and spell with dark vision to 60 feet, build.darkVision returns 120", () => {
+    //     let build = new Build();
+    //     build.darkVision = 10;
 
-        let race = new RaceObject();
-        let trait = new TraitObject();
-        trait.effect = (b: Build): void => { b.darkVision = 120 };
-        race.traits.push()
-        build.race = race;
+    //     let race = new RaceObject();
+    //     let trait = new TraitObject();
+    //     trait.effect = (b: Build): void => { b.darkVision = 120 };
+    //     race.traits.push(trait);
+    //     build.race = race;
 
-        expect(build.darkVision).toEqual(120);
-    });
-    // it("given a build with a race based darkvision to 120 feet and spell with dark vision to 60 feet, build.darkVision returns 120", () => {
+    //     expect(build.darkVision).toEqual(120);
+    // });
+    // it("spell effet: given a build with a spell with dark vision to 60 feet, build.darkVision returns 60", () => {
     //     let build = new Build();
     //     build.darkVision = 0
 
-        
-    //     race.darkVision = 120
-    //     build.race = race;
-    //     console.log(Object.keys(Build.prototype));
-    //     expect(build.ability.Strength).toEqual(1);
+    //     let spell = new SpellObject();
+    //     spell.effect = (b: Build): void => { b.darkVision = 60 };
+    //     build.spellsInAffect.push(spell);
+
+    //     expect(build.darkVision).toEqual(60);
     // });
+
+    it("default background effet: given a build with a background that give proficiency in stealth and animal handling, build.skill.stealth = true and build.skill.AnimalHandling = true", () => {
+        let build = new Build();
+
+        let background = new BackgroundObject();
+        background.skill = { inherint: [Skill.AnimalHandling, Skill.Stealth], selectable: null },
+        build.background = background;
+
+        Object.keys(Skill).forEach(key => {
+            let buildHasSkill = background.skill.inherint.find(backgroundKey => backgroundKey === Skill[key]) != undefined;
+            expect(build.skill[key]).toEqual(buildHasSkill);
+        })
+    });
 
     // it("given a build with racial dark vision, build.darkVision returns the dark vision of that race", () => {
     //     let build = new Build();

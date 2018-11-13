@@ -1,4 +1,4 @@
-import { Skill } from "./skill.enum";
+import { Skill, SkillObject } from "./skill.enum";
 
 // Limits the possible Classes to the ones listed below and allows for type safety.
 export enum ClassEnum {
@@ -17,7 +17,7 @@ export enum ClassEnum {
 
 // Enforces form of return object from so you can do `Class.Bard.numSkills`
 export interface ClassObject {
-    skillOptions: Array<Skill>;
+    skillOptions: Array<SkillObject>;
     numSkills: number;
 };
 

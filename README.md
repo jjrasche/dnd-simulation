@@ -20,6 +20,8 @@ Q: how does the environment interact with characters: torch light in dark, fog, 
 
 ## Considerations
 - bonuses to ability checks
+- interactive effects e.g. a trait that increases max hp by 10 and a condition that halves it... what order should things be applied in?
+- circular effects e.g. a spell that adds a trait that adds a spell
 
 
 ## External Resources

@@ -1,16 +1,68 @@
 import { AbilityScores } from "./ability.model";
 import { ClassObject } from "../enum/class.enum";
+import { RaceObject, Race } from "../enum/race.enum";
+import { SpellObject } from "../enum/spell.enum";
+import { SkillEnum } from "../enum/skill.enum";
+import { LevelObject } from "../enum/level.enum";
+import { Condition } from "selenium-webdriver";
+import { ConditionObject } from "../enum/money.enum";
+import { AbilityEnum } from "../enum/ability.enum";
+import { copyBuild, Factory } from "../utils/objectManipulation";
+import { LanguageObject } from "../enum/language.enum";
+
+/**
+ * Anytime get is called on a property, this method is run 
+ */
+var modifierCaller = {
+    get: function (build, prop) {
+        let origValue = build[prop];
+        console.log(`1 getting property '${prop}' from build '${build.takeBase}'`);
+        if (build.takeBase) {
+            return origValue;
+        }
+
+        let buildCopy = copyBuild(build);
+        buildCopy.takeBase = true;
+        // run all modifiers
+        buildCopy.race.effect(buildCopy);
+
+
+        console.log(`2 getting property '${prop}' from build '${build.takeBase}'. value was '${JSON.stringify(origValue)}' now '${JSON.stringify(build[prop])}'`);
+        // return buildProps[prop];
+        return buildCopy[prop];
+    }
+};
 
 export class Build {
     // Workaround to get type safety and tie an object to the type
     // can do Class.Bard.<property> instead of Class[ClassName.Bard].<property
+    takeBase: boolean = false;
+    race: RaceObject;
     class: ClassObject;
+    spellsInAffect: SpellObject[];
+    skillProficiency: { [key in SkillEnum]: number };
+    level: LevelObject;
+    conditions: ConditionObject[];    
+    darkVision: number;
+
+    // variable that all modifiers alter  
+    public ability: { [key in AbilityEnum]: number };
     
+    constructor() {
+        return new Proxy(this, modifierCaller);
+    }
+
+
+    /** accessing Build.<properties> while going through modifiers
+     * I want to call Build.ability.Wisdom and return a value that starts with _abilityScores.Wisdom and is altered by modifiers
+     *  Build.wisdom
+     */
+
+
     /** permanent traits
      * name
      * race
      * background
-     * base speed
      */
 
     /**
@@ -39,14 +91,19 @@ export class Build {
       * - armor class(), returns number === armor + shiled + dex when armor doesn't specify, spells
       * - skill check(skill), returns modifier: number
       * - saving throw(ability), returns modifier: number
-      * - proficiency(), returns bonus === proficiencyBonusChart[level]
+      * - proficiencyBonus(), returns bonus === proficiencyBonusChart[level]
       * - initiative(), returns modifier: number === dexMod
-      * - vision(), returns number === race/class can be modified by spells Darkvision
+      * - darkVision(), returns number === race/class can be modified by spells Darkvision
       * - speed(), returns number === race/class can be modified by spells Haste, Slow
       * - getMod(ability), returns modifier: number based on ability score
       * - hitpoints(), returns number === hitPoints - damage + temporaryHitPoints
       * 
       */
+
+      private _speed: number;
+      get speed(): number {
+        return this._speed;
+      }
 
       /** all traits
        * armorClass()
@@ -63,6 +120,7 @@ export class Build {
 
       /** How to dynamically apply build choice's and current state's affect on calculated traits? 
        * change agents
+       *    applyLevel()
        *    applySpells() 
        *    applyFeats()
        *    applyConditions()
@@ -80,7 +138,8 @@ export class Build {
        * 
        */
 
-    
-    ability: AbilityScores;
+       private applyLevel(): Build {
+            return this;
+       }
     
 }

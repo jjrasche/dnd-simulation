@@ -1,4 +1,5 @@
 import { AbilityObject, Ability } from "./ability.enum";
+import { EnumBased } from "../models/common";
 
 export enum SkillEnum {
     Acrobatics = "Acrobatics",
@@ -21,9 +22,9 @@ export enum SkillEnum {
     Survival = "Survival",
 }
 
-export interface SkillObject {
+export class SkillObject extends EnumBased {
     description: string;
-    ability: AbilityObject,
+    ability: AbilityObject;
 }
 
 export const Skill: { [key in SkillEnum]: SkillObject } = {
@@ -100,3 +101,27 @@ export const Skill: { [key in SkillEnum]: SkillObject } = {
         ability: Ability.Wisdom,
     },
 }
+
+export const defaultSkill = { 
+    Acrobatics: false,
+    AnimalHandling: false,
+    Arcana: false,
+    Athletics: false,
+    Deception: false,
+    History: false,
+    Insight: false,
+    Intimidation: false,
+    Investigation: false,
+    Medicine: false,
+    Nature: false,
+    Perception: false,
+    Performance: false,
+    Persuasion: false,
+    Religion: false,
+    SleightOfHand: false,
+    Stealth: false,
+    Survival: false
+};
+
+// Add enum to each SkillObject
+Object.keys(Skill).forEach(key => Skill[key].enum = key);

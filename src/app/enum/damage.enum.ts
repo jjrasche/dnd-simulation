@@ -1,3 +1,5 @@
+import { Die } from "./die.enum";
+
 export enum DamageTypeEnum {
     Acid = "Acid",
     Bludgeoning = "Bludgeoning",
@@ -16,6 +18,17 @@ export enum DamageTypeEnum {
 
 export interface DamageTypeObject {
     description: string;
+}
+
+export interface DieDamage {
+    numDie: number;
+    die: Die;
+    type: DamageTypeObject
+}
+
+export interface AmountDamage {
+    amount: number;
+    type: DamageTypeObject
 }
 
 export const DamageType: { [key in DamageTypeEnum]: DamageTypeObject } = {

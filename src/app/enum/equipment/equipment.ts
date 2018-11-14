@@ -6,4 +6,3 @@ import { PackEnum, PackObject, Pack } from "./pack.enum";
 // needed to separate this from equipment.enum.ts to prevent circular dependencies
 export const Equipment: 
     { [key in WeaponEnum |ToolEnum | GearEnum | PackEnum]: WeaponObject |ToolObject | GearObject | PackObject } = { ...Weapon, ...Tool, ...Gear, ...Pack } ;
-    // { [key in WeaponEnum | ToolEnum | GearEnum ]: WeaponObject | ToolObject | GearObject } = { ...Weapon, ...Tool, ...Gear };

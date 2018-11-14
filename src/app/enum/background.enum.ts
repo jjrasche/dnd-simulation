@@ -29,7 +29,7 @@ export class BackgroundObject implements BuildAffectingObject {
         this.skill.inherent.forEach(skill => {
             b.skill[skill.enum] = true;
         });
-        console.log(`value was '${JSON.stringify(origVale)}' now '${JSON.stringify(b.skill)}'`);
+        // console.log(`value was '${JSON.stringify(origVale)}' now '${JSON.stringify(b.skill)}'`);
     };
 }
 

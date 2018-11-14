@@ -10,8 +10,9 @@ import { TraitObject } from '../enum/trait.enum';
 import { BackgroundObject } from '../enum/background.enum';
 import { Skill } from '../enum/skill.enum';
 import { Ability } from '../enum/ability.enum';
-import { WeaponObject } from '../enum/equipment/weapon.enum';
+import { WeaponObject, SimpleMeleeWeapons } from '../enum/equipment/weapon.enum';
 import { WeaponPropertyObject } from '../enum/equipment/weaponProperty.enum';
+import { LightArmor, ArmorObject, ArmorCategory } from '../enum/equipment/armor.enum';
 
 describe('BuildModel', () => {
 
@@ -110,7 +111,7 @@ describe('BuildModel', () => {
         expect(build.savingThrow).toEqual(expected);
     });
 
-    // modifier interaction
+    // multiple modifier interaction
     it("order on max: given a build with racial dark vision of 120 and spell with darkvision of 60, build.darkVision returns the higher one", () => {
         let build = new Build();
 
@@ -166,14 +167,16 @@ describe('BuildModel', () => {
         weapon.inUse = true;
 
         // armor with +2 AC
-        // let armor = new ArmorObject();
-        // armor.effect = (b: Build): void => { b.armorClass += 2 };
-        // armor.inUse = true;
+        let armor = new ArmorObject();
+        armor.category = ArmorCategory.Medium
+        armor.effect = (b: Build): void => { b.armorClass += 2 };
+        armor.inUse = true;
 
         // shield with +2 AC
-        // let shield = new ShieldObject();
-        // shield.effect = (b: Build): void => { b.armorClass += 2 };
-        // shield.inUse = true;
+        let shield = new ArmorObject();
+        armor.category = ArmorCategory.Shield
+        shield.effect = (b: Build): void => { b.armorClass += 2 };
+        shield.inUse = true;
 
         // spell with -1 AC
         let spellMinusAC = new SpellObject();
@@ -188,14 +191,10 @@ describe('BuildModel', () => {
 
         build.race = race;
         build.class = clazz;
-        build.equipment = [weapon];
+        build.equipment = [weapon, armor, shield];
         build.spellsInAffect = [spellMinusAC, spellPlusDex];
         build.conditions = [condition];
 
         expect(build.armorClass).toEqual(7);
     });
-
-
-    // limitations on builds
-    // can't 
 });

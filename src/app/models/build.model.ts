@@ -166,10 +166,10 @@ export class Build {
                 if (this.background.effect) {
                     this.background.effect(this);
                 } else {
-                    console.log(`background '${this.background.toString()}' has no effect property`);
+                    // console.log(`background '${this.background.toString()}' has no effect property`);
                 }
             } else {
-                console.log(`this build has no background property`);
+                // console.log(`this build has no background property`);
             }
         }
        private applyLevel(): Build {

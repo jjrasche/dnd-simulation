@@ -1,6 +1,5 @@
-import { GearObject, GearCategory } from "./gear.enum";
-import { EquipmentObject } from "./equipment.enum";
-import { Equipment } from "./equipment";
+import { GearObject, GearCategory, Gear } from "./gear.enum";
+import { EquipmentCategory } from "./equipment.enum";
 
 export enum PackEnum {
     BurglarPack = "BurglarPack",
@@ -13,7 +12,7 @@ export enum PackEnum {
 };
 
 export class PackObject extends GearObject {
-    contents: EquipmentObject[];
+    contents: GearObject[];
 };
 
 export const Pack: { [key in PackEnum]: PackObject } = {
@@ -23,18 +22,18 @@ export const Pack: { [key in PackEnum]: PackObject } = {
         weight: null,
         description: "",
         contents: [
-            Equipment.Backpack,
-            Equipment.BallBearings,
-            { ...Equipment.Candle, quantity: 5 },
-            Equipment.Crowbar,
-            Equipment.Hammer,
-            { ...Equipment.HoodedLantern, quantity: 10 },
-            Equipment.OilFlask,
-            { ...Equipment.Piton, quantity: 2 },
-            { ...Equipment.Rations, quantity: 5 },
-            Equipment.HempenRope,
-            Equipment.Tinderbox,
-            Equipment.Waterskin
+            Gear.Backpack,
+            Gear.BallBearings,
+            { ...Gear.Candle, quantity: 5 },
+            Gear.Crowbar,
+            Gear.Hammer,
+            { ...Gear.HoodedLantern, quantity: 10 },
+            Gear.OilFlask,
+            { ...Gear.Piton, quantity: 2 },
+            { ...Gear.Rations, quantity: 5 },
+            Gear.HempenRope,
+            Gear.Tinderbox,
+            Gear.Waterskin
         ],
     },
     DiplomatPack: {
@@ -43,17 +42,17 @@ export const Pack: { [key in PackEnum]: PackObject } = {
         weight: null,
         description: "",
         contents: [
-            Equipment.CaseMapOrScroll,
-            { ...Equipment.Chest, quantity: 2 },
-            { ...Equipment.FineClothes, quantity: 5 },
-            Equipment.Ink,
-            Equipment.InkPen,
-            Equipment.Lamp,
-            { ...Equipment.OilFlask, quantity: 2 },
-            { ...Equipment.PaperSheet, quantity: 5 },
-            Equipment.PerfumeVial,
-            Equipment.SealingWax,
-            Equipment.Soap
+            Gear.CaseMapOrScroll,
+            { ...Gear.Chest, quantity: 2 },
+            { ...Gear.FineClothes, quantity: 5 },
+            Gear.Ink,
+            Gear.InkPen,
+            Gear.Lamp,
+            { ...Gear.OilFlask, quantity: 2 },
+            { ...Gear.PaperSheet, quantity: 5 },
+            Gear.PerfumeVial,
+            Gear.SealingWax,
+            Gear.Soap
         ],
     },
     DungeoneerPack: {
@@ -62,14 +61,14 @@ export const Pack: { [key in PackEnum]: PackObject } = {
         weight: null,
         description: "",
         contents: [
-            Equipment.Backpack,
-            Equipment.Crowbar,
-            Equipment.Hammer,
-            { ...Equipment.Piton, quantity: 10 },
-            { ...Equipment.Rations, quantity: 10 },
-            { ...Equipment.HempenRope, quantity: 10 },
-            Equipment.Torch,
-            Equipment.Waterskin
+            Gear.Backpack,
+            Gear.Crowbar,
+            Gear.Hammer,
+            { ...Gear.Piton, quantity: 10 },
+            { ...Gear.Rations, quantity: 10 },
+            { ...Gear.HempenRope, quantity: 10 },
+            Gear.Torch,
+            Gear.Waterskin
         ],
     },
     EntertainerPack: {
@@ -78,13 +77,13 @@ export const Pack: { [key in PackEnum]: PackObject } = {
         weight: null,
         description: "",
         contents: [
-            Equipment.Backpack,
-            Equipment.Bedroll,
-            { ...Equipment.Candle, quantity: 2 },
-            { ...Equipment.CostumeClothes, quantity: 5 },
-            { ...Equipment.DisguiseKit, quantity: 5 },
-            Equipment.Rations,
-            Equipment.Waterskin,
+            Gear.Backpack,
+            Gear.Bedroll,
+            { ...Gear.Candle, quantity: 2 },
+            { ...Gear.CostumeClothes, quantity: 5 },
+            { ...Gear.DisguiseKit, quantity: 5 },
+            Gear.Rations,
+            Gear.Waterskin,
         ],
     },
     ExplorerPack: {
@@ -93,14 +92,14 @@ export const Pack: { [key in PackEnum]: PackObject } = {
         weight: null,
         description: "",
         contents: [
-            Equipment.Backpack,
-            Equipment.Bedroll,
-            Equipment.DisguiseKit,
-            Equipment.MessKit,
-            { ...Equipment.Rations, quantity: 10 },
-            { ...Equipment.Tinderbox, quantity: 10 },
-            Equipment.Torch,
-            Equipment.Waterskin,
+            Gear.Backpack,
+            Gear.Bedroll,
+            Gear.DisguiseKit,
+            Gear.MessKit,
+            { ...Gear.Rations, quantity: 10 },
+            { ...Gear.Tinderbox, quantity: 10 },
+            Gear.Torch,
+            Gear.Waterskin,
         ]
     },
     PriestPack: {
@@ -109,12 +108,12 @@ export const Pack: { [key in PackEnum]: PackObject } = {
         weight: null,
         description: "",
         contents: [
-            Equipment.Backpack,
-            Equipment.Blanket,
-            { ...Equipment.Candle, quantity: 10 },
-            Equipment.Rations,
-            { ...Equipment.Tinderbox, quantity: 2 },
-            Equipment.Waterskin,
+            Gear.Backpack,
+            Gear.Blanket,
+            { ...Gear.Candle, quantity: 10 },
+            Gear.Rations,
+            { ...Gear.Tinderbox, quantity: 2 },
+            Gear.Waterskin,
         ]
     },
     ScholarPack: {
@@ -123,14 +122,14 @@ export const Pack: { [key in PackEnum]: PackObject } = {
         weight: null,
         description: "",
         contents: [
-            Equipment.Backpack,
-            Equipment.Book,
-            Equipment.Ink,
-            Equipment.InkPen,
-            { ...Equipment.ParchmentSheet, quantity: 10 },
+            Gear.Backpack,
+            Gear.Book,
+            Gear.Ink,
+            Gear.InkPen,
+            { ...Gear.ParchmentSheet, quantity: 10 },
         ]
     }, 
 };
 
 // Add EquipmentCategory.Tools to all tools.
-// Object.keys(Pack).forEach(key => Pack[key].EquipmentCategory = EquipmentCategory.Tools);
+Object.keys(Pack).forEach(key => Pack[key].EquipmentCategory = EquipmentCategory.Tools);

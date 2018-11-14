@@ -46,16 +46,4 @@ export const Language: { [key in LanguageEnum]: LanguageObject } = {
     Primordial: { type: LanguageType.Exotic, typicalSpeakers: ["Elementa;s"], script: LanguageEnum.Dwarvish },
     Sylvan: { type: LanguageType.Exotic, typicalSpeakers: ["Fey Creatures"], script: LanguageEnum.Elvish },
     Undercommon: { type: LanguageType.Exotic, typicalSpeakers: ["Underdark Traders"], script: LanguageEnum.Elvish },
-
-}
-
-export function findLanguageEnumByLanguageInfo(classInfo: LanguageObject): LanguageEnum {
-    let keys = Object.keys(Language);
-    for (let index = 0; index < keys.length; index++) {
-        const languageEnum = keys[index] as LanguageEnum;
-        if (Language[languageEnum] === classInfo) {
-            return languageEnum;
-        }
-    }
-    return null;
 }

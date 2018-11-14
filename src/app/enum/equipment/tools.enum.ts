@@ -1,7 +1,7 @@
 import { Skill } from "../skill.enum";
 import { Die } from "../die.enum";
 import { DamageTypeObject, DamageType } from "../damage.enum";
-import { EquipmentObject } from "./equipment.enum";
+import { EquipmentObject, EquipmentCategory } from "./equipment.enum";
 
 export enum ToolEnum {
     AlchemistSupplies = "AlchemistSupplies",
@@ -44,7 +44,7 @@ export enum ToolCategory {
     OtherTools = "OtherTools",
 }
 
-export interface ToolObject extends EquipmentObject {
+export class ToolObject extends EquipmentObject {
     category: ToolCategory;
 };
 
@@ -236,3 +236,6 @@ export const Tool: { [key in ToolEnum]: ToolObject } = {
         description: "This set of tools includes a small file, a set of lock picks, a small mirror mounted on a metal handle, a set of narrow-bladed scissors, and a pair of pliers. Proficiency with these tools lets you add your proficiency bonus to any ability checks you make to disarm traps or open locks.",
     },
 };
+
+// Add EquipmentCategory.Tools to all tools.
+Object.keys(Tool).forEach(key => Tool[key].EquipmentCategory = EquipmentCategory.Tools);

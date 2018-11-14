@@ -1,6 +1,6 @@
 import { Die } from "../die.enum";
 import { DamageType, DieDamage, AmountDamage } from "../damage.enum";
-import { EquipmentObject } from "./equipment.enum";
+import { EquipmentObject, EquipmentCategory } from "./equipment.enum";
 import { WeaponPropertyObject, WeaponProperty } from "./weaponProperty.enum";
 import { BuildAffectingObject } from "src/app/models/common";
 import { Build } from "src/app/models/build.model";
@@ -58,7 +58,7 @@ export interface Range {
 }
 
 export class WeaponObject extends EquipmentObject implements BuildAffectingObject {
-    weaponCategory: WeaponCategory;
+    category: WeaponCategory;
     range: Range;
     damage: DieDamage | AmountDamage;   // TODO: test handling of difference here
     properties: WeaponPropertyObject[] = [];
@@ -71,9 +71,10 @@ export class WeaponObject extends EquipmentObject implements BuildAffectingObjec
     };
 };
 
+export type WeaponMapType = { [key in WeaponEnum]: WeaponObject };
 export const Weapon: { [key in WeaponEnum]: WeaponObject } = {
     Club: {
-        weaponCategory: WeaponCategory.SimpleMelee,
+        category: WeaponCategory.SimpleMelee,
         cost: .1,
         weight: 2,
         range: null,
@@ -83,7 +84,7 @@ export const Weapon: { [key in WeaponEnum]: WeaponObject } = {
         effect: WeaponObject.prototype.effect,
     },
     Dagger: {
-        weaponCategory: WeaponCategory.SimpleMelee,
+        category: WeaponCategory.SimpleMelee,
         cost: 2,
         weight: 1,
         range: { normal: 20, long: 60 },
@@ -93,7 +94,7 @@ export const Weapon: { [key in WeaponEnum]: WeaponObject } = {
         effect: WeaponObject.prototype.effect,
     },
     Greatclub: {
-        weaponCategory: WeaponCategory.SimpleMelee,
+        category: WeaponCategory.SimpleMelee,
         cost: .2,
         weight: 10,
         range: null,
@@ -103,7 +104,7 @@ export const Weapon: { [key in WeaponEnum]: WeaponObject } = {
         effect: WeaponObject.prototype.effect,
     },
     Handaxe: {
-        weaponCategory: WeaponCategory.SimpleMelee,
+        category: WeaponCategory.SimpleMelee,
         cost: 5,
         weight: 2,
         range: { normal: 20, long: 60 },
@@ -113,7 +114,7 @@ export const Weapon: { [key in WeaponEnum]: WeaponObject } = {
         effect: WeaponObject.prototype.effect,
     },
     Javelin: {
-        weaponCategory: WeaponCategory.SimpleMelee,
+        category: WeaponCategory.SimpleMelee,
         cost: .5,
         weight: 2,
         range: { normal: 30, long: 120 },
@@ -123,7 +124,7 @@ export const Weapon: { [key in WeaponEnum]: WeaponObject } = {
         effect: WeaponObject.prototype.effect,
     },
     LightHammer: {
-        weaponCategory: WeaponCategory.SimpleMelee,
+        category: WeaponCategory.SimpleMelee,
         cost: 2,
         weight: 2,
         range: { normal: 20, long: 60 },
@@ -133,7 +134,7 @@ export const Weapon: { [key in WeaponEnum]: WeaponObject } = {
         effect: WeaponObject.prototype.effect,
     },
     Mace: {
-        weaponCategory: WeaponCategory.SimpleMelee,
+        category: WeaponCategory.SimpleMelee,
         cost: 5,
         weight: 4,
         range: null,
@@ -143,7 +144,7 @@ export const Weapon: { [key in WeaponEnum]: WeaponObject } = {
         effect: WeaponObject.prototype.effect,
     },
     Quarterstaff: {
-        weaponCategory: WeaponCategory.SimpleMelee,
+        category: WeaponCategory.SimpleMelee,
         cost: .2,
         weight: 4,
         range: null,
@@ -153,7 +154,7 @@ export const Weapon: { [key in WeaponEnum]: WeaponObject } = {
         effect: WeaponObject.prototype.effect,
     },
     Sickle: {
-        weaponCategory: WeaponCategory.SimpleMelee,
+        category: WeaponCategory.SimpleMelee,
         cost: 1,
         weight: 2,
         range: null,
@@ -163,7 +164,7 @@ export const Weapon: { [key in WeaponEnum]: WeaponObject } = {
         effect: WeaponObject.prototype.effect,
     },
     Spear: {
-        weaponCategory: WeaponCategory.SimpleMelee,
+        category: WeaponCategory.SimpleMelee,
         cost: 1,
         weight: 3,
         range: { normal: 20, long: 60 },
@@ -173,7 +174,7 @@ export const Weapon: { [key in WeaponEnum]: WeaponObject } = {
         effect: WeaponObject.prototype.effect,
     },
     CrossbowLight: {
-        weaponCategory: WeaponCategory.SimpleRange,
+        category: WeaponCategory.SimpleRange,
         cost: 25,
         weight: 5,
         range: { normal: 80, long: 320 },
@@ -183,7 +184,7 @@ export const Weapon: { [key in WeaponEnum]: WeaponObject } = {
         effect: WeaponObject.prototype.effect,
     },
     Dart: {
-        weaponCategory: WeaponCategory.SimpleRange,
+        category: WeaponCategory.SimpleRange,
         cost: .05,
         weight: 0.25,
         range: { normal: 20, long: 60 },
@@ -193,7 +194,7 @@ export const Weapon: { [key in WeaponEnum]: WeaponObject } = {
         effect: WeaponObject.prototype.effect,
     },
     Shortbow: {
-        weaponCategory: WeaponCategory.SimpleRange,
+        category: WeaponCategory.SimpleRange,
         cost: 25,
         weight: 2,
         range: { normal: 80, long: 320 },
@@ -203,7 +204,7 @@ export const Weapon: { [key in WeaponEnum]: WeaponObject } = {
         effect: WeaponObject.prototype.effect,
     },
     Sling: {
-        weaponCategory: WeaponCategory.SimpleRange,
+        category: WeaponCategory.SimpleRange,
         cost: .1,
         weight: 0,
         range: { normal: 30, long: 120 },
@@ -213,7 +214,7 @@ export const Weapon: { [key in WeaponEnum]: WeaponObject } = {
         effect: WeaponObject.prototype.effect,
     },
     Battleaxe: {
-        weaponCategory: WeaponCategory.MartialMelee,
+        category: WeaponCategory.MartialMelee,
         cost: 10,
         weight: 4,
         range: null,
@@ -223,7 +224,7 @@ export const Weapon: { [key in WeaponEnum]: WeaponObject } = {
         effect: WeaponObject.prototype.effect,
     },
     Flail: {
-        weaponCategory: WeaponCategory.MartialMelee,
+        category: WeaponCategory.MartialMelee,
         cost: 10,
         weight: 2,
         range: null,
@@ -233,7 +234,7 @@ export const Weapon: { [key in WeaponEnum]: WeaponObject } = {
         effect: WeaponObject.prototype.effect,
     },
     Glaive: {
-        weaponCategory: WeaponCategory.MartialMelee,
+        category: WeaponCategory.MartialMelee,
         cost: 20,
         weight: 6,
         range: null,
@@ -243,7 +244,7 @@ export const Weapon: { [key in WeaponEnum]: WeaponObject } = {
         effect: WeaponObject.prototype.effect,
     },
     Greataxe: {
-        weaponCategory: WeaponCategory.MartialMelee,
+        category: WeaponCategory.MartialMelee,
         cost: 30,
         weight: 7,
         range: null,
@@ -253,7 +254,7 @@ export const Weapon: { [key in WeaponEnum]: WeaponObject } = {
         effect: WeaponObject.prototype.effect,
     },
     Greatsword: {
-        weaponCategory: WeaponCategory.MartialMelee,
+        category: WeaponCategory.MartialMelee,
         cost: 50,
         weight: 6,
         range: null,
@@ -263,7 +264,7 @@ export const Weapon: { [key in WeaponEnum]: WeaponObject } = {
         effect: WeaponObject.prototype.effect,
     },
     Halberd: {
-        weaponCategory: WeaponCategory.MartialMelee,
+        category: WeaponCategory.MartialMelee,
         cost: 20,
         weight: 6,
         range: null,
@@ -273,7 +274,7 @@ export const Weapon: { [key in WeaponEnum]: WeaponObject } = {
         effect: WeaponObject.prototype.effect,
     },
     Lance: {
-        weaponCategory: WeaponCategory.MartialMelee,
+        category: WeaponCategory.MartialMelee,
         cost: 10,
         weight: 6,
         range: null,
@@ -283,7 +284,7 @@ export const Weapon: { [key in WeaponEnum]: WeaponObject } = {
         effect: WeaponObject.prototype.effect,
     },
     Longsword: {
-        weaponCategory: WeaponCategory.MartialMelee,
+        category: WeaponCategory.MartialMelee,
         cost: 15,
         weight: 3,
         range: null,
@@ -293,7 +294,7 @@ export const Weapon: { [key in WeaponEnum]: WeaponObject } = {
         effect: WeaponObject.prototype.effect,
     },
     Maul: {
-        weaponCategory: WeaponCategory.MartialMelee,
+        category: WeaponCategory.MartialMelee,
         cost: 10,
         weight: 10,
         range: null,
@@ -303,7 +304,7 @@ export const Weapon: { [key in WeaponEnum]: WeaponObject } = {
         effect: WeaponObject.prototype.effect,
     },
     Morningstar: {
-        weaponCategory: WeaponCategory.MartialMelee,
+        category: WeaponCategory.MartialMelee,
         cost: 15,
         weight: 4,
         range: null,
@@ -313,7 +314,7 @@ export const Weapon: { [key in WeaponEnum]: WeaponObject } = {
         effect: WeaponObject.prototype.effect,
     },
     Pike: {
-        weaponCategory: WeaponCategory.MartialMelee,
+        category: WeaponCategory.MartialMelee,
         cost: 5,
         weight: 18,
         range: null,
@@ -323,7 +324,7 @@ export const Weapon: { [key in WeaponEnum]: WeaponObject } = {
         effect: WeaponObject.prototype.effect,
     },
     Rapier: {
-        weaponCategory: WeaponCategory.MartialMelee,
+        category: WeaponCategory.MartialMelee,
         cost: 25,
         weight: 2,
         range: null,
@@ -333,7 +334,7 @@ export const Weapon: { [key in WeaponEnum]: WeaponObject } = {
         effect: WeaponObject.prototype.effect,
     },
     Scimitar: {
-        weaponCategory: WeaponCategory.MartialMelee,
+        category: WeaponCategory.MartialMelee,
         cost: 25,
         weight: 3,
         range: null,
@@ -343,7 +344,7 @@ export const Weapon: { [key in WeaponEnum]: WeaponObject } = {
         effect: WeaponObject.prototype.effect,
     },
     Shortsword: {
-        weaponCategory: WeaponCategory.MartialMelee,
+        category: WeaponCategory.MartialMelee,
         cost: 10,
         weight: 2,
         range: null,
@@ -353,7 +354,7 @@ export const Weapon: { [key in WeaponEnum]: WeaponObject } = {
         effect: WeaponObject.prototype.effect,
     },
     Trident: {
-        weaponCategory: WeaponCategory.MartialMelee,
+        category: WeaponCategory.MartialMelee,
         cost: 5,
         weight: 4,
         range: { normal: 20, long: 60 },
@@ -363,7 +364,7 @@ export const Weapon: { [key in WeaponEnum]: WeaponObject } = {
         effect: WeaponObject.prototype.effect,
     },
     WarPick: {
-        weaponCategory: WeaponCategory.MartialMelee,
+        category: WeaponCategory.MartialMelee,
         cost: 5,
         weight: 2,
         range: null,
@@ -373,7 +374,7 @@ export const Weapon: { [key in WeaponEnum]: WeaponObject } = {
         effect: WeaponObject.prototype.effect,
     },
     Warhammer: {
-        weaponCategory: WeaponCategory.MartialMelee,
+        category: WeaponCategory.MartialMelee,
         cost: 15,
         weight: 2,
         range: null,
@@ -383,7 +384,7 @@ export const Weapon: { [key in WeaponEnum]: WeaponObject } = {
         effect: WeaponObject.prototype.effect,
     },
     Whip: {
-        weaponCategory: WeaponCategory.MartialMelee,
+        category: WeaponCategory.MartialMelee,
         cost: 2,
         weight: 3,
         range: null,
@@ -393,7 +394,7 @@ export const Weapon: { [key in WeaponEnum]: WeaponObject } = {
         effect: WeaponObject.prototype.effect,
     },
     Blowgun: {
-        weaponCategory: WeaponCategory.MartialRange,
+        category: WeaponCategory.MartialRange,
         cost: 10,
         weight: 1,
         range: { normal: 25, long: 100 },
@@ -403,7 +404,7 @@ export const Weapon: { [key in WeaponEnum]: WeaponObject } = {
         effect: WeaponObject.prototype.effect,
     },
     CrossbowHand: {
-        weaponCategory: WeaponCategory.MartialRange,
+        category: WeaponCategory.MartialRange,
         cost: 75,
         weight: 3,
         range: { normal: 30, long: 120 },
@@ -413,7 +414,7 @@ export const Weapon: { [key in WeaponEnum]: WeaponObject } = {
         effect: WeaponObject.prototype.effect,
     },
     CrossbowHeavy: {
-        weaponCategory: WeaponCategory.MartialRange,
+        category: WeaponCategory.MartialRange,
         cost: 50,
         weight: 18,
         range: { normal: 100, long: 400 },
@@ -423,7 +424,7 @@ export const Weapon: { [key in WeaponEnum]: WeaponObject } = {
         effect: WeaponObject.prototype.effect,
     },
     Longbow: {
-        weaponCategory: WeaponCategory.MartialRange,
+        category: WeaponCategory.MartialRange,
         cost: 50,
         weight: 2,
         range: { normal: 150, long: 600 },
@@ -433,7 +434,7 @@ export const Weapon: { [key in WeaponEnum]: WeaponObject } = {
         effect: WeaponObject.prototype.effect,
     },
     Net: {
-        weaponCategory: WeaponCategory.MartialRange,
+        category: WeaponCategory.MartialRange,
         cost: 1,
         weight: 3,
         range: { normal: 5, long: 15 },
@@ -443,3 +444,10 @@ export const Weapon: { [key in WeaponEnum]: WeaponObject } = {
         effect: WeaponObject.prototype.effect,
     },
 };
+
+// Add EquipmentCategory.Tools to all tools.
+Object.keys(Weapon).forEach(key => Weapon[key].EquipmentCategory = EquipmentCategory.Weapon);
+
+// export const SimpleMeleeWeapons: WeaponMapType = Object.keys(Weapon).filter(key => Weapon[key].category == WeaponCategory.SimpleMelee);
+// export const Shields: ArmorMapType = Object.keys(Armor).filter(key => Armor[key].category == ArmorCategory.Shield);
+

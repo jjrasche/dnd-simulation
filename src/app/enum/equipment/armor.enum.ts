@@ -141,7 +141,8 @@ export const Armor: ArmorMapType = {
 // Add EquipmentCategory.Tools to all tools.
 Object.keys(Armor).forEach(key => Armor[key].EquipmentCategory = EquipmentCategory.Armor);
 
-export const LightArmor: ArmorMapType = Object.keys(Armor).filter(key => Armor[key].category == ArmorCategory.Light);
-export const MediumArmor: ArmorMapType = Object.keys(Armor).filter(key => Armor[key].category == ArmorCategory.Medium);
-export const HeavyArmor: ArmorMapType = Object.keys(Armor).filter(key => Armor[key].category == ArmorCategory.Heavy);
-export const Shields: ArmorMapType = Object.keys(Armor).filter(key => Armor[key].category == ArmorCategory.Shield);
+export const AllArmor: ArmorObject[] = Object.keys(Armor).map(key => Armor[key]);
+export const LightArmor: ArmorObject[] = AllArmor.filter(armor => armor.category == ArmorCategory.Light);
+export const MediumArmor: ArmorObject[] = AllArmor.filter(armor => armor.category == ArmorCategory.Medium);
+export const HeavyArmor: ArmorObject[] = AllArmor.filter(armor => armor.category == ArmorCategory.Heavy);
+export const Shields: ArmorObject[] = AllArmor.filter(armor => armor.category == ArmorCategory.Shield);

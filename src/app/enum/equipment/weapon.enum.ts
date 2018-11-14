@@ -72,7 +72,7 @@ export class WeaponObject extends EquipmentObject implements BuildAffectingObjec
 };
 
 export type WeaponMapType = { [key in WeaponEnum]: WeaponObject };
-export const Weapon: { [key in WeaponEnum]: WeaponObject } = {
+export const Weapon: WeaponMapType = {
     Club: {
         category: WeaponCategory.SimpleMelee,
         cost: .1,
@@ -448,6 +448,12 @@ export const Weapon: { [key in WeaponEnum]: WeaponObject } = {
 // Add EquipmentCategory.Tools to all tools.
 Object.keys(Weapon).forEach(key => Weapon[key].EquipmentCategory = EquipmentCategory.Weapon);
 
-// export const SimpleMeleeWeapons: WeaponMapType = Object.keys(Weapon).filter(key => Weapon[key].category == WeaponCategory.SimpleMelee);
-// export const Shields: ArmorMapType = Object.keys(Armor).filter(key => Armor[key].category == ArmorCategory.Shield);
+// TODO: why is this typing weird and I cant export const SimpleMeleeWeapons: WeaponMapType   -->   Type 'WeaponObject[]' is not assignable to type 'WeaponMapType'. Property 'Club' is missing in type 'WeaponObject[]'. [2322]
+export const AllWeapons: WeaponObject[] = Object.keys(Weapon).map(key => Weapon[key]);
+export const SimpleMeleeWeapons = AllWeapons.filter(weapon => weapon.category == WeaponCategory.SimpleMelee); 
+export const SimpleRangeWeapons = AllWeapons.filter(weapon => weapon.category == WeaponCategory.SimpleRange);
+export const MartialeMeleeWeapons = AllWeapons.filter(weapon => weapon.category == WeaponCategory.MartialMelee);
+export const MartialRangeWeapons = AllWeapons.filter(weapon => weapon.category == WeaponCategory.MartialRange);
 
+export const SimpleWeapons = SimpleMeleeWeapons.concat(SimpleRangeWeapons);
+export const MartialWeapons = MartialeMeleeWeapons.concat(MartialRangeWeapons);

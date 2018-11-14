@@ -197,4 +197,12 @@ describe('BuildModel', () => {
 
         expect(build.armorClass).toEqual(7);
     });
+
+    /**
+     * If you wear armor that you lack proficiency with, you have disadvantage on any ability check, saving throw, or attack roll 
+     * that involves Strength or Dexterity, and you can’t cast spells.
+     */
+    it("multi-modifier effect on proficiency: given build is using armor it is not proficient in, then disadvantage on ability, throw, attacks for dex/str and can't cast spells.", () => {
+
+    });
 });

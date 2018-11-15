@@ -7,6 +7,7 @@ import { Skill, SkillObject } from "./skill.enum";
 import { TraitObject, Trait } from "./trait.enum";
 import { settings, BuildAffectingObject } from "../models/common";
 import { Equipment } from "./equipment/equipment";
+import { SubRaceObject, SubRace } from "./subRace.enum";
 
 export enum RaceEnum {
     Dwarf = "Dwarf",
@@ -27,6 +28,7 @@ export enum RaceEnum {
  */
 
 export class RaceObject implements BuildAffectingObject {
+    subRaces?: SubRaceObject[];
     abilityModifier: { [ability in AbilityEnum]: number };
     size: Size;
     equipmentProficiency: settings<EquipmentObject>;
@@ -49,6 +51,7 @@ export class RaceObject implements BuildAffectingObject {
 
 export const Race: { [key in RaceEnum]: RaceObject } = {
     Dwarf: {
+        subRaces: [SubRace.HillDwarf, SubRace.MountainDwarf ],
         abilityModifier: { Strength: 0, Dexterity: 0, Constitution: 2, Intelligence: 0, Wisdom: 0, Charisma: 0 },
         size: Size.Medium,
         speed: 30,
@@ -62,6 +65,7 @@ export const Race: { [key in RaceEnum]: RaceObject } = {
         effect: RaceObject.prototype.effect,
     },
     Elf: {
+        subRaces: [SubRace.WoodElf, SubRace.HighElf, SubRace.DarkElf],
         abilityModifier: { Strength: 0, Dexterity: 2, Constitution: 0, Intelligence: 0, Wisdom: 0, Charisma: 0 },
         size: Size.Medium,
         speed: 30,
@@ -72,6 +76,7 @@ export const Race: { [key in RaceEnum]: RaceObject } = {
         effect: RaceObject.prototype.effect,
     },
     Halfling: {
+        subRaces: [SubRace.LightfootHalfling, SubRace.StoutHalfling ],
         abilityModifier: { Strength: 0, Dexterity: 2, Constitution: 0, Intelligence: 0, Wisdom: 0, Charisma: 0 },
         size: Size.Small,
         speed: 25,

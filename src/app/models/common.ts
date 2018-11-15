@@ -1,3 +1,7 @@
+/**
+ * "starting_proficiencies:": [\[{}A-Za-z0-9":/\.,\n\s]*],
+ */
+
 import { Build } from "./build.model";
 
 export interface settings<T> {

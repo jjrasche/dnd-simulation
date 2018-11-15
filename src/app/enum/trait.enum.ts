@@ -29,6 +29,12 @@ export enum TraitEnum {
     SavageAttacks = "SavageAttacks",
     HellishResistance = "HellishResistance",
     InfernalLegacy = "InfernalLegacy",
+    FleetOfFoot = "FleetOfFoot",
+    MaskOfTheWild = "MaskOfTheWild",
+    SuperiorDarkvision = "SuperiorDarkvision",
+    SunlightSensitivity = "SunlightSensitivity",
+    DrowMagic = "DrowMagic",
+    StoutResilience = "StoutResilience",
 }
 
 export class TraitObject implements BuildAffectingObject{
@@ -146,5 +152,29 @@ export const Trait: { [key in TraitEnum]: TraitObject } = {
     InfernalLegacy: {
         description: "You know the thaumaturgy cantrip. When you reach 3rd level, you can cast the hellish rebuke spell as a 2nd-level spell once with this trait and regain the ability to do so when you finish a long rest. When you reach 5h level, you can cast the darkness spell once with this trait and regain the ability to do so when you finish a long rest. Charisma is your spellcasting ability for these spells.",
         effect: TraitObject.prototype.effect,
-    }
+    },
+    FleetOfFoot: {
+        description: "Your base walking speed increases to 35 feet.",
+        effect: TraitObject.prototype.effect,
+    },
+    MaskOfTheWild: {
+        description: "You can attempt to hide even when you are only lightly obscured by foliage, heavy rain, falling snow, mist, and other natural phenomena.",
+        effect: TraitObject.prototype.effect,
+    },
+    SuperiorDarkvision: {
+        description: "Your darkvision has a radius of 120 feet.",
+        effect: TraitObject.prototype.effect,
+    },
+    SunlightSensitivity: {
+        description: "You have disadvantage on attack rolls and on Wisdom (Perception) checks that rely on sight when you, the target of your attack, or whatever you are trying to perceive is in direct sunlight.",
+        effect: TraitObject.prototype.effect,
+    },
+    DrowMagic: {
+        description: "You know the dancing lights cantrip. When you reach 3rd level, you can cast the faerie fire spell once per day. When you reach 5th level, you can also cast the darkness spell once per day. Charisma is your spellcasting ability for these spells.",
+        effect: TraitObject.prototype.effect,
+    },
+    StoutResilience: {
+        description: "You have advantage on saving throws against poison, and you have resistance against poison damage.",
+        effect: TraitObject.prototype.effect,
+    },
 }

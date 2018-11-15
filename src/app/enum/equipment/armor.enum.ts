@@ -5,6 +5,19 @@ import { BuildAffectingObject } from "src/app/models/common";
 import { Build } from "src/app/models/build.model";
 
 export enum ArmorEnum {
+    Padded = "Padded",
+    Leather = "Leather",
+    StuddedLeather = "StuddedLeather",
+    Hide = "Hide",
+    ChainShirt = "ChainShirt",
+    ScaleMail = "ScaleMail",
+    Breastplate = "Breastplate",
+    HalfPlate = "HalfPlate",
+    RingMail = "RingMail",
+    ChainMail = "ChainMail",
+    Splint = "Splint",
+    Plate = "Plate",
+    Shield = "Shield",
 };
 
 export enum ArmorCategory {
@@ -39,6 +52,8 @@ export const Armor: ArmorMapType = {
         weight: 8,
         cost: 5,
         armorClass: { base: 11, addDex: true, maxDex: null },
+        description: "",
+        effect: ArmorObject.prototype.effect,
     },
     Leather: {
         category: ArmorCategory.Light,
@@ -47,6 +62,8 @@ export const Armor: ArmorMapType = {
         weight: 10,
         cost: 10,
         armorClass: { base: 11, addDex: true, maxDex: null },
+        description: "",
+        effect: ArmorObject.prototype.effect,
     },
     StuddedLeather: {
         category: ArmorCategory.Light,
@@ -55,6 +72,8 @@ export const Armor: ArmorMapType = {
         weight: 13,
         cost: 45,
         armorClass: { base: 12, addDex: true, maxDex: null },
+        description: "",
+        effect: ArmorObject.prototype.effect,
     },
     Hide: {
         category: ArmorCategory.Medium,
@@ -63,6 +82,8 @@ export const Armor: ArmorMapType = {
         weight: 12,
         cost: 10,
         armorClass: { base: 12, addDex: true, maxDex: 2 },
+        description: "",
+        effect: ArmorObject.prototype.effect,
     },
     ChainShirt: {
         category: ArmorCategory.Medium,
@@ -71,6 +92,8 @@ export const Armor: ArmorMapType = {
         weight: 20,
         cost: 50,
         armorClass: { base: 13, addDex: true, maxDex: 2 },
+        description: "",
+        effect: ArmorObject.prototype.effect,
     },
     ScaleMail: {
         category: ArmorCategory.Medium,
@@ -79,6 +102,8 @@ export const Armor: ArmorMapType = {
         weight: 45,
         cost: 50,
         armorClass: { base: 14, addDex: true, maxDex: 2 },
+        description: "",
+        effect: ArmorObject.prototype.effect,
     },
     Breastplate: {
         category: ArmorCategory.Medium,
@@ -87,6 +112,8 @@ export const Armor: ArmorMapType = {
         weight: 20,
         cost: 400,
         armorClass: { base: 14, addDex: true, maxDex: 2 },
+        description: "",
+        effect: ArmorObject.prototype.effect,
     },
     HalfPlate: {
         category: ArmorCategory.Medium,
@@ -95,6 +122,8 @@ export const Armor: ArmorMapType = {
         weight: 40,
         cost: 750,
         armorClass: { base: 15, addDex: true, maxDex: 2 },
+        description: "",
+        effect: ArmorObject.prototype.effect,
     },
     RingMail: {
         category: ArmorCategory.Heavy,
@@ -103,6 +132,8 @@ export const Armor: ArmorMapType = {
         weight: 40,
         cost: 30,
         armorClass: { base: 14, addDex: false, maxDex: null },
+        description: "",
+        effect: ArmorObject.prototype.effect,
     },
     ChainMail: {
         category: ArmorCategory.Heavy,
@@ -111,6 +142,8 @@ export const Armor: ArmorMapType = {
         weight: 55,
         cost: 75,
         armorClass: { base: 16, addDex: false, maxDex: null },
+        description: "",
+        effect: ArmorObject.prototype.effect,
     },
     Splint: {
         category: ArmorCategory.Heavy,
@@ -119,6 +152,8 @@ export const Armor: ArmorMapType = {
         weight: 60,
         cost: 200,
         armorClass: { base: 17, addDex: false, maxDex: null },
+        description: "",
+        effect: ArmorObject.prototype.effect,
     },
     Plate: {
         category: ArmorCategory.Heavy,
@@ -127,6 +162,8 @@ export const Armor: ArmorMapType = {
         weight: 65,
         cost: 1500,
         armorClass: { base: 18, addDex: false, maxDex: null },
+        description: "",
+        effect: ArmorObject.prototype.effect,
     },
     Shield: {
         category: ArmorCategory.Shield,
@@ -135,6 +172,8 @@ export const Armor: ArmorMapType = {
         weight: 6,
         cost: 10,
         armorClass: { base: 2, addDex: false, maxDex: null },
+        description: "",
+        effect: ArmorObject.prototype.effect,
     },
 };
 

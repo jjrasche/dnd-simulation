@@ -100,12 +100,23 @@ describe('BuildModel', () => {
         expect(build.proficiencyBonus).toEqual(3);
     });
 
-    it("class modifier: given with a class that has saving throws of int, dex, and cha, build.savingThrows has those as proficient", () => {
+    it("class modifier: given a build with a class that has saving throws of int, dex, and cha, build.savingThrows has those as proficient", () => {
         let build = new Build();
         
         let c = new ClassObject();
         c.savingThrows = [Ability.Intelligence, Ability.Dexterity, Ability.Dexterity],
         build.class = c;
+
+        let expected = { Strength: false, Dexterity: true, Constitution: false, Intelligence: true, Wisdom: false, Charisma: true };
+        expect(build.savingThrow).toEqual(expected);
+    });
+
+    it("subClass modifier: given a build with a class that has a subclass, build.savingThrows has those as proficient", () => {
+        let build = new Build();
+
+        let c = new ClassObject();
+        c.savingThrows = [Ability.Intelligence, Ability.Dexterity, Ability.Dexterity],
+            build.class = c;
 
         let expected = { Strength: false, Dexterity: true, Constitution: false, Intelligence: true, Wisdom: false, Charisma: true };
         expect(build.savingThrow).toEqual(expected);

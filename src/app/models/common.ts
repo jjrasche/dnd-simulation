@@ -1,5 +1,5 @@
 /**
- * "starting_proficiencies:": [\[{}A-Za-z0-9":/\.,\n\s]*],
+ * starting_equipment":[\[{}A-Za-z0-9":/\.,’'\n\s]*]
  */
 
 import { Build } from "./build.model";

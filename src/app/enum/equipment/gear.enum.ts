@@ -733,3 +733,11 @@ export const Gear: { [key in GearEnum]: GearObject } = {
         description: "",
     },
 };
+
+export const AllGear: GearObject[] = Object.keys(Gear).map(key => Gear[key]);
+export const GearCategories = Object.keys(GearCategory) as GearCategory[]
+
+// couldn't think of a better way to do thsi dynamically
+let gearByCategory: any = {}
+GearCategories.forEach((category: GearCategory) => gearByCategory[category] = AllGear.filter(gear => gear.category === category));
+export var GearByCategory: { [key in GearCategory]: GearObject[] } = gearByCategory;

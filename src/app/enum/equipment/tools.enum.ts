@@ -239,3 +239,10 @@ export const Tool: { [key in ToolEnum]: ToolObject } = {
 
 // Add EquipmentCategory.Tools to all tools.
 Object.keys(Tool).forEach(key => Tool[key].EquipmentCategory = EquipmentCategory.Tools);
+
+export const AllTools: ToolObject[] = Object.keys(Tool).map(key => Tool[key]);
+export const ToolCategories = Object.keys(ToolCategory) as ToolCategory[]
+// couldn't think of a better way to do thsi dynamically
+let tmp: any = {}
+ToolCategories.forEach((category: ToolCategory) => tmp[category] = AllTools.filter(tool => tool.category === category));
+export var ToolByCategory: { [key in ToolCategory]: ToolObject[] } = tmp;

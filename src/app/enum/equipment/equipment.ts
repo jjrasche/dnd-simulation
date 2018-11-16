@@ -7,3 +7,9 @@ import { ArmorEnum, ArmorObject, Armor } from "./armor.enum";
 // needed to separate this from equipment.enum.ts to prevent circular dependencies
 export const Equipment: 
     { [key in WeaponEnum |ToolEnum | GearEnum | PackEnum | ArmorEnum ]: WeaponObject |ToolObject | GearObject | PackObject | ArmorObject } = { ...Weapon, ...Tool, ...Gear, ...Pack, ...Armor } ;
+
+// add key as a name property on all objects for tracking in arrays
+Object.keys(Equipment).forEach(key => {
+    let obj = Equipment[key];
+    obj.name = key;
+});

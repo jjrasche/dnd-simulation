@@ -1,5 +1,5 @@
 import { Skill, SkillObject } from "./skill.enum";
-import { settings, BuildAffectingObject } from "../models/common";
+import { settings, BuildAffectingObject, groupedChoiceSettings, settingsWithGroupedOptions } from "../models/common";
 import { AbilityObject, Ability } from "./ability.enum";
 import { Build } from "../models/build.model";
 import { EquipmentObject } from "./equipment/equipment.enum";
@@ -30,7 +30,8 @@ export class ClassObject implements BuildAffectingObject {
     savingThrows: AbilityObject[];
     equipmentProficiency: settings<EquipmentObject>;
     hitDie: Die;
-    startingEquipment: settings<EquipmentObject>;
+    // capable of selecting from groups of objects. e.g. cleric can choose between [light crowwbow and 20 arrows] or any simple weapon
+    startingEquipment: settingsWithGroupedOptions<EquipmentObject>;
 
     // default effect without any alteration
     effect(b: Build): void {
@@ -65,8 +66,7 @@ export const Class: { [key in ClassEnum]: ClassObject } = {
             selectable: null
         },
         hitDie: Die.D12,
-        startingEquipment: { 
-            inherent: [ Equipment.ExplorerPack, { quantity: 4, ...Equipment.Javelin } as WeaponObject ], selectable: null },
+        startingEquipment: { inherent: [ Equipment.ExplorerPack, { quantity: 4, ...Equipment.Javelin } as WeaponObject ], selectable: null },
     },
     Bard: {
         skill: { inherent: null, selectable: [{ num: 3, options: [Skill.Athletics, Skill.Acrobatics, Skill.SleightOfHand, Skill.Stealth, Skill.Arcana, Skill.History, Skill.Investigation, Skill.Nature, Skill.Religion, Skill.AnimalHandling, Skill.Insight, Skill.Medicine, Skill.Perception, Skill.Survival, Skill.Deception, Skill.Intimidation, Skill.Performance, Skill.Persuasion] }] },
@@ -84,6 +84,7 @@ export const Class: { [key in ClassEnum]: ClassObject } = {
             selectable: null
         },
         hitDie: Die.D8,
+        // get leather armor and dagger, can choose 
         startingEquipment: { inherent: [ Equipment.Leather, Equipment.Dagger ], selectable: null },
     },
     Cleric: {
@@ -100,7 +101,24 @@ export const Class: { [key in ClassEnum]: ClassObject } = {
             selectable: null
         },
         hitDie: Die.D8,
-        startingEquipment: { inherent: [ Equipment.Shield ], selectable: null },
+        // get shield and can choose from crossbow and bolts or any simple weapon
+        // selectable: [{num:1, options:[ [Equipment.CrossBow, {quantity:20, }], SimpleWeapons]}]
+        // { quantity: 10, ...Equipment.Dart } as WeaponObject
+        startingEquipment: { 
+            inherent: [Equipment.Shield],
+            selectable: [
+                {   groups: [ 
+                        [{ quantity: 20, ...Equipment.CrossbowBolt }, Equipment.CrossbowHand  ],
+                        SimpleWeapons
+                    ], num: 1 
+                }, 
+                {   groups: [
+                        [{ quantity: 20, ...Equipment.CrossbowBolt }, Equipment.CrossbowHand],
+                        SimpleWeapons
+                    ], num: 1
+                },
+            ]
+        },
     },
     Druid: {
         skill: { inherent: null, selectable: [{ num: 2, options: [Skill.Acrobatics, Skill.AnimalHandling, Skill.Athletics, Skill.History, Skill.Insight, Skill.Intimidation, Skill.Perception, Skill.Survival] }] },
@@ -254,3 +272,512 @@ export const Class: { [key in ClassEnum]: ClassObject } = {
         startingEquipment: { inherent: [ Equipment.Spellbook ], selectable: null },
     },
 };
+
+/**
+ * 
+ * still trying to workout concept of selection groups e.g. I choose 1 from these EquipmentObject[]
+ * Unsure how to add all equipment from a category as a single item array e.g. 
+ * [Equipment.Spear] is a choice along side
+ * [{ quantity: 20, ...Equipment.CrossbowBolt }, Equipment.CrossbowHand]
+ * 
+ *             selectable: [
+                {   groups: [
+                        [ [Equipment.Greataxe], ...MartialeMeleeWeapons  ],
+                        SimpleWeapons
+                    ], num: 1
+                },
+                {   groups: [
+                        [{ quantity: 20, ...Equipment.CrossbowBolt }, Equipment.CrossbowHand],
+                        SimpleWeapons
+                    ], num: 1
+                },
+            ]
+
+"choice_1":[
+         {
+            "choose":1,
+            "type":"equipment",
+            "from":[  "Greataxe"]
+         },
+         {
+            "choose":1,
+            "type":"equipment",
+            "from":[  ...MartialeMeleeWeapons,]
+         }
+      ],
+"choice_2":[
+         {
+            "choose":1,
+            "type":"equipment",
+            "from":[  "Handaxe", quantity:2]
+         },
+         {
+            "choose":1,
+            "type":"equipment",
+            "from":[  ...SimpleMeleeWeapons, ...SimpleRangeWeapons]
+         }
+      ],
+"choice_1":[
+         {
+            "choose":1,
+            "type":"equipment",
+            "from":[  "Rapier"]
+         },
+         {
+            "choose":1,
+            "type":"equipment",
+            "from":[  "Longsword"]
+         },
+         {
+            "choose":1,
+            "type":"equipment",
+            "from":[  ...SimpleMeleeWeapons, ...SimpleRangeWeapons]
+         }
+      ],
+"choice_2":[
+         {
+            "choose":1,
+            "type":"equipment",
+            "from":[  "Diplomat's Pack"]
+         },
+         {
+            "choose":1,
+            "type":"equipment",
+            "from":[  "Entertainer's Pack"]
+         }
+      ],
+"choice_3":[
+         {
+            "choose":1,
+            "type":"equipment",
+            "from":[  "Lute"]
+         },
+         {
+            "choose":1,
+            "type":"equipment",
+            "from":[  ...ToolByCategory.MusicalInstrument,]
+         }
+      ],
+"choice_1":[
+         {
+            "choose":1,
+            "type":"equipment",
+            "from":[  "Mace"]
+         },
+         {
+            "choose":1,
+            "type":"equipment",
+            "from":[  "Warhammer"
+                  "prerequisites":[
+                     {  "Warhammers"
+                        }
+                     }
+                  ]]
+         }
+      ],
+"choice_2":[
+         {
+            "choose":1,
+            "type":"equipment",
+            "from":[  "Scale Mail"]
+         },
+         {
+            "choose":1,
+            "type":"equipment",
+            "from":[  "Leather"]
+         },
+         {
+            "choose":1,
+            "type":"equipment",
+            "from":[  "Chain Mail"
+                  "prerequisites":[
+                     {  "Chain Mail"
+                        }
+                     }
+                  ]]
+         }
+      ],
+"choice_3":[
+         {
+            "choose":2,
+            "type":"equipment",
+            "from":[  "Crossbow, light", "Crossbow bolt", quantity:20]
+         },
+         {
+            "choose":1,
+            "type":"equipment",
+            "from":[  ...SimpleMeleeWeapons, ...SimpleRangeWeapons]
+         }
+      ],
+"choice_4":[
+         {
+            "choose":1,
+            "type":"equipment",
+            "from":[  "Priest's Pack"]
+         },
+         {
+            "choose":1,
+            "type":"equipment",
+            "from":[  "Explorer's Pack"]
+         }
+      ],
+"choice_5":[
+         {
+            "choose":1,
+            "type":"equipment",
+            "from":[  ...GearByCategory.HolySymbol,]
+         }
+      ],
+"choice_1":[
+         {
+            "choose":1,
+            "type":"equipment",
+            "from":[  "Shield"]
+         },
+         {
+            "choose":1,
+            "type":"equipment",
+            "from":[  ...SimpleMeleeWeapons, ...SimpleRangeWeapons]
+         }
+      ],
+"choice_2":[
+         {
+            "choose":1,
+            "type":"equipment",
+            "from":[  "Scimitar"]
+         },
+         {
+            "choose":1,
+            "type":"equipment",
+            "from":[  ...SimpleMeleeWeapons,]
+         }
+      ],
+"choice_3":[
+         {
+            "choose":1,
+            "type":"equipment",
+            "from":[  ...GearByCategory.Druidicfocus,]
+         }
+      ],
+"choice_1":[
+         {
+            "choose":1,
+            "type":"equipment",
+            "from":[  "Chain Mail"]
+         },
+         {
+            "choose":3,
+            "type":"equipment",
+            "from":[  "Leather", "Longbow", "Arrow", quantity:20]
+         }
+      ],
+"choice_2":[
+         {
+            "choose":1,
+            "type":"equipment",
+            "from":[  "Shield"]
+         },
+         {
+            "choose":1,
+            "type":"equipment",
+            "from":[  ...MartialeMeleeWeapons,, ...MartialRangeWeapons,]
+         }
+      ],
+"choice_3":[
+         {
+            "choose":2,
+            "type":"equipment",
+            "from":[  "Crossbow, light", "Crossbow bolt", quantity:20]
+         },
+         {
+            "choose":1,
+            "type":"equipment",
+            "from":[  "Handaxe", quantity:2]
+         }
+      ],
+"choice_4":[
+         {
+            "choose":1,
+            "type":"equipment",
+            "from":[  "Dungeoneer's Pack"]
+         },
+         {
+            "choose":1,
+            "type":"equipment",
+            "from":[  "Explorer's Pack"]
+         }
+      ],
+"choice_5":[
+         {
+            "choose":1,
+            "type":"equipment",
+            "from":[  ...MartialeMeleeWeapons,, ...MartialRangeWeapons,]
+         }
+      ],
+"choice_1":[
+         {
+            "choose":1,
+            "type":"equipment",
+            "from":[  "Shortsword"]
+         },
+         {
+            "choose":1,
+            "type":"equipment",
+            "from":[  ...SimpleMeleeWeapons, ...SimpleRangeWeapons]
+         }
+      ],
+"choice_2":[
+         {
+            "choose":1,
+            "type":"equipment",
+            "from":[  "Dungeoneer's Pack"]
+         },
+         {
+            "choose":1,
+            "type":"equipment",
+            "from":[  "Explorer's Pack"]
+         }
+      ],
+"choice_1":[
+         {
+            "choose":1,
+            "type":"equipment",
+            "from":[  "Shield"]
+         },
+         {
+            "choose":1,
+            "type":"equipment",
+            "from":[  ...MartialeMeleeWeapons,, ...MartialRangeWeapons,]
+         }
+      ],
+"choice_2":[
+         {
+            "choose":1,
+            "type":"equipment",
+            "from":[  "Javelin", quantity:5]
+         },
+         {
+            "choose":1,
+            "type":"equipment",
+            "from":[  ...SimpleMeleeWeapons, ...SimpleRangeWeapons]
+         }
+      ],
+"choice_3":[
+         {
+            "choose":1,
+            "type":"equipment",
+            "from":[  "Priest's Pack"]
+         },
+         {
+            "choose":1,
+            "type":"equipment",
+            "from":[  "Explorer's Pack"]
+         }
+      ],
+"choice_4":[
+         {
+            "choose":1,
+            "type":"equipment",
+            "from":[  ...GearByCategory.HolySymbol,]
+         }
+      ],
+"choice_5":[
+         {
+            "choose":1,
+            "type":"equipment",
+            "from":[  ...MartialeMeleeWeapons,, ...MartialRangeWeapons,]
+         }
+      ],
+"choice_1":[
+         {
+            "choose":1,
+            "type":"equipment",
+            "from":[  "Scale Mail"]
+         },
+         {
+            "choose":1,
+            "type":"equipment",
+            "from":[  "Shortsword"]
+         }
+      ],
+"choice_2":[
+         {
+            "choose":1,
+            "type":"equipment",
+            "from":[  "Dungeoneer's Pack", quantity:2]
+         },
+         {
+            "choose":2,
+            "type":"equipment",
+            "from":[  ...SimpleMeleeWeapons,]
+         }
+      ],
+"choice_3":[
+         {
+            "choose":1,
+            "type":"equipment",
+            "from":[  "Dungeoneer's Pack"]
+         },
+         {
+            "choose":1,
+            "type":"equipment",
+            "from":[  "Explorer's Pack"]
+         }
+      ],
+"choice_1":[
+         {
+            "choose":1,
+            "type":"equipment",
+            "from":[  "Rapier"]
+         },
+         {
+            "choose":1,
+            "type":"equipment",
+            "from":[  "Shortsword"]
+         }
+      ],
+"choice_2":[
+         {
+            "choose":2,
+            "type":"equipment",
+            "from":[  "Shortbow", "Arrow", quantity:20]
+         },
+         {
+            "choose":2,
+            "type":"equipment",
+            "from":[  "Shortsword"]
+         }
+      ],
+"choice_3":[
+         {
+            "choose":1,
+            "type":"equipment",
+            "from":[  "Burglar's Pack"]
+         },
+         {
+            "choose":1,
+            "type":"equipment",
+            "from":[  "Dungeoneer's Pack"]
+         },
+         {
+            "choose":1,
+            "type":"equipment",
+            "from":[  "Explorer's Pack"]
+         }
+      ],
+"choice_1":[
+         {
+            "choose":1,
+            "type":"equipment",
+            "from":[  "Crossbow, light", "Crossbow bolt", quantity:20]
+         },
+         {
+            "choose":1,
+            "type":"equipment",
+            "from":[  ...SimpleMeleeWeapons, ...SimpleRangeWeapons]
+         }
+      ],
+"choice_2":[
+         {
+            "choose":1,
+            "type":"equipment",
+            "from":[  "Component pouch", quantity:2]
+         },
+         {
+            "choose":1,
+            "type":"equipment",
+            "from":[  ...GearByCategory.Arcanefocus]
+         }
+      ],
+"choice_3":[
+         {
+            "choose":1,
+            "type":"equipment",
+            "from":[  "Dungeoneer's Pack"]
+         },
+         {
+            "choose":1,
+            "type":"equipment",
+            "from":[  "Explorer's Pack"]
+         }
+      ],
+"choice_1":[
+         {
+            "choose":1,
+            "type":"equipment",
+            "from":[  "Crossbow, light", "Crossbow bolt", quantity:20]
+         },
+         {
+            "choose":1,
+            "type":"equipment",
+            "from":[  ...SimpleMeleeWeapons, ...SimpleRangeWeapons]
+         }
+      ],
+"choice_2":[
+         {
+            "choose":1,
+            "type":"equipment",
+            "from":[  "Component pouch", quantity:2]
+         },
+         {
+            "choose":1,
+            "type":"equipment",
+            "from":[  ...GearByCategory.Arcanefocus]
+         }
+      ],
+"choice_3":[
+         {
+            "choose":1,
+            "type":"equipment",
+            "from":[  "Scholar's Pack"]
+         },
+         {
+            "choose":1,
+            "type":"equipment",
+            "from":[  "Dungeoneer's Pack"]
+         }
+      ],
+"choice_4":[
+         {
+            "choose":1,
+            "type":"equipment",
+            "from":[  ...SimpleMeleeWeapons, ...SimpleRangeWeapons]
+         }
+      ],
+"choice_1":[
+         {
+            "choose":1,
+            "type":"equipment",
+            "from":[  "Dagger"]
+         },
+         {
+            "choose":1,
+            "type":"equipment",
+            "from":[  "Quarterstaff"]
+         }
+      ],
+"choice_2":[
+         {
+            "choose":1,
+            "type":"equipment",
+            "from":[  "Component pouch", quantity:2]
+         },
+         {
+            "choose":1,
+            "type":"equipment",
+            "from":[  ...GearByCategory.Arcanefocus]
+         }
+      ],
+"choice_3":[
+         {
+            "choose":1,
+            "type":"equipment",
+            "from":[  "Scholar's Pack"]
+         },
+         {
+            "choose":1,
+            "type":"equipment",
+            "from":[  "Dungeoneer's Pack"]
+         }
+      ],
+ */

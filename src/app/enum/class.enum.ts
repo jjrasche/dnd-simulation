@@ -4,8 +4,8 @@ import { AbilityObject, Ability } from "./ability.enum";
 import { Build } from "../models/build.model";
 import { EquipmentObject } from "./equipment/equipment.enum";
 import { Equipment } from "./equipment/equipment";
-import { Armor, LightArmor, MediumArmor, Shields, AllArmor } from "./equipment/armor.enum";
-import { SimpleWeapons, MartialWeapons, AllWeapons } from "./equipment/weapon.enum";
+import { Armor, LightArmor, MediumArmor, Shields, AllArmor, ArmorObject } from "./equipment/armor.enum";
+import { SimpleWeapons, MartialWeapons, AllWeapons, WeaponObject } from "./equipment/weapon.enum";
 import { Die } from "./die.enum";
 
 // Limits the possible Classes to the ones listed below and allows for type safety.
@@ -65,7 +65,8 @@ export const Class: { [key in ClassEnum]: ClassObject } = {
             selectable: null
         },
         hitDie: Die.D12,
-        startingEquipment: { inherent: [ { quantity: 1, ...Equipment.ExplorerPack }, { quantity: 4, ...Equipment.Javelin } ], selectable: null },
+        startingEquipment: { 
+            inherent: [ Equipment.ExplorerPack, { quantity: 4, ...Equipment.Javelin } as WeaponObject ], selectable: null },
     },
     Bard: {
         skill: { inherent: null, selectable: [{ num: 3, options: [Skill.Athletics, Skill.Acrobatics, Skill.SleightOfHand, Skill.Stealth, Skill.Arcana, Skill.History, Skill.Investigation, Skill.Nature, Skill.Religion, Skill.AnimalHandling, Skill.Insight, Skill.Medicine, Skill.Perception, Skill.Survival, Skill.Deception, Skill.Intimidation, Skill.Performance, Skill.Persuasion] }] },
@@ -83,7 +84,7 @@ export const Class: { [key in ClassEnum]: ClassObject } = {
             selectable: null
         },
         hitDie: Die.D8,
-        startingEquipment: { inherent: [ { quantity: 1, ...Equipment.Leather }, { quantity: 1, ...Equipment.Dagger } ], selectable: null },
+        startingEquipment: { inherent: [ Equipment.Leather, Equipment.Dagger ], selectable: null },
     },
     Cleric: {
         skill: { inherent: null, selectable: [{ num: 2, options: [Skill.History, Skill.Insight, Skill.Medicine, Skill.Persuasion, Skill.Religion] }] },
@@ -99,7 +100,7 @@ export const Class: { [key in ClassEnum]: ClassObject } = {
             selectable: null
         },
         hitDie: Die.D8,
-        startingEquipment: { inherent: [ { quantity: 1, ...Equipment.Shield } ], selectable: null },
+        startingEquipment: { inherent: [ Equipment.Shield ], selectable: null },
     },
     Druid: {
         skill: { inherent: null, selectable: [{ num: 2, options: [Skill.Acrobatics, Skill.AnimalHandling, Skill.Athletics, Skill.History, Skill.Insight, Skill.Intimidation, Skill.Perception, Skill.Survival] }] },
@@ -125,7 +126,7 @@ export const Class: { [key in ClassEnum]: ClassObject } = {
             selectable: null
         },
         hitDie: Die.D8,
-        startingEquipment: { inherent: [ { quantity: 1, ...Equipment.Leather }, { quantity: 1, ...Equipment.ExplorerPack } ], selectable: null },
+        startingEquipment: { inherent: [ Equipment.Leather, Equipment.ExplorerPack ], selectable: null },
     },
     Fighter: {
         skill: { inherent: null, selectable: [{ num: 2, options: [Skill.Acrobatics, Skill.Athletics, Skill.History, Skill.Insight, Skill.Religion, Skill.Stealth] }] },
@@ -154,7 +155,7 @@ export const Class: { [key in ClassEnum]: ClassObject } = {
             selectable: null
         },
         hitDie: Die.D8,
-        startingEquipment: { inherent: [ { quantity: 10, ...Equipment.Dart } ], selectable: null },
+        startingEquipment: { inherent: [ { quantity: 10, ...Equipment.Dart } as WeaponObject ], selectable: null },
     },
     Paladin: {
         skill: { inherent: null, selectable: [{ num: 2, options: [Skill.Athletics, Skill.Insight, Skill.Intimidation, Skill.Medicine, Skill.Persuasion, Skill.Religion] }] },
@@ -169,7 +170,7 @@ export const Class: { [key in ClassEnum]: ClassObject } = {
             selectable: null
         },
         hitDie: Die.D10,
-        startingEquipment: { inherent: [ { quantity: 1, ...Equipment.ChainMail } ], selectable: null },
+        startingEquipment: { inherent: [ Equipment.ChainMail ], selectable: null },
     },
     Ranger: {
         skill: { inherent: null, selectable: [{ num: 3, options: [Skill.AnimalHandling, Skill.Athletics, Skill.Insight, Skill.Investigation, Skill.Nature, Skill.Perception, Skill.Stealth, Skill.Survival] }] },
@@ -185,7 +186,7 @@ export const Class: { [key in ClassEnum]: ClassObject } = {
             selectable: null
         },
         hitDie: Die.D10,
-        startingEquipment: { inherent: [ { quantity: 1, ...Equipment.Longbow }, { quantity: 20, ...Equipment.Arrow } ], selectable: null },
+        startingEquipment: { inherent: [ Equipment.Longbow, { quantity: 20, ...Equipment.Arrow } as WeaponObject ], selectable: null },
     },
     Rogue: {
         skill: { inherent: null, selectable: [{ num: 4, options: [Skill.Acrobatics, Skill.Athletics, Skill.Deception, Skill.Insight, Skill.Intimidation, Skill.Investigation, Skill.Perception, Skill.Performance, Skill.Persuasion, Skill.SleightOfHand, Skill.Stealth] }] },
@@ -204,7 +205,7 @@ export const Class: { [key in ClassEnum]: ClassObject } = {
             selectable: null
         },
         hitDie: Die.D8,
-        startingEquipment: { inherent: [ { quantity: 1, ...Equipment.Leather }, { quantity: 2, ...Equipment.Dagger }, { quantity: 1, ...Equipment.ThievesTools } ], selectable: null },
+        startingEquipment: { inherent: [Equipment.Leather, { quantity: 2, ...Equipment.Dagger } as WeaponObject, Equipment.ThievesTools ], selectable: null },
     },
     Sorcerer: {
         skill: { inherent: null, selectable: [{ num: 2, options: [Skill.Arcana, Skill.Deception, Skill.Insight, Skill.Intimidation, Skill.Persuasion, Skill.Religion] }] },
@@ -220,7 +221,7 @@ export const Class: { [key in ClassEnum]: ClassObject } = {
             selectable: null
         },
         hitDie: Die.D6,
-        startingEquipment: { inherent: [ { quantity: 2, ...Equipment.Dagger } ], selectable: null },
+        startingEquipment: { inherent: [ { quantity: 2, ...Equipment.Dagger } as WeaponObject ], selectable: null },
     },
     Warlock: {
         skill: { inherent: null, selectable: [{ num: 2, options: [Skill.Arcana, Skill.Deception, Skill.History, Skill.Intimidation, Skill.Investigation, Skill.Nature, Skill.Religion] }] },
@@ -234,7 +235,7 @@ export const Class: { [key in ClassEnum]: ClassObject } = {
             selectable: null
         },
         hitDie: Die.D8,
-        startingEquipment: { inherent: [ { quantity: 2, ...Equipment.Dagger }, { quantity: 1, ...Equipment.Leather } ], selectable: null },
+        startingEquipment: { inherent: [{ quantity: 2, ...Equipment.Dagger } as WeaponObject, Equipment.Leather ], selectable: null },
     },
     Wizard: {
         skill: { inherent: null, selectable: [{ num: 2, options: [Skill.Arcana, Skill.History, Skill.Insight, Skill.Investigation, Skill.Medicine, Skill.Religion] }] },
@@ -250,6 +251,6 @@ export const Class: { [key in ClassEnum]: ClassObject } = {
             selectable: null
         },
         hitDie: Die.D6,
-        startingEquipment: { inherent: [ { quantity: 1, ...Equipment.Spellbook } ], selectable: null },
+        startingEquipment: { inherent: [ Equipment.Spellbook ], selectable: null },
     },
 };

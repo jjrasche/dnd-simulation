@@ -10,17 +10,11 @@ import { TraitObject } from '../enum/trait.enum';
 import { BackgroundObject } from '../enum/background.enum';
 import { Skill } from '../enum/skill.enum';
 import { Ability } from '../enum/ability.enum';
-import { WeaponObject, SimpleMeleeWeapons } from '../enum/equipment/weapon.enum';
+import { WeaponObject, SimpleMeleeWeapons, MeleeWeaponCategory } from '../enum/equipment/weapon.enum';
 import { WeaponPropertyObject } from '../enum/equipment/weaponProperty.enum';
 import { LightArmor, ArmorObject, ArmorCategory } from '../enum/equipment/armor.enum';
 
 describe('BuildModel', () => {
-
-    it("given a build with can read and write Class to a Build ", () => {
-        let build: Build = GetBasicBarbarianBuild();
-        build.class = Class.Bard;
-        expect(build.class).toEqual(Class.Bard);
-    });
 
     // single modifier effect
     it("racial ability modifier: given a build with race specific and base ability, the result is the combination of both", () => {
@@ -212,8 +206,25 @@ describe('BuildModel', () => {
     /**
      * If you wear armor that you lack proficiency with, you have disadvantage on any ability check, saving throw, or attack roll 
      * that involves Strength or Dexterity, and you can’t cast spells.
+     * 
+     * 
+     * each piece of equipment can:
+     *  - modify the character              e.g. add to ability score
+     *  - add an action
+     * 
      */
     it("multi-modifier effect on proficiency: given build is using armor it is not proficient in, then disadvantage on ability, throw, attacks for dex/str and can't cast spells.", () => {
+        let build = new Build();
+        build.ability.Dexterity = 13;
 
+        // build has proficiency with no armor 
+        let armor = new ArmorObject();
+        armor.category = ArmorCategory.Light
+        armor.inUse = true;
+
+
+        // figure out how 
+        expect(build.ability.Dexterity).toEqual(true);
+        expect(build.ability.Strength).toEqual(true);
     });
 });

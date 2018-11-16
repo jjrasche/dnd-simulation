@@ -40,6 +40,7 @@ export class ArmorObject extends EquipmentObject implements BuildAffectingObject
     armorClass: ArmorClassObject;
 
     effect(b: Build): void {
+        // proficiency check if not dex/str checks, throws, attacks have disadvantage, prevent spell casting actions
     };
 };
 

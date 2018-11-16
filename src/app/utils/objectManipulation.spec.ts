@@ -24,12 +24,7 @@ describe('ObjectManipulation', () => {
         let b = new Build();
         b.race = Race.Human;
         let copy = copyBuild(b);
-        console.log(b.race)
-        b.class = Class.Bard;
-        copy.class = Class.Cleric;
-        console.log(b.class)
-        console.log(copy.class)
-
+        
         expect(b).not.toBe(copy);
         expect(b.race.languages.inherent).toEqual(copy.race.languages.inherent);
     });

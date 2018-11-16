@@ -9,6 +9,7 @@ import { copyBuild } from "../utils/objectManipulation";
 import { LanguageObject } from "../enum/language.enum";
 import { BackgroundObject } from "../enum/background.enum";
 import { EquipmentObject } from "../enum/equipment/equipment.enum";
+import { ActionTypeEnum } from "../enum/action-type.enum";
 
 /**
  * Anytime a property is retrieved, this method applies all modifying effects
@@ -66,6 +67,8 @@ export class Build {
     proficiencyBonus: number = 0;
     savingThrow: { [key in AbilityEnum]: boolean } = defaultSavingThrow;
     armorClass: number = 10;
+    // allows each piece of equipment to dictate what you can do
+    actions: [{ object: EquipmentObject, actionType: ActionTypeEnum }] // do x with y 
 
 
     constructor() {

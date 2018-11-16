@@ -4,6 +4,7 @@ import { EquipmentObject, EquipmentCategory } from "./equipment.enum";
 import { WeaponPropertyObject, WeaponProperty } from "./weaponProperty.enum";
 import { BuildAffectingObject } from "src/app/models/common";
 import { Build } from "src/app/models/build.model";
+import { ActionTypeEnum } from "../action-type.enum";
 
 export enum WeaponEnum {
     Club = "Club",
@@ -63,10 +64,17 @@ export class WeaponObject extends EquipmentObject implements BuildAffectingObjec
     damage: DieDamage | AmountDamage;   // TODO: test handling of difference here
     properties: WeaponPropertyObject[] = [];
 
-    effect(b: Build): void {
+    effect = function(b: Build): void {
         // apply weapon properties
         if (this.properties) {
             Object.keys(this.properties).forEach(key => WeaponPropertyObject[key].effect(b));
+        }
+        // add a hit action to all Melee weapons
+        if ([WeaponCategory.SimpleMelee, WeaponCategory.MartialMelee].includes(this.category)) {
+            b.actions.push({object: this, actionType: ActionTypeEnum.Hit});
+        }
+        if ([WeaponCategory.SimpleRange, WeaponCategory.MartialRange].includes(this.category)) {
+            b.actions.push({ object: this, actionType: ActionTypeEnum.Shoot });
         }
     };
 };
@@ -455,5 +463,7 @@ export const SimpleRangeWeapons = AllWeapons.filter(weapon => weapon.category ==
 export const MartialeMeleeWeapons = AllWeapons.filter(weapon => weapon.category == WeaponCategory.MartialMelee);
 export const MartialRangeWeapons = AllWeapons.filter(weapon => weapon.category == WeaponCategory.MartialRange);
 
-export const SimpleWeapons = SimpleMeleeWeapons.concat(SimpleRangeWeapons);
-export const MartialWeapons = MartialeMeleeWeapons.concat(MartialRangeWeapons);
+export const SimpleWeapons = [...SimpleMeleeWeapons, ...SimpleRangeWeapons];
+export const MartialWeapons = [...MartialeMeleeWeapons, ...MartialRangeWeapons];
+export const RangeWeapons = [...SimpleRangeWeapons, ...MartialRangeWeapons];
+export const MeleeWeapons = [...SimpleMeleeWeapons, ...MartialeMeleeWeapons];

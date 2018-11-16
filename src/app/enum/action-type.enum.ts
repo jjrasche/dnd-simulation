@@ -10,3 +10,12 @@ export enum ActionType {
     Search,
     Use
 }
+
+/**
+ * describes 
+ */
+export enum ActionTypeEnum {
+    Throw = "Throw",
+    Hit = "Hit",
+    Shoot = "Shoot",
+}

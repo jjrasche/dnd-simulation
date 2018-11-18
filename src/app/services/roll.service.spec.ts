@@ -1,15 +1,15 @@
 import { TestBed } from '@angular/core/testing';
 
-import { RollsService } from './rolls.service';
+import { RollService } from './roll.service';
 import { Die } from '../enum/die.enum';
 import { RollOperation } from '../enum/roll-operation.enum';
 
-describe('RollsService', () => {
-  let service: RollsService;
+describe('RollService', () => {
+  let service: RollService;
 
   beforeEach(() => {
     TestBed.configureTestingModule({})
-    service = TestBed.get(RollsService);
+    service = TestBed.get(RollService);
   });
 
   it("roll invalid inputs throws invalid input exception", () => {

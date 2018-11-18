@@ -95,3 +95,22 @@ export const getDuplicatedEnumKeys = (enums: Object[]): Array<Object> => {
 }
 export const enumsDuplicated = (enums: Object[]): boolean => getDuplicatedEnumKeys(enums).length > 0;
 
+/**
+ * checks.
+ */
+export const checkNullInputs = (methodName: string, ...args) => {
+    if (args.filter(arg => arg == null).length) {
+        throw new Error(`Method '${methodName}' was called with invalid inputs '${args}'.`)
+    }
+};
+export const checkDivideByZero = (methodName: string, paramName: string, check: number) => {
+    if (check === 0) {
+        throw new Error(`Method '${methodName}' parameter '${paramName}' would divide by Zero.`);
+    }
+};
+export const checkReturnNotWithinLimit = (methodName: string, lowerLimit: number, upperLimit: number, ret: number): number => { 
+    if (lowerLimit > ret || ret > upperLimit) {
+        throw new Error(`Method '${methodName}' return value '${ret}' is not between '${lowerLimit} - ${upperLimit}'`);
+    }
+    return ret;
+};

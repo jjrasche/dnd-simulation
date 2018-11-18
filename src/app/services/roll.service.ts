@@ -2,10 +2,14 @@ import { Injectable } from '@angular/core';
 import { Die } from '../enum/die.enum';
 import { RollOperation } from '../enum/roll-operation.enum';
 
+/**
+ * Provide functionality to emulate a dice rolle. 
+ * Can return either statistical outcomes or random discrete outcomes
+ */
 @Injectable({
   providedIn: 'root'
 })
-export class RollsService {
+export class RollService {
 
   constructor() { }
 

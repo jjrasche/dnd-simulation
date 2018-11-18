@@ -12,37 +12,37 @@ describe('StatisticsService', () => {
   });
 
   // given an outcome and set of possibilities, return a probability
-  it("probability invalid inputs probability(numDesiredOutcomes, numTotalOutcomes);", () => {
-    expect(service.probability(null, null)).toThrow();
+  it("probability, given null inputs will throw", () => { 
+    expect(() => service.probability(null, null)).toThrow();
   });
 
-  it("probability divide by 0 probability(numDesiredOutcomes, numTotalOutcomes);", () => {
-    expect(service.probability(1, 0)).toThrow();
+  it("probability, given numTotalOutcomes is 0, will throw due to divide by 0", () => {
+    expect(() => service.probability(1, 0)).toThrow();
   });
 
-  it("probability negative numbers not allowed probability(numDesiredOutcomes, numTotalOutcomes);", () => {
-    expect(service.probability(-1, 2)).toThrow();
+  it("probability, given an input with negative numbers, will throw due to output not [1, 0]", () => {
+    expect(() => service.probability(-1, 2)).toThrow();
   });
 
-  it("throw error when probabilities are out of range of 0-1 probability(numDesiredOutcomes, numTotalOutcomes);", () => {
-    expect(service.probability(5, 1)).toThrow();
+  it("probability, given numDesiredOutcomes greater than numTotalOutcomes, will throw due to output not [1, 0]", () => {
+    expect(() => service.probability(5, 1)).toThrow();
   });
 
-  it("edge case probabilities can be 0 (will not happen)", () => {
+  it("probability, given 0 desired outcomes, probabilities will be 0 (will not happen)", () => {
     let actual = service.probability(0, 1); 
     expect(actual).toEqual(0);
   });
 
-  it("happy path 10 desired outcomes out of 20 total outcumes probability(numDesiredOutcomes, numTotalOutcomes);", () => {
+  it("probability, happy path", () => {
     let actual = service.probability(10, 20); 
     expect(actual).toEqual(.5);
   });
 
-  it("average null averageOutcome(die)", () => {
-    expect(service.average(null)).toThrow();
+  it("average, given invalid inputs, will throw", () => {
+    expect(() => service.average(null)).toThrow();
   });
   
-  it("average d8  averageOutcome(die)", () => {
+  it("average, happy path", () => {
     let actual = service.average(Die.D8)
     expect(actual).toEqual(4.5);
   });

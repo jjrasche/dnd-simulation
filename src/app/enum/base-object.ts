@@ -19,8 +19,6 @@ import { SubRaceEnum, SubRaceObject, SubRace } from "./subRace.enum";
 import { TraitEnum, TraitObject, Trait } from "./trait.enum";
 import { EquipmentObject } from "./equipment/equipment.enum";
 
-const ObjectEnums: Object[] = [AbilityEnum, BackgroundEnum, ClassEnum, ComponentEnum, ConditionEnum, DamageTypeEnum, LanguageEnum, LevelEnum,
-    RaceEnum, SkillEnum, SpellEnum, SubRaceEnum, TraitEnum, ...EquipmentEnums];
 type ObjectEnums = AbilityEnum | BackgroundEnum | ClassEnum | ComponentEnum | ConditionEnum | DamageTypeEnum | LanguageEnum | LevelEnum | 
     RaceEnum| SkillEnum | SpellEnum | SubRaceEnum | TraitEnum | EquipmentEnums;
 type ObjectClasses = AbilityObject | BackgroundObject | ClassObject | ComponentObject | ConditionObject | DamageTypeObject | LanguageObject | 
@@ -28,17 +26,7 @@ type ObjectClasses = AbilityObject | BackgroundObject | ClassObject | ComponentO
 let ObjectData = { ...Ability, ...Background, ...Class, ...Component, ...Condition, ...DamageType, ...Language, ...Level, ...Race, ...Skill,
     ...Spell, ...SubRace, ...Trait, ...Equipment };
 
-export const Obj: { [key in ObjectEnums]: ObjectClasses } = ObjectData;
-
-// add enum as the key property on all objects for tracking in arrays
-export function initializeObject() {
-    Object.keys(Obj).forEach(key => {
-        Obj[key].key = key;
-    });
-    if (enumsDuplicated(ObjectEnums)) {
-        throw (`The following keys are dupliactated on Object Enums: '${getDuplicatedEnumKeys(ObjectEnums)}'`)
-    } 
-}
+export const Objects: { [key in ObjectEnums]: ObjectClasses } = ObjectData;
 
 export interface BaseObject {
     // allows comparisons between objects to easily be made
@@ -46,25 +34,3 @@ export interface BaseObject {
     description: string;
     // type: ObjectType;
 }
-
-/**
- * 
- * @param enums Array of enums to compare keys across.
- * returns an object with enum keys as key and value as number of ocurrences.
- * Complexity O(n) where n is number of enum keys between all enums.
- */
-export const enumKeysCount = (enums: Object[]): Object => enums.reduce((acc: Object, currEnum: Object) => {
-    // add this enums keys to any existing key, incrementing by 1 if that key already existed.
-    let currEnumCount =
-        Object.keys(currEnum).reduce((accInner: { string: number }, curr: string) =>
-            ({ ...accInner, [curr]: (acc[curr] || 0) + 1 }), {});
-
-    return { ...acc, ...currEnumCount };
-}, {});
-
-/**
- * @param dict dictionary created from enumKeysCount with value being num occurrences of that key
- * returns list of all keys used more than once
- */
-export const getDuplicatedEnumKeys = (enumKeyCounts: Object): Array<Object> => Object.keys(enumKeyCounts).filter(key => enumKeyCounts[key] > 1);
-export const enumsDuplicated = (enumKeyCounts: Object): boolean => getDuplicatedEnumKeys(enumKeyCounts).length > 0;

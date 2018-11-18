@@ -16,23 +16,38 @@ import { WeaponPropertyObject } from '../enum/equipment/weaponProperty.enum';
 import { LightArmor, ArmorObject, ArmorCategory } from '../enum/equipment/armor.enum';
 import { GearCategories, AllGear, GearCategory, GearObject, GearByCategory, GearEnum } from '../enum/equipment/gear.enum';
 import { Equipment } from '../enum/equipment/equipment';
-import { initializeObject, Obj, enumKeysCount, enumsDuplicated} from '../enum/base-object';
+import { BaseObject } from '../enum/base-object';
+import { initializeDataStructure, enumKeysCount, enumsDuplicated,  } from './common';
 
 describe('BuildModel', () => {
 
-    // it("Equipment Object ", () => {
-    //     initializeObject();
+    it("Equipment Object ", () => {
+        enum OneEnum {
+            A = "A",
+            B = "B",
+        };
+        const OneData: { [key in OneEnum]: Object } = {
+            A: {},
+            B: {}
+        };
+        enum TwoEnum {
+            A = "A",
+            C = "C",
+        };
+        const TwoData: { [key in TwoEnum]: Object } = {
+            A: {},
+            C: {}
+        };
 
-    //     // console.log(Class.Bard.equipmentProficiency.inherent[6])
+        const ObjectEnums = [OneEnum, TwoEnum];
+        const ObjectData = { ...OneData, ...TwoData };
 
-    //     console.log(ObjectType2)
-    //     console.log(Object.keys(ObjectType2))
-    //     console.log(test)
-
-    //     expect(Equipment.Crystal.key).toEqual("Crystal");
-    //     expect(Equipment.Sling).toBe(Weapon.Sling);
-    //     expect(Obj.Strength).toEqual(Ability.Strength)
-    // });
+        expect(() => initializeDataStructure(ObjectData ,ObjectEnums)).toThrow();
+        expect(OneData.B["key"]).toBeDefined();
+        expect(TwoData.A["key"]).toBeDefined();
+        expect(TwoData.C["key"]).toBeDefined();
+        expect(OneData.A["key"]).toBeUndefined();
+    });
 
     it("duplicate enum check: given enums that do use duplicate keys, then enumsDuplicate is true", () => {
         enum One {
@@ -44,10 +59,9 @@ describe('BuildModel', () => {
             C = "C",
         };
         let enums = [One, Two];
-        let resultKeyCounts = enumKeysCount(enums);
 
-        expect(resultKeyCounts).toEqual({A: 2, B: 1, C: 1});
-        expect(enumsDuplicated(resultKeyCounts)).toBe(true);
+        expect(enumKeysCount(enums)).toEqual({A: 2, B: 1, C: 1});
+        expect(enumsDuplicated(enums)).toBe(true);
     });
 
     it("duplicate enum check: given enums that do not use duplicate keys, then enumsDuplicate is false", () => {
@@ -60,10 +74,9 @@ describe('BuildModel', () => {
             D = "D",
         };
         let enums = [One, Two];
-        let resultKeyCounts = enumKeysCount(enums);
 
-        expect(resultKeyCounts).toEqual({ A: 1, B: 1, C: 1, D: 1 });
-        expect(enumsDuplicated(resultKeyCounts)).toBe(false);
+        expect(enumKeysCount(enums)).toEqual({ A: 1, B: 1, C: 1, D: 1 });
+        expect(enumsDuplicated(enums)).toBe(false);
     });
 
 

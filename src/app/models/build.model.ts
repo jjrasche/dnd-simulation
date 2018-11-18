@@ -3,15 +3,15 @@ import { RaceObject } from "../enum/race.enum";
 import { SpellObject } from "../enum/spell.enum";
 import { SkillEnum, defaultSkill } from "../enum/skill.enum";
 import { LevelObject } from "../enum/level.enum";
-import { ConditionObject } from "../enum/money.enum";
 import { AbilityEnum, defaultAbilityScore, defaultSavingThrow } from "../enum/ability.enum";
 import { copyBuild } from "../utils/objectManipulation";
 import { LanguageObject } from "../enum/language.enum";
 import { BackgroundObject } from "../enum/background.enum";
 import { EquipmentObject } from "../enum/equipment/equipment.enum";
 import { ActionTypeEnum } from "../enum/action-type.enum";
-import { BuildAffectingObject } from "./common";
-import { initializeObject } from "../enum/base-object";
+import { BuildAffectingObject, initializeDataStructure } from "./common";
+import { ConditionObject } from "../enum/condition.enum";
+import { initializeObjects } from "../enum/base-object";
 
 /**
  * Anytime a property is retrieved, this method applies all modifying effects
@@ -77,7 +77,7 @@ export class Build {
 
 
     constructor() {
-        initializeObject();
+        initializeObjects();
         return new Proxy(this, handler);
     }
 

@@ -16,8 +16,8 @@ import { WeaponPropertyObject } from '../enum/equipment/weaponProperty.enum';
 import { LightArmor, ArmorObject, ArmorCategory } from '../enum/equipment/armor.enum';
 import { GearCategories, AllGear, GearCategory, GearObject, GearByCategory, GearEnum } from '../enum/equipment/gear.enum';
 import { Equipment } from '../enum/equipment/equipment';
-import { BaseObject } from '../enum/base-object';
-import { initializeDataStructure, enumKeysCount, enumsDuplicated,  } from './common';
+import { BaseObject, initializeObjects } from '../enum/base-object';
+import { enumKeysCount, enumsDuplicated, addKeyModifier, initializeDataStructure,  } from './common';
 
 describe('BuildModel', () => {
 
@@ -42,10 +42,11 @@ describe('BuildModel', () => {
         const ObjectEnums = [OneEnum, TwoEnum];
         const ObjectData = { ...OneData, ...TwoData };
 
-        expect(() => initializeDataStructure(ObjectData ,ObjectEnums)).toThrow();
+        expect(() => initializeDataStructure(ObjectData, [addKeyModifier], ObjectEnums)).toThrow();
         expect(OneData.B["key"]).toBeDefined();
         expect(TwoData.A["key"]).toBeDefined();
         expect(TwoData.C["key"]).toBeDefined();
+        // since this dupliate is overwritten by TwoData.A, it is not apart of ObjectData and will not get the key property
         expect(OneData.A["key"]).toBeUndefined();
     });
 

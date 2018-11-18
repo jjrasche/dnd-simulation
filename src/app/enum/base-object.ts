@@ -18,15 +18,25 @@ import { SpellEnum, SpellObject, Spell } from "./spell.enum";
 import { SubRaceEnum, SubRaceObject, SubRace } from "./subRace.enum";
 import { TraitEnum, TraitObject, Trait } from "./trait.enum";
 import { EquipmentObject } from "./equipment/equipment.enum";
+import { addKeyModifier, initializeDataStructure } from "../models/common";
 
-type ObjectEnums = AbilityEnum | BackgroundEnum | ClassEnum | ComponentEnum | ConditionEnum | DamageTypeEnum | LanguageEnum | LevelEnum | 
+const ObjectEnums = [AbilityEnum, BackgroundEnum, ClassEnum, ComponentEnum, ConditionEnum, DamageTypeEnum, LanguageEnum, LevelEnum,
+    RaceEnum, SkillEnum, SpellEnum, SubRaceEnum, TraitEnum, EquipmentEnums];
+type ObjectEnumsType = AbilityEnum | BackgroundEnum | ClassEnum | ComponentEnum | ConditionEnum | DamageTypeEnum | LanguageEnum | LevelEnum | 
     RaceEnum| SkillEnum | SpellEnum | SubRaceEnum | TraitEnum | EquipmentEnums;
 type ObjectClasses = AbilityObject | BackgroundObject | ClassObject | ComponentObject | ConditionObject | DamageTypeObject | LanguageObject | 
     LevelObject | RaceObject | SkillObject | SpellObject | SubRaceObject | TraitObject | EquipmentObject;
 let ObjectData = { ...Ability, ...Background, ...Class, ...Component, ...Condition, ...DamageType, ...Language, ...Level, ...Race, ...Skill,
     ...Spell, ...SubRace, ...Trait, ...Equipment };
 
-export const Objects: { [key in ObjectEnums]: ObjectClasses } = ObjectData;
+export const Objects: { [key in ObjectEnumsType]: ObjectClasses } = ObjectData;
+
+/**
+ * add key to all objects and verify the enums that make up Object are unique.
+ */
+export function initializeObjects() {
+    initializeDataStructure(ObjectData, [addKeyModifier], ObjectEnums)
+}
 
 export interface BaseObject {
     // allows comparisons between objects to easily be made

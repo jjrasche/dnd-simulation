@@ -16,7 +16,7 @@ export enum WeaponPropertyEnum {
 };
 
 export class WeaponPropertyObject implements BuildAffectingObject {
-    description: String;
+    description: string;
     effect(b: Build): void {
     };
 };

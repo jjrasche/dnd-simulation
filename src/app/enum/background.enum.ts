@@ -1,6 +1,7 @@
 import { Build } from "../models/build.model";
 import { SkillObject, Skill } from "./skill.enum";
 import { settings, BuildAffectingObject } from "../models/common";
+import { BaseObject } from "./base-object";
 
 export enum BackgroundEnum {
     Acolyte = "Acolyte",
@@ -18,7 +19,7 @@ export enum BackgroundEnum {
     Urchin = "Urchin",
 }
 
-export class BackgroundObject implements BuildAffectingObject {
+export class BackgroundObject implements BaseObject, BuildAffectingObject {
     description: string;
     skill: settings<SkillObject>;
 

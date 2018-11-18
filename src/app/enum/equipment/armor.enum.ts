@@ -6,6 +6,7 @@ import { Build } from "src/app/models/build.model";
 
 export enum ArmorEnum {
     Padded = "Padded",
+    Sling = "Sling",
     Leather = "Leather",
     StuddedLeather = "StuddedLeather",
     Hide = "Hide",
@@ -47,6 +48,16 @@ export class ArmorObject extends EquipmentObject implements BuildAffectingObject
 export type ArmorMapType = { [key in ArmorEnum]: ArmorObject };
 export const Armor: ArmorMapType = {
     Padded: {
+        category: ArmorCategory.Light,
+        strengthNeeded: 0,
+        stealthDisadvantage: true,
+        weight: 8,
+        cost: 5,
+        armorClass: { base: 11, addDex: true, maxDex: null },
+        description: "",
+        effect: ArmorObject.prototype.effect,
+    },
+    Sling: {
         category: ArmorCategory.Light,
         strengthNeeded: 0,
         stealthDisadvantage: true,

@@ -24,7 +24,7 @@ export enum LanguageEnum {
 
 export interface LanguageObject {
     type: LanguageType;
-    typicalSpeakers: String[];
+    typicalSpeakers: string[];
     script: LanguageEnum;
 }
 

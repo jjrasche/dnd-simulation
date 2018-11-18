@@ -333,7 +333,6 @@ export class SpellObject implements BuildAffectingObject {
 
     // default effect without any alteration
     effect(b: Build): void {
-        //
     };
 }
 

@@ -36,12 +36,17 @@ export class ClassObject implements BuildAffectingObject {
     // default effect without any alteration
     effect(b: Build): void {
         // apply skills
-        if (this.savingThrows) {
-            Object.keys(Ability).forEach(key => b.savingThrow[key] = this.savingThrows[key]);
-        }
-        // apply saving throws
         if (this.skill) {
             Object.keys(Skill).forEach(key => b.skill[key] = this.skill[key]);
+        }
+        // apply saving throws
+        if (this.savingThrows) {
+            // have two objects  { [key in AbilityEnum]: boolean } 
+            // an                { [key in AbilityEnum]: AbilityObject }
+            /**
+             * how can I test weather these are base in the same enum ... add the enum to as a key to all
+             */
+            // this.savingThrows.forEach((ability: AbilityObject) => b.savingThrow[ability.] = this.savingThrows[key] ? this.savingThrows[key] : false);
         }
     };
 };

@@ -44,6 +44,7 @@ export class RaceObject implements BuildAffectingObject {
             Object.keys(Ability).forEach(key => b.ability[key] += this.abilityModifier[key]);
         }
         // apply traits
+        this.traits.forEach(trait => trait.effect(b));
 
         // apply speed
     };

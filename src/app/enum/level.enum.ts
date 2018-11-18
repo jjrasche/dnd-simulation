@@ -1,3 +1,6 @@
+import { BuildAffectingObject } from "../models/common";
+import { Build } from "../models/build.model";
+
 export enum LevelEnum {
     One = "One",
     Two = "Two",
@@ -21,29 +24,35 @@ export enum LevelEnum {
     Twenty = "Twenty",
 }
 
-export interface LevelObject {
-    proficiencyBonus: number
+export class LevelObject implements BuildAffectingObject  {
+    proficiencyBonus: number;
+
+    effect(b: Build): void {
+        if (this.proficiencyBonus) {
+            b.proficiencyBonus = this.proficiencyBonus;
+        }
+    };
 }
 
 export const Level: { [key in LevelEnum]: LevelObject } = {
-    One: { proficiencyBonus: 2 },
-    Two: { proficiencyBonus: 2 },
-    Three: { proficiencyBonus: 2 },
-    Four: { proficiencyBonus: 2 },
-    Five: { proficiencyBonus: 3 },
-    Six: { proficiencyBonus: 3 },
-    Seven: { proficiencyBonus: 3 },
-    Eight: { proficiencyBonus: 3 },
-    Nine: { proficiencyBonus: 4 },
-    Ten: { proficiencyBonus: 4 },
-    Eleven: { proficiencyBonus: 4 },
-    Twelve: { proficiencyBonus: 4 },
-    Thirteen: { proficiencyBonus: 5 },
-    Fourteen: { proficiencyBonus: 5 },
-    Fifteen: { proficiencyBonus: 5 },
-    Sixteen: { proficiencyBonus: 5 },
-    Seventeen: { proficiencyBonus: 6 },
-    Eighteen: { proficiencyBonus: 6 },
-    NineTeen: { proficiencyBonus: 6 },
-    Twenty: { proficiencyBonus: 6 },
+    One: { proficiencyBonus: 2, effect: LevelObject.prototype.effect },
+    Two: { proficiencyBonus: 2, effect: LevelObject.prototype.effect },
+    Three: { proficiencyBonus: 2, effect: LevelObject.prototype.effect },
+    Four: { proficiencyBonus: 2, effect: LevelObject.prototype.effect },
+    Five: { proficiencyBonus: 3, effect: LevelObject.prototype.effect },
+    Six: { proficiencyBonus: 3, effect: LevelObject.prototype.effect },
+    Seven: { proficiencyBonus: 3, effect: LevelObject.prototype.effect },
+    Eight: { proficiencyBonus: 3, effect: LevelObject.prototype.effect },
+    Nine: { proficiencyBonus: 4, effect: LevelObject.prototype.effect },
+    Ten: { proficiencyBonus: 4, effect: LevelObject.prototype.effect },
+    Eleven: { proficiencyBonus: 4, effect: LevelObject.prototype.effect },
+    Twelve: { proficiencyBonus: 4, effect: LevelObject.prototype.effect },
+    Thirteen: { proficiencyBonus: 5, effect: LevelObject.prototype.effect },
+    Fourteen: { proficiencyBonus: 5, effect: LevelObject.prototype.effect },
+    Fifteen: { proficiencyBonus: 5, effect: LevelObject.prototype.effect },
+    Sixteen: { proficiencyBonus: 5, effect: LevelObject.prototype.effect },
+    Seventeen: { proficiencyBonus: 6, effect: LevelObject.prototype.effect },
+    Eighteen: { proficiencyBonus: 6, effect: LevelObject.prototype.effect },
+    NineTeen: { proficiencyBonus: 6, effect: LevelObject.prototype.effect },
+    Twenty: { proficiencyBonus: 6, effect: LevelObject.prototype.effect },
 }

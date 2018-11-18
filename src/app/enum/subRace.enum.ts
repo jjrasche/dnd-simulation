@@ -30,7 +30,7 @@ export class SubRaceObject implements BuildAffectingObject {
     equipmentProficiency?: settings<EquipmentObject>;
     languages?: settings<LanguageObject>;
     traits?: settings<TraitObject>;
-    description: String;
+    description: string;
 
     // default effect without any alteration
     effect(b: Build): void {

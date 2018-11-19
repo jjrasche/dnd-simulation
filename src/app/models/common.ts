@@ -85,7 +85,7 @@ export function verifyEnumKeyUniqueness(enums: Array<Object>) {
     }
 }
 
-type ObjectModifier = (obj: Object, key: string) => void;
+export type ObjectModifier = (obj: Object, key: string) => void;
 export const addKeyModifier: ObjectModifier = (obj: Object, key: string): void => { obj[key].key = key };
 
 /**

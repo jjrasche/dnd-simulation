@@ -12,50 +12,73 @@ describe('RollService', () => {
     service = TestBed.get(RollService);
   });
 
-  it("roll invalid inputs throws invalid input exception", () => {
-    expect(service.roll(null, null, null)).toThrow();
+  it("roll, given invalid inputs, will throw", () => {
+    expect(() => service.statisticalRoll(null, null, null)).toThrow();
+    expect(() => service.statisticalRoll(undefined, undefined, undefined)).toThrow();
   });
 
-  it("roll an 18 exactly on a d20", () => {
-    let actual = service.roll(Die.D20, RollOperation.Equal, 18);
+
+  it("roll, given negative desiredRoll input, will throw", () => {
+    expect(() => service.statisticalRoll(Die.D10, RollOperation.Equal, -5)).toThrow();
+  });
+
+  it("roll, happy path, rolling an 18 on a D20, is a 1 in 20 chance", () => {
+    let actual = service.statisticalRoll(Die.D20, RollOperation.Equal, 18);
     expect(actual).toEqual(1/20);
   });
 
-  it("roll an 21 exactly on a d20", () => {
-    let actual = service.roll(Die.D20, RollOperation.Equal, 21);
+  it("roll, edge case, rolling an 21 on a D20, is a 0 in 20 chance", () => {
+    let actual = service.statisticalRoll(Die.D20, RollOperation.Equal, 21);
     expect(actual).toEqual(0);
   });
 
-  it("roll an 0 exactly on a d20", () => {
-    let actual = service.roll(Die.D20, RollOperation.GreaterThanOrEqual, 0);
+  it("roll, rolling a 0 on a D20, will throw", () => {
+    let actual = () => service.statisticalRoll(Die.D20, RollOperation.Equal, 0);
+    expect(actual).toThrow();
+  });
+
+  it("roll, edge case, rolling greater than or equal to a 1 on a D20, is a 20 in 20 chance", () => {
+    let actual = service.statisticalRoll(Die.D20, RollOperation.GreaterThanOrEqual, 1);
+    expect(actual).toEqual(1);
+  });
+
+  it("roll, edge case, rolling greater than or equal to a 20 on a D20, is a 0 in 20 chance", () => {
+    let actual = service.statisticalRoll(Die.D20, RollOperation.GreaterThanOrEqual, 20);
+    expect(actual).toEqual(1/20);
+  });
+
+  it("roll, edge case, rolling greater than or equal to a 21 on a D20, is a 0 in 20 chance", () => {
+    let actual = service.statisticalRoll(Die.D20, RollOperation.GreaterThanOrEqual, 21);
     expect(actual).toEqual(0);
   });
 
-  it("roll greater than 7 on a d12", () => {
-    let actual = service.roll(Die.D12, RollOperation.GreaterThan, 7);
+  it("roll, happy path, rolling greater than 7 on a d12, is a 5 in 12 chance", () => {
+    let actual = service.statisticalRoll(Die.D12, RollOperation.GreaterThan, 7);
     expect(actual).toEqual(5/12);
   });
 
-  it("probability rolled greater than or equal to 7 on a d12", () => {
-    let actual = service.roll(Die.D20, RollOperation.GreaterThanOrEqual, 12);
-    expect(actual).toEqual(6/12);
+  it("roll, rolling greater than 11 on a d12, is a 1 in 12 chance", () => {
+    let actual = service.statisticalRoll(Die.D12, RollOperation.GreaterThan, 11);
+    expect(actual).toEqual(1/12);
   });
 
-  it("rollAttackProbability invalid inputs throws invalid input exception", () => {
-    expect(service.rollAttackProbability(null, null)).toThrow();
+  it("roll, rolling greater than 12 on a d12, is a 0 chance", () => {
+    let actual = service.statisticalRoll(Die.D12, RollOperation.GreaterThan, 12);
+    expect(actual).toEqual(0);
   });
 
-  it("rollAttackProbability for 15 with d20 returns 6/20 = .3", () => {
-    let actual = service.rollAttackProbability(Die.D20, 15);
-    expect(actual).toEqual(6/20);
+  it("roll, rolling greater than 13 on a d12, is a 0 chance", () => {
+    let actual = service.statisticalRoll(Die.D12, RollOperation.GreaterThan, 13);
+    expect(actual).toEqual(0);
   });
 
-  it("rollDamageAverage invalid inputs throws invalid input exception", () => {
-    expect(service.rollDamageAverage(Die.D12)).toThrow();
+  it("averageRoll, given invalid inputs, will throw", () => {
+    expect(() => service.averageRoll(null)).toThrow();
+    expect(() => service.averageRoll(undefined)).toThrow();
   });
 
-  it("rollDamageAverage for a d12 returns average of d12 = 6.5", () => {
-    let actual = service.rollDamageAverage(Die.D12);
-    expect(actual).toEqual(6.5);
+  it("averageRoll, happy path, correct values are returned", () => {
+    expect(service.averageRoll(Die.D12)).toEqual(6.5);
+    expect(service.averageRoll(Die.D8)).toEqual(4.5);
   });
 });

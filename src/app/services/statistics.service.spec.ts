@@ -1,7 +1,6 @@
 import { TestBed } from '@angular/core/testing';
 
 import { StatisticsService } from './statistics.service';
-import { Die } from '../enum/die.enum';
 
 describe('StatisticsService', () => {
   let service: StatisticsService;
@@ -12,8 +11,9 @@ describe('StatisticsService', () => {
   });
 
   // given an outcome and set of possibilities, return a probability
-  it("probability, given null inputs will throw", () => { 
+  it("probability, given invalid inputs will throw", () => { 
     expect(() => service.probability(null, null)).toThrow();
+    expect(() => service.probability(undefined, undefined)).toThrow();
   });
 
   it("probability, given numTotalOutcomes is 0, will throw due to divide by 0", () => {
@@ -43,7 +43,7 @@ describe('StatisticsService', () => {
   });
   
   it("average, happy path", () => {
-    let actual = service.average(Die.D8)
-    expect(actual).toEqual(4.5);
+    expect(service.average(3)).toEqual(2);
+    expect(service.average(9)).toEqual(5);
   });
 });

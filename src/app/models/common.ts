@@ -3,6 +3,7 @@
  */
 
 import { Build } from "./build.model";
+import { Die } from "../enum/die.enum";
 
 export interface settings<T> {
     // have all these settings
@@ -103,6 +104,13 @@ export const checkNullInputs = (methodName: string, ...args) => {
         throw new Error(`Method '${methodName}' was called with invalid inputs '${args}'.`)
     }
 };
+export const checkInputsArePositiveNumbers = (methodName: string, ...args) => {
+    args.forEach(arg => {
+        if (arg <= 0 ) {
+            throw new Error(`Method '${methodName}' was called with negatibe number input '${arg}'.`)
+        }
+    })
+};
 export const checkDivideByZero = (methodName: string, paramName: string, check: number) => {
     if (check === 0) {
         throw new Error(`Method '${methodName}' parameter '${paramName}' would divide by Zero.`);
@@ -113,4 +121,21 @@ export const checkReturnNotWithinLimit = (methodName: string, lowerLimit: number
         throw new Error(`Method '${methodName}' return value '${ret}' is not between '${lowerLimit} - ${upperLimit}'`);
     }
     return ret;
+};
+/**
+ * Throw if roll is outside the bounds of possible Die outcomes.
+ * 
+ * @example
+ *  var d: Die = Die.D8;
+ *  var roll: number = 100;
+ * 
+ *  checkRollWithinLimits(d, roll) // will throw error.
+ * 
+ * @param die to check against for limits
+ * @param roll 
+ */
+export const checkRollWithinLimits = (methodName: string, die: Die, roll: number) => {
+    if (1 > roll || roll > die) {
+        throw new Error(`Method '${methodName}' die roll of '${roll}' is not possible with a D${die}`);
+    }
 };

@@ -15,7 +15,6 @@ import { WeaponPropertyObject } from '../enum/equipment/weaponProperty.enum';
 import { LightArmor, ArmorObject, ArmorCategory } from '../enum/equipment/armor.enum';
 import { GearCategories, AllGear, GearCategory, GearObject, GearByCategory } from '../enum/equipment/gear.enum';
 import { Equipment } from '../enum/equipment/equipment';
-import { initializeObject } from '../enum/base-object';
 
 describe('BuildModel', () => {
 

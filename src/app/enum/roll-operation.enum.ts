@@ -1,5 +1,5 @@
 export enum RollOperation {
-    Equal,
-    GreaterThan,
-    GreaterThanOrEqual,
+    Equal = "=",
+    GreaterThan = ">",
+    GreaterThanOrEqual = ">=",
 }

@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Die } from '../enum/die.enum';
-import { invalidInput, divideByZero, returnNotWithinLimit, checkReturnNotWithinLimit, checkNullInputs, checkDivideByZero } from '../models/common';
+import { checkReturnNotWithinLimit, checkNullInputs, checkDivideByZero } from '../models/common';
 
 /**
  * Statistical helper service returning averages and probabilities
@@ -30,10 +30,9 @@ export class StatisticsService {
    * @param die 
    * @returns a number representing the average numerical outcome or rolling a die.
    */
-  public average(die: Die): number {
-    if (!die) {
-      invalidInput("average", die);
-    }
+  public average(die: number): number {
+    checkNullInputs("probability", die);
+
     const numSides: number = die;
     const summationOfSides: number = numSides * (numSides + 1) / 2;
     

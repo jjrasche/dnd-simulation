@@ -1,6 +1,6 @@
 import { Die } from "../die.enum";
 import { DamageType, DieDamage, AmountDamage } from "../damage.enum";
-import { EquipmentObject, EquipmentCategory } from "./equipment.enum";
+import { EquipmentObject, EquipmentCategory } from "./equipment.model";
 import { WeaponPropertyObject, WeaponProperty } from "./weaponProperty.enum";
 import { BuildAffectingObject } from "src/app/models/common";
 import { Build } from "src/app/models/build.model";

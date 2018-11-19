@@ -1,4 +1,4 @@
-import { EquipmentObject } from "./equipment.enum";
+import { EquipmentObject } from "./equipment.model";
 
 export enum GearEnum {
     AcidVial = "AcidVial",

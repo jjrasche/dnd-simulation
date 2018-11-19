@@ -1,4 +1,4 @@
-import { BaseObject } from "../base-object";
+import { BaseObject } from "../base-object.model";
 
 export enum EquipmentCategory {
     Gear = "Gear",
@@ -8,7 +8,7 @@ export enum EquipmentCategory {
     Weapon = "Weapon",
 }
 
-export abstract class EquipmentObject implements BaseObject{
+export abstract class EquipmentObject extends BaseObject{
     // base object
     description: string;
     // type: ObjectType;

@@ -17,7 +17,7 @@ import { SkillEnum, SkillObject, Skill } from "./skill.enum";
 import { SpellEnum, SpellObject, Spell } from "./spell.enum";
 import { SubRaceEnum, SubRaceObject, SubRace } from "./subRace.enum";
 import { TraitEnum, TraitObject, Trait } from "./trait.enum";
-import { EquipmentObject } from "./equipment/equipment.enum";
+import { EquipmentObject } from "./equipment/equipment.model";
 import { addKeyModifier, modifyDataStructure, verifyEnumKeyUniqueness } from "../models/common";
 
 const ObjectEnums = [AbilityEnum, BackgroundEnum, ClassEnum, ComponentEnum, ConditionEnum, DamageTypeEnum, LanguageEnum, LevelEnum,
@@ -39,11 +39,4 @@ export function initializeObjects() {
     modifyDataStructure(ObjectData, [addKeyModifier]);
     // verifyEnumKeyUniqueness(ObjectEnums);
     initializeEquipment();
-}
-
-export class BaseObject {
-    // allows comparisons between objects to easily be made
-    key?: string;
-    description: string;
-    // type: ObjectType;
 }

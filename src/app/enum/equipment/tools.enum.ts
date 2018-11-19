@@ -1,7 +1,7 @@
 import { Skill } from "../skill.enum";
 import { Die } from "../die.enum";
 import { DamageTypeObject, DamageType } from "../damage.enum";
-import { EquipmentObject, EquipmentCategory } from "./equipment.enum";
+import { EquipmentObject, EquipmentCategory } from "./equipment.model";
 
 export enum ToolEnum {
     AlchemistSupplies = "AlchemistSupplies",

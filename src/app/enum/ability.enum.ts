@@ -1,4 +1,4 @@
-import { BaseObject } from "./base-object";
+import { BaseObject } from "./base-object.model";
 
 export enum AbilityEnum {
     Strength = "Strength",

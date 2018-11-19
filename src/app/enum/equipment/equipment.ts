@@ -4,7 +4,7 @@ import { GearObject, GearEnum, Gear } from "./gear.enum";
 import { PackEnum, PackObject, Pack } from "./pack.enum";
 import { ArmorEnum, ArmorObject, Armor } from "./armor.enum";
 import { modifyDataStructure, verifyEnumKeyUniqueness, ObjectModifier } from "src/app/models/common";
-import { EquipmentCategory } from "./equipment.enum";
+import { EquipmentCategory } from "./equipment.model";
 
 // needed to separate this from equipment.enum.ts to prevent circular dependencies
 // Equipment.<Any enum extending EquipmentObject>

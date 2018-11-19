@@ -1,5 +1,5 @@
 import { GearObject, GearCategory, Gear } from "./gear.enum";
-import { EquipmentCategory } from "./equipment.enum";
+import { EquipmentCategory } from "./equipment.model";
 
 export enum PackEnum {
     BurglarPack = "BurglarPack",

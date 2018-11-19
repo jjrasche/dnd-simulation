@@ -1,5 +1,6 @@
 import { AbilityObject, Ability } from "./ability.enum";
 import { EnumBased } from "../models/common";
+import { BaseObject } from "./base-object.model";
 
 export enum SkillEnum {
     Acrobatics = "Acrobatics",
@@ -22,7 +23,7 @@ export enum SkillEnum {
     Survival = "Survival",
 }
 
-export class SkillObject extends EnumBased {
+export class SkillObject extends BaseObject {
     description: string;
     ability: AbilityObject;
 }

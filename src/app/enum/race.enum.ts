@@ -2,7 +2,7 @@ import { AbilityEnum, Ability } from "./ability.enum";
 import { Size } from "./size.enum";
 import { LanguageObject, Language } from "./language.enum";
 import { Build } from "../models/build.model";
-import { EquipmentObject } from "./equipment/equipment.enum";
+import { EquipmentObject } from "./equipment/equipment.model";
 import { Skill, SkillObject } from "./skill.enum";
 import { TraitObject, Trait } from "./trait.enum";
 import { settings, BuildAffectingObject } from "../models/common";

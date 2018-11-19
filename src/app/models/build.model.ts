@@ -7,7 +7,7 @@ import { AbilityEnum, defaultAbilityScore, defaultSavingThrow, AbilityObject } f
 import { copyBuild } from "../utils/objectManipulation";
 import { LanguageObject } from "../enum/language.enum";
 import { BackgroundObject } from "../enum/background.enum";
-import { EquipmentObject } from "../enum/equipment/equipment.enum";
+import { EquipmentObject } from "../enum/equipment/equipment.model";
 import { ActionTypeEnum } from "../enum/action-type.enum";
 import { BuildAffectingObject } from "./common";
 import { ConditionObject } from "../enum/condition.enum";

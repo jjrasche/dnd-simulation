@@ -2,12 +2,12 @@ import { Skill, SkillObject } from "./skill.enum";
 import { settings, BuildAffectingObject, groupedChoiceSettings, settingsWithGroupedOptions, applyToBuild } from "../models/common";
 import { AbilityObject, Ability, AbilityEnum } from "./ability.enum";
 import { Build } from "../models/build.model";
-import { EquipmentObject } from "./equipment/equipment.enum";
+import { EquipmentObject } from "./equipment/equipment.model";
 import { Equipment } from "./equipment/equipment";
 import { Armor, LightArmor, MediumArmor, Shields, AllArmor, ArmorObject } from "./equipment/armor.enum";
 import { SimpleWeapons, MartialWeapons, AllWeapons, WeaponObject } from "./equipment/weapon.enum";
 import { Die } from "./die.enum";
-import { BaseObject } from "./base-object";
+import { BaseObject } from "./base-object.model";
 
 // Limits the possible Classes to the ones listed below and allows for type safety.
 export enum ClassEnum {

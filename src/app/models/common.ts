@@ -71,13 +71,15 @@ export const enumKeysCount = (enums: Object[]): Object => enums.reduce((acc: Obj
  * @param modifier function that makes changes to objects.
  * @param enums enums to verify uniqueness.
  */
-export function initializeDataStructure(object: Object, objectModifiers: ObjectModifier[], enums?: Object[]) {
+export function modifyDataStructure(object: Object, objectModifiers: Array<ObjectModifier>) {
     // apply all modifiers to each property in object.
     Object.keys(object).forEach(key => {
         objectModifiers.forEach((modifier: ObjectModifier) => modifier(object, key))
     });
+}
 
-    // verify enums that specify items in the object are all unique and no conflicts exist.
+// verify enums that specify items in the object are all unique and no conflicts exist.
+export function verifyEnumKeyUniqueness(enums: Array<Object>) {
     if (!!enums && enumsDuplicated(enums)) {
         throw (`The following keys are dupliactated on Object Enums: '${getDuplicatedEnumKeys(enums)}'`)
     }

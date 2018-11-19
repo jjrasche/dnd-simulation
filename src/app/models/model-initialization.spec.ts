@@ -17,7 +17,7 @@ import { LightArmor, ArmorObject, ArmorCategory } from '../enum/equipment/armor.
 import { GearCategories, AllGear, GearCategory, GearObject, GearByCategory, GearEnum } from '../enum/equipment/gear.enum';
 import { Equipment } from '../enum/equipment/equipment';
 import { BaseObject, initializeObjects } from '../enum/base-object';
-import { enumKeysCount, enumsDuplicated, addKeyModifier, initializeDataStructure,  } from './common';
+import { enumKeysCount, enumsDuplicated, addKeyModifier, modifyDataStructure, verifyEnumKeyUniqueness,  } from './common';
 
 describe('BuildModel', () => {
 
@@ -42,7 +42,8 @@ describe('BuildModel', () => {
         const ObjectEnums = [OneEnum, TwoEnum];
         const ObjectData = { ...OneData, ...TwoData };
 
-        expect(() => initializeDataStructure(ObjectData, [addKeyModifier], ObjectEnums)).toThrow();
+        expect(() => verifyEnumKeyUniqueness(ObjectEnums)).toThrow();
+        modifyDataStructure(ObjectData, [addKeyModifier]);
         expect(OneData.B["key"]).toBeDefined();
         expect(TwoData.A["key"]).toBeDefined();
         expect(TwoData.C["key"]).toBeDefined();

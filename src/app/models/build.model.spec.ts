@@ -102,6 +102,8 @@ describe('BuildModel', () => {
 
     it("class modifier: given a build with a class that has saving throws of int, dex, and cha, build.savingThrows has those as proficient", () => {
         let build = new Build();
+
+        console.log(WeaponObject.name);
         
         let c = new ClassObject();
         c.savingThrows = [Ability.Intelligence, Ability.Dexterity, Ability.Dexterity],

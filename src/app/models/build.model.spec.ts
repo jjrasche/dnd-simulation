@@ -54,7 +54,7 @@ describe('BuildModel', () => {
         expect(build.darkVision).toEqual(60);
     });
 
-    it("default background modifier: given a build with a background that give proficiency in stealth and animal handling, build.skill.stealth = true and build.skill.AnimalHandling = true", () => {
+    it("default background modifier: given a build with a background that gives proficiency in stealth and animal handling, build.skill.stealth = true and build.skill.AnimalHandling = true", () => {
         let build = new Build();
 
         let background = new BackgroundObject();

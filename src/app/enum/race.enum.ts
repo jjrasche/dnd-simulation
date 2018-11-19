@@ -5,7 +5,7 @@ import { Build } from "../models/build.model";
 import { EquipmentObject } from "./equipment/equipment.model";
 import { Skill, SkillObject } from "./skill.enum";
 import { TraitObject, Trait } from "./trait.enum";
-import { settings, BuildAffectingObject } from "../models/common";
+import { settings, BuildAffectingObject, applyToBuild, applyToBuildFromObject } from "../models/common";
 import { Equipment } from "./equipment/equipment";
 import { SubRaceObject, SubRace } from "./subRace.enum";
 
@@ -39,14 +39,8 @@ export class RaceObject implements BuildAffectingObject {
 
     // default effect without any alteration
     effect(b: Build): void {
-        // apply racial effect to ability modifiers
-        if (b.ability != null && this.abilityModifier != null) {
-            Object.keys(Ability).forEach(key => b.ability[key] += this.abilityModifier[key]);
-        }
-        // apply traits
+        applyToBuildFromObject(() => this.abilityModifier, (k, a) => b.ability[k] += a[k])
         this.traits.forEach(trait => trait.effect(b));
-
-        // apply speed
     };
 }
 

@@ -1,6 +1,6 @@
 import { Build } from "../models/build.model";
 import { SkillObject, Skill } from "./skill.enum";
-import { settings, BuildAffectingObject } from "../models/common";
+import { settings, BuildAffectingObject, applyToBuild } from "../models/common";
 import { BaseObject } from "./base-object.model";
 
 export enum BackgroundEnum {
@@ -25,12 +25,7 @@ export class BackgroundObject implements BaseObject, BuildAffectingObject {
 
     // default effect without any alteration
     effect(b: Build): void {
-        // apply proficiency bonus
-        let origVale = b.skill;
-        this.skill.inherent.forEach(skill => {
-            // b.skill[skill.enum] = true;
-        });
-        // console.log(`value was '${JSON.stringify(origVale)}' now '${JSON.stringify(b.skill)}'`);
+        applyToBuild(() => this.skill.inherent, k => b.skill[k] = true);
     };
 }
 

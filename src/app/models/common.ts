@@ -4,7 +4,7 @@
 
 import { Build } from "./build.model";
 import { Die } from "../enum/die.enum";
-import { BaseObject } from "../enum/base-object";
+import { BaseObject } from "../enum/base-object.model";
 
 export interface settings<T> {
     // have all these settings
@@ -32,11 +32,6 @@ export interface groupedChoiceSettings<T> {
     groups: Array<T[]>;
     // can choose num groups from these options
     num: number;
-}
-
-
-export abstract class EnumBased {
-    enum?: string
 }
 
 /**
@@ -99,10 +94,51 @@ export const getDuplicatedEnumKeys = (enums: Object[]): Array<Object> => {
 }
 export const enumsDuplicated = (enums: Object[]): boolean => getDuplicatedEnumKeys(enums).length > 0;
 
-export const applyToBuild = (objArray: BaseObject[], modifier: (key: string) => void) => {
+/**
+ * Take some BaseObject data representing an aspect of a build e.g. Class.savingThrows, background.skills
+ * iterate over that data and add it's modification effect to the build. getBaseObjectArray is a method
+ * rather than simply a BaseObject[] to avoid null checks, if application fails due to a null ObjectArray
+ * this is an acceptable setting of the data.
+ * 
+ * @example
+ * applyToBuild(() => this.skill.inherent, k => b.skill[k] = true);
+ * 
+ * @param getBaseObjectArray method retrieving objects to modify build.
+ * @param modifier method making modicication to the build based on each element of the BaseObject[].
+ */
+export const applyToBuild = (getBaseObjectArray: () => BaseObject[], modifier: (key: string, objArray?: BaseObject[]) => void) => {
+    let objArray: Array<BaseObject>;
+    try {
+        objArray = getBaseObjectArray();
+    } catch (e) {}
+
     if (objArray) {
         objArray.map(obj => obj.key).forEach((key: string) => {
-            modifier(key);
+            modifier(key, objArray);
         });
     }
 };
+
+/**
+ * Take some plain Object data representing an aspect of a build e.g. Race.abilityModifier
+ * iterate over that data and add it's modification effect to the build.
+ * 
+ * @example
+ *  applyToBuildFromObject(() => this.abilityModifier, (k, a) => b.ability[k] += a[k])
+ * 
+ * @param getBaseObjectArray method retrieving objects to modify build.
+ * @param modifier method making modicication to the build based on each element of the BaseObject[].
+ */
+export const applyToBuildFromObject = (getBaseObjectArray: () => Object, modifier: (key: string, objArray?: Object) => void) => {
+    let obj: Object;
+    try {
+        obj = getBaseObjectArray();
+    } catch (e) { }
+
+    if (obj) {
+        Object.keys(obj).forEach((key: string) => {
+            modifier(key, obj);
+        });
+    }
+};
+

@@ -36,15 +36,8 @@ export class ClassObject implements BuildAffectingObject {
 
     // default effect without any alteration
     effect(b: Build): void {
-        // apply inherent skills
-        if (this.skill) {
-         //   applyToBuild(b, this.skill.inherent, (b, k) => b.skill[k] = true)
-         //   this.skill.inherent.map(obj => obj.key).forEach((skill: string) => {
-         //      b.skill[skill] = true;
-         //   });
-        }
-        // apply saving throws
-         applyToBuild(this.savingThrows, k => b.savingThrow[k] = true );
+      applyToBuild(() => this.skill.inherent, k => b.skill[k] = true);
+      applyToBuild(() => this.savingThrows, k => b.savingThrow[k] = true );
     };
 };
 

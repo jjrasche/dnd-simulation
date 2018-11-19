@@ -1,6 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Die } from '../enum/die.enum';
-import { checkReturnNotWithinLimit, checkNullInputs, checkDivideByZero } from '../models/common';
+import { InputCheckService } from './input-check.service';
 
 /**
  * Statistical helper service returning averages and probabilities
@@ -10,7 +9,9 @@ import { checkReturnNotWithinLimit, checkNullInputs, checkDivideByZero } from '.
 })
 export class StatisticsService {
 
-  constructor() { }
+  constructor(
+    private inputService: InputCheckService,
+  ) { }
 
   /**
    * @param numDesiredOutcomes 
@@ -19,11 +20,11 @@ export class StatisticsService {
    *  desired outocme will happen out of total outcomes.
    */
   public probability(numDesiredOutcomes: number, numTotalOutcomes: number): number {
-    checkNullInputs("probability", numDesiredOutcomes, numTotalOutcomes);
-    checkDivideByZero("probability", "numTotalOutcomes", numTotalOutcomes);
+    this.inputService.checkNullInputs("probability", numDesiredOutcomes, numTotalOutcomes);
+    this.inputService.checkDivideByZero("probability", "numTotalOutcomes", numTotalOutcomes);
 
     const probability = numDesiredOutcomes / numTotalOutcomes;
-    return checkReturnNotWithinLimit("probability", 0, 1, probability);
+    return this.inputService.checkReturnNotWithinLimit("probability", 0, 1, probability);
   }
 
   /**
@@ -31,7 +32,7 @@ export class StatisticsService {
    * @returns a number representing the average numerical outcome or rolling a die.
    */
   public average(die: number): number {
-    checkNullInputs("probability", die);
+    this.inputService.checkNullInputs("probability", die);
 
     const numSides: number = die;
     const summationOfSides: number = numSides * (numSides + 1) / 2;

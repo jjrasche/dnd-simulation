@@ -9,7 +9,7 @@ import { LanguageObject } from "../enum/language.enum";
 import { BackgroundObject } from "../enum/background.enum";
 import { EquipmentObject } from "../enum/equipment/equipment.enum";
 import { ActionTypeEnum } from "../enum/action-type.enum";
-import { BuildAffectingObject, initializeDataStructure } from "./common";
+import { BuildAffectingObject } from "./common";
 import { ConditionObject } from "../enum/condition.enum";
 import { initializeObjects } from "../enum/base-object";
 

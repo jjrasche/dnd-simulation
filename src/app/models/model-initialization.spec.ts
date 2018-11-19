@@ -1,22 +1,3 @@
-
-import { Build } from './build.model';
-import { GetBasicBarbarianBuild } from './build.model.spec.data';
-import { Class, ClassObject } from '../enum/class.enum';
-import { Race, RaceObject } from '../enum/race.enum';
-import { Spell, SpellObject } from '../enum/spell.enum';
-import { Level, LevelObject } from '../enum/level.enum';
-import { Condition, ConditionObject } from '../enum/condition.enum';
-import { Tool, ToolByCategory } from '../enum/equipment/tools.enum';
-import { TraitObject } from '../enum/trait.enum';
-import { BackgroundObject, Background } from '../enum/background.enum';
-import { Skill } from '../enum/skill.enum';
-import { Ability } from '../enum/ability.enum';
-import { WeaponObject, SimpleMeleeWeapons, Weapon, SimpleRangeWeapons, MartialeMeleeWeapons, MartialRangeWeapons } from '../enum/equipment/weapon.enum';
-import { WeaponPropertyObject } from '../enum/equipment/weaponProperty.enum';
-import { LightArmor, ArmorObject, ArmorCategory } from '../enum/equipment/armor.enum';
-import { GearCategories, AllGear, GearCategory, GearObject, GearByCategory, GearEnum } from '../enum/equipment/gear.enum';
-import { Equipment } from '../enum/equipment/equipment';
-import { BaseObject, initializeObjects } from '../enum/base-object';
 import { enumKeysCount, enumsDuplicated, addKeyModifier, modifyDataStructure, verifyEnumKeyUniqueness,  } from './common';
 
 describe('BuildModel', () => {

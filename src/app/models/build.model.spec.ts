@@ -130,12 +130,13 @@ describe('BuildModel', () => {
 
         let race = new RaceObject();
         let trait = new TraitObject();
-        trait.effect = (b: Build): void => { b.darkVision = 120 };
+        // TOOD: thought about adding number prototype extension to do b.darkVision.max(120) --> set this to higher of darkvision or 120
+        trait.effect = (b: Build): void => { b.darkVision = Math.max(b.darkVision, 120) };
         race.traits.push(trait);
         build.race = race;
 
         let spell = new SpellObject();
-        spell.effect = (b: Build): void => { b.darkVision = 60 };
+        spell.effect = (b: Build): void => { b.darkVision = Math.max(b.darkVision, 60) };
         build.spellsInAffect.push(spell);
 
         expect(build.darkVision).toEqual(120);
@@ -146,12 +147,12 @@ describe('BuildModel', () => {
 
         let race = new RaceObject();
         let trait = new TraitObject();
-        trait.effect = (b: Build): void => { b.darkVision = 60 };
+        trait.effect = (b: Build): void => { b.darkVision = Math.max(b.darkVision, 60) };
         race.traits.push(trait);
         build.race = race;
 
         let spell = new SpellObject();
-        spell.effect = (b: Build): void => { b.darkVision = 120 };
+        spell.effect = (b: Build): void => { b.darkVision = Math.max(b.darkVision, 120) };
         build.spellsInAffect.push(spell);
 
         expect(build.darkVision).toEqual(120);

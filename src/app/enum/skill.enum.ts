@@ -1,5 +1,4 @@
 import { AbilityObject, Ability } from "./ability.enum";
-import { EnumBased } from "../models/common";
 import { BaseObject } from "./base-object.model";
 
 export enum SkillEnum {

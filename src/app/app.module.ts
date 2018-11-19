@@ -1,8 +1,6 @@
 import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
 import { DisplayComponent } from './display/display.component';
-import { initializeObject } from './enum/base-object';
-
 
 @NgModule({
   declarations: [
@@ -13,8 +11,4 @@ import { initializeObject } from './enum/base-object';
   providers: [],
   bootstrap: [DisplayComponent]
 })
-export class AppModule { 
-  constructor() {
-    initializeObject();
-  }
-}
+export class AppModule { }

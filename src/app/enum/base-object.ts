@@ -41,7 +41,7 @@ export function initializeObjects() {
     initializeEquipment();
 }
 
-export interface BaseObject {
+export class BaseObject {
     // allows comparisons between objects to easily be made
     key?: string;
     description: string;

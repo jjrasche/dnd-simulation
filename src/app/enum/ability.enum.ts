@@ -1,3 +1,5 @@
+import { BaseObject } from "./base-object";
+
 export enum AbilityEnum {
     Strength = "Strength",
     Dexterity = "Dexterity",
@@ -7,7 +9,7 @@ export enum AbilityEnum {
     Charisma = "Charisma",
 }
 
-export interface AbilityObject {
+export interface AbilityObject extends BaseObject {
     description: string;
 }
 

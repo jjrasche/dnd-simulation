@@ -1,12 +1,13 @@
 import { Skill, SkillObject } from "./skill.enum";
-import { settings, BuildAffectingObject, groupedChoiceSettings, settingsWithGroupedOptions } from "../models/common";
-import { AbilityObject, Ability } from "./ability.enum";
+import { settings, BuildAffectingObject, groupedChoiceSettings, settingsWithGroupedOptions, applyToBuild } from "../models/common";
+import { AbilityObject, Ability, AbilityEnum } from "./ability.enum";
 import { Build } from "../models/build.model";
 import { EquipmentObject } from "./equipment/equipment.enum";
 import { Equipment } from "./equipment/equipment";
 import { Armor, LightArmor, MediumArmor, Shields, AllArmor, ArmorObject } from "./equipment/armor.enum";
 import { SimpleWeapons, MartialWeapons, AllWeapons, WeaponObject } from "./equipment/weapon.enum";
 import { Die } from "./die.enum";
+import { BaseObject } from "./base-object";
 
 // Limits the possible Classes to the ones listed below and allows for type safety.
 export enum ClassEnum {
@@ -35,21 +36,18 @@ export class ClassObject implements BuildAffectingObject {
 
     // default effect without any alteration
     effect(b: Build): void {
-        // apply skills
+        // apply inherent skills
         if (this.skill) {
-            Object.keys(Skill).forEach(key => b.skill[key] = this.skill[key]);
+         //   applyToBuild(b, this.skill.inherent, (b, k) => b.skill[k] = true)
+         //   this.skill.inherent.map(obj => obj.key).forEach((skill: string) => {
+         //      b.skill[skill] = true;
+         //   });
         }
         // apply saving throws
-        if (this.savingThrows) {
-            // have two objects  { [key in AbilityEnum]: boolean } 
-            // an                { [key in AbilityEnum]: AbilityObject }
-            /**
-             * how can I test weather these are base in the same enum ... add the enum to as a key to all
-             */
-            // this.savingThrows.forEach((ability: AbilityObject) => b.savingThrow[ability.] = this.savingThrows[key] ? this.savingThrows[key] : false);
-        }
+         applyToBuild(this.savingThrows, k => b.savingThrow[k] = true );
     };
 };
+
 
 /**
  * Stores object data b/c Enum can't store objects directly.
@@ -111,18 +109,19 @@ export const Class: { [key in ClassEnum]: ClassObject } = {
         // { quantity: 10, ...Equipment.Dart } as WeaponObject
         startingEquipment: { 
             inherent: [Equipment.Shield],
-            selectable: [
-                {   groups: [ 
-                        [{ quantity: 20, ...Equipment.CrossbowBolt }, Equipment.CrossbowHand  ],
-                        SimpleWeapons
-                    ], num: 1 
-                }, 
-                {   groups: [
-                        [{ quantity: 20, ...Equipment.CrossbowBolt }, Equipment.CrossbowHand],
-                        SimpleWeapons
-                    ], num: 1
-                },
-            ]
+            selectable: null
+            // [
+            //     {   groups: [ 
+            //             [{ quantity: 20, ...Equipment.CrossbowBolt }, Equipment.CrossbowHand  ],
+            //             SimpleWeapons
+            //         ], num: 1 
+            //     }, 
+            //     {   groups: [
+            //             [{ quantity: 20, ...Equipment.CrossbowBolt }, Equipment.CrossbowHand],
+            //             SimpleWeapons
+            //         ], num: 1
+            //     },
+            // ]
         },
     },
     Druid: {

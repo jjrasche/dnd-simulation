@@ -3,7 +3,7 @@ import { RaceObject } from "../enum/race.enum";
 import { SpellObject } from "../enum/spell.enum";
 import { SkillEnum, defaultSkill } from "../enum/skill.enum";
 import { LevelObject } from "../enum/level.enum";
-import { AbilityEnum, defaultAbilityScore, defaultSavingThrow } from "../enum/ability.enum";
+import { AbilityEnum, defaultAbilityScore, defaultSavingThrow, AbilityObject } from "../enum/ability.enum";
 import { copyBuild } from "../utils/objectManipulation";
 import { LanguageObject } from "../enum/language.enum";
 import { BackgroundObject } from "../enum/background.enum";

@@ -4,6 +4,7 @@
 
 import { Build } from "./build.model";
 import { Die } from "../enum/die.enum";
+import { BaseObject } from "../enum/base-object";
 
 export interface settings<T> {
     // have all these settings
@@ -97,3 +98,11 @@ export const getDuplicatedEnumKeys = (enums: Object[]): Array<Object> => {
     return Object.keys(enumKeyCounts).filter(key => enumKeyCounts[key] > 1);
 }
 export const enumsDuplicated = (enums: Object[]): boolean => getDuplicatedEnumKeys(enums).length > 0;
+
+export const applyToBuild = (objArray: BaseObject[], modifier: (key: string) => void) => {
+    if (objArray) {
+        objArray.map(obj => obj.key).forEach((key: string) => {
+            modifier(key);
+        });
+    }
+};

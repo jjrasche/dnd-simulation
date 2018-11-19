@@ -106,7 +106,7 @@ describe('BuildModel', () => {
         console.log(WeaponObject.name);
         
         let c = new ClassObject();
-        c.savingThrows = [Ability.Intelligence, Ability.Dexterity, Ability.Dexterity],
+        c.savingThrows = [Ability.Intelligence, Ability.Dexterity, Ability.Charisma],
         build.class = c;
 
         let expected = { Strength: false, Dexterity: true, Constitution: false, Intelligence: true, Wisdom: false, Charisma: true };

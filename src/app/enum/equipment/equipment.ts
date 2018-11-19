@@ -35,10 +35,3 @@ const addEquipmentCategory: ObjectModifier = (obj: Object, key: string): void =>
     }
     throw Error(`object ${JSON.stringify(obj)} is not of any of the types '${EquipmentClasses}'`);
 };
-
-export interface BaseObject {
-    // allows comparisons between objects to easily be made
-    key?: string;
-    description: string;
-    // type: ObjectType;
-}

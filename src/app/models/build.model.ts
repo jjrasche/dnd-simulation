@@ -9,7 +9,7 @@ import { LanguageObject } from "../enum/language.enum";
 import { BackgroundObject } from "../enum/background.enum";
 import { EquipmentObject } from "../enum/equipment/equipment.model";
 import { ActionTypeEnum } from "../enum/action-type.enum";
-import { BuildAffectingObject } from "./common";
+import { BuildAffectingObject, BuildAffectingObject2, BuildEffect } from "./common";
 import { ConditionObject } from "../enum/condition.enum";
 import { initializeObjects } from "../enum/base-object";
 
@@ -27,13 +27,13 @@ var handler = {
         // order of applying effects: race, class, background, level, conditions, spells, equipment
 
 
-        let buildCopy = copyBuild(build);
+        let buildCopy: Build = copyBuild(build);
         buildCopy.takeBase = true;
         // run all modifiers
         buildCopy.apply(buildCopy.race);
         buildCopy.apply(buildCopy.class);
         buildCopy.apply(buildCopy.background);
-        buildCopy.apply(buildCopy.level);
+        buildCopy.addModification(buildCopy.level);
         buildCopy.applyAll(buildCopy.spellsInAffect);
         buildCopy.applyAll(buildCopy.conditions);
         // console.log(`2 getting property '${prop}' from build '${build.takeBase}'. value was '${JSON.stringify(origValue)}' now '${JSON.stringify(build[prop])}'`);
@@ -159,32 +159,34 @@ export class Build {
        * 
        */
 
-    private apply(obj: BuildAffectingObject): void {
-        if (obj) {
-            if (obj.effect) {
-                obj.effect(this);
-            } else {
-                // console.log(`background '${this.background.toString()}' has no effect property`);
-            }
-        } else {
-            // console.log(`this build has no background property`);
+    public apply(obj: BuildAffectingObject): void {
+        if (obj && obj.effect) {
+            obj.effect(this);
         }
     }
 
-    private applyAll(objects: Array<BuildAffectingObject>): void {
+    public applyAll(objects: Array<BuildAffectingObject>): void {
         if (objects != null) {
-            objects.forEach((obj: BuildAffectingObject) => {
-                if (obj.effect) {
-                    obj.effect(this);
-                } else {
-                    // console.log(`background '${this.background.toString()}' has no effect property`);
-                }
-            })
-        } else {
-            // console.log(`this build has no background property`);
+            objects.forEach((obj: BuildAffectingObject) => this.apply(obj));
+        }
+    }
+
+    private applyEffect(obj: BuildEffect): void {
+        if (obj && obj.effect) {
+            obj.effect(this);
+        }
+    }
+
+    public addModification(obj: BuildAffectingObject2): void {
+        if (obj && obj.mod) {
+            let mods: BuildEffect[] = obj.mod;
+            mods.forEach((mod: BuildEffect) => {
+                this.applyEffect(mod);
+            });
         }
     }
      
     // used to prevent looping when using getters within effects.
     takeBase: boolean = false;
+    modifications: Array<BuildEffect>;
 }

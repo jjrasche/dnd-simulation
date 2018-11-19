@@ -34,11 +34,36 @@ export interface groupedChoiceSettings<T> {
     num: number;
 }
 
-/**
- * An object that has an effect that can modify some property on the build.
- */
 export interface BuildAffectingObject {
     effect(b: Build): void;
+}
+
+/**
+ * Describes objects that can alter properties on a build.
+ * To better track interactions when applying changes to build properties,
+ * the effects are aggregated then acted upon. This will allow
+ * to control when and how effects are applied with respect to one another.
+ * 
+ * each effect should change only one property on a build 
+ */
+export interface BuildAffectingObject2 {
+    mod: BuildEffect[];
+}
+
+export class BuildEffect {
+    // Name of the mofifying BuildAffectingObject.
+    name: string;
+    // The property on the build that will be modified.
+    property: string;
+    // Possible means to control order of application e.g. ApplyLast.
+    type?: any;
+    effect: (b: Build) => void;
+
+    constructor(name: string, property: string, effect: (b: Build) => void) {
+        this.name = name;
+        this.property = property;
+        this.effect = effect;
+    }
 }
 
 export interface ActionableObject {

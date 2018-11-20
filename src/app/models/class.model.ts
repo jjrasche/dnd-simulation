@@ -1,4 +1,4 @@
-import { BuildAffectingObject, applyToBuild } from "./build.object";
+import { BuildAffectingObject, applyToBuild, BaseBuildAffectingConstructor, BaseBuildAffectingObject, BuildEffect } from "./build.object";
 import { settings, settingsWithGroupedOptions } from "./setting.model";
 import { SkillObject, Skill } from "./skill.model";
 import { AbilityObject, Ability } from "./ability.model";
@@ -10,8 +10,16 @@ import { LightArmor, MediumArmor, Shields, AllArmor } from "./equipment/armor.mo
 import { AllWeapons, WeaponObject, SimpleWeapons } from "./equipment/weapon.model";
 import { Equipment } from "./equipment/equipment.data";
 
-// Enforces form of return object from so you can do `Class.Bard.numSkills`
-export class ClassObject implements BuildAffectingObject {
+interface IClassObject {
+   skill: settings<SkillObject>;
+   savingThrows: AbilityObject[];
+   equipmentProficiency: settings<EquipmentObject>;
+   hitDie: Die;
+   startingEquipment: settingsWithGroupedOptions<EquipmentObject>;
+}
+type ClassConstructor = IClassObject & BaseBuildAffectingConstructor;
+
+export class ClassObject extends BaseBuildAffectingObject {
     skill: settings<SkillObject>;
     savingThrows: AbilityObject[];
     equipmentProficiency: settings<EquipmentObject>;
@@ -19,11 +27,17 @@ export class ClassObject implements BuildAffectingObject {
     // capable of selecting from groups of objects. e.g. cleric can choose between [light crowwbow and 20 arrows] or any simple weapon
     startingEquipment: settingsWithGroupedOptions<EquipmentObject>;
 
-    // default effect without any alteration
-    effect(b: Build): void {
-      applyToBuild(() => this.skill.inherent, k => b.skill[k] = true);
-      applyToBuild(() => this.savingThrows, k => b.savingThrow[k] = true );
-    };
+   constructor(obj: ClassConstructor) {
+      super(obj);
+      this.skill = obj.skill;
+      this.savingThrows = obj.savingThrows;
+      this.equipmentProficiency = obj.equipmentProficiency;
+      this.hitDie = obj.hitDie;
+      this.startingEquipment = obj.startingEquipment;
+
+      this.mod.push(new BuildEffect("class", "skill", (b: Build) => applyToBuild(() => this.skill.inherent, k => b.skill[k] = true)));
+      this.mod.push(new BuildEffect("class", "savingThrow", (b: Build) => applyToBuild(() => this.savingThrows, k => b.savingThrow[k] = true)));
+   }
 };
 
 
@@ -33,226 +47,226 @@ export class ClassObject implements BuildAffectingObject {
  * Class.Bard (good) Class.Fairy (fails)
  */
 export const Class: { [key in ClassEnum]: ClassObject } = {
-    Barbarian: {
-        skill: { inherent: null, selectable: [{ num: 2, options: [Skill.AnimalHandling, Skill.Athletics, Skill.Intimidation, Skill.Nature, Skill.Perception, Skill.Survival] }] },
-        savingThrows: [Ability.Strength, Ability.Constitution],
-        effect: ClassObject.prototype.effect,
-        equipmentProficiency: {
-            inherent: [
-                ...LightArmor,
-                ...MediumArmor,
-                ...Shields,
-                ...AllWeapons,
-            ],
-            selectable: null
-        },
-        hitDie: Die.D12,
-        startingEquipment: { inherent: [ Equipment.ExplorerPack, { quantity: 4, ...Equipment.Javelin } as WeaponObject ], selectable: null },
-    },
-    Bard: {
-        skill: { inherent: null, selectable: [{ num: 3, options: [Skill.Athletics, Skill.Acrobatics, Skill.SleightOfHand, Skill.Stealth, Skill.Arcana, Skill.History, Skill.Investigation, Skill.Nature, Skill.Religion, Skill.AnimalHandling, Skill.Insight, Skill.Medicine, Skill.Perception, Skill.Survival, Skill.Deception, Skill.Intimidation, Skill.Performance, Skill.Persuasion] }] },
-        savingThrows: [Ability.Dexterity, Ability.Charisma],
-        effect: ClassObject.prototype.effect,
-        equipmentProficiency: {
-            inherent: [
-                ...LightArmor,
-                ...SimpleWeapons,
-                Equipment.Longsword,
-                Equipment.Rapier,
-                Equipment.Shortsword,
-                Equipment.CrossbowHand,
-            ],
-            selectable: null
-        },
-        hitDie: Die.D8,
-        // get leather armor and dagger, can choose 
-        startingEquipment: { inherent: [ Equipment.Leather, Equipment.Dagger ], selectable: null },
-    },
-    Cleric: {
-        skill: { inherent: null, selectable: [{ num: 2, options: [Skill.History, Skill.Insight, Skill.Medicine, Skill.Persuasion, Skill.Religion] }] },
-        savingThrows: [Ability.Wisdom, Ability.Charisma],
-        effect: ClassObject.prototype.effect,
-        equipmentProficiency: {
-            inherent: [
-                ...LightArmor,
-                ...MediumArmor,
-                ...Shields,
-                ...SimpleWeapons,
-            ],
-            selectable: null
-        },
-        hitDie: Die.D8,
-        // get shield and can choose from crossbow and bolts or any simple weapon
-        // selectable: [{num:1, options:[ [Equipment.CrossBow, {quantity:20, }], SimpleWeapons]}]
-        // { quantity: 10, ...Equipment.Dart } as WeaponObject
-        startingEquipment: { 
-            inherent: [Equipment.Shield],
-            selectable: null
-            // [
-            //     {   groups: [ 
-            //             [{ quantity: 20, ...Equipment.CrossbowBolt }, Equipment.CrossbowHand  ],
-            //             SimpleWeapons
-            //         ], num: 1 
-            //     }, 
-            //     {   groups: [
-            //             [{ quantity: 20, ...Equipment.CrossbowBolt }, Equipment.CrossbowHand],
-            //             SimpleWeapons
-            //         ], num: 1
-            //     },
-            // ]
-        },
-    },
-    Druid: {
-        skill: { inherent: null, selectable: [{ num: 2, options: [Skill.Acrobatics, Skill.AnimalHandling, Skill.Athletics, Skill.History, Skill.Insight, Skill.Intimidation, Skill.Perception, Skill.Survival] }] },
-        savingThrows: [Ability.Intelligence, Ability.Wisdom],
-        effect: ClassObject.prototype.effect,
-        equipmentProficiency: {
-            inherent: [
-                ...LightArmor,
-                ...MediumArmor,
-                ...Shields,
-                Equipment.Club,
-                Equipment.Dagger,
-                Equipment.Javelin,
-                Equipment.Mace,
-                Equipment.Quarterstaff,
-                Equipment.Sickle,
-                Equipment.Spear,
-                Equipment.Dart,
-                Equipment.Sling,
-                Equipment.Scimitar,
-                Equipment.HerbalismKit,
-            ],
-            selectable: null
-        },
-        hitDie: Die.D8,
-        startingEquipment: { inherent: [ Equipment.Leather, Equipment.ExplorerPack ], selectable: null },
-    },
-    Fighter: {
-        skill: { inherent: null, selectable: [{ num: 2, options: [Skill.Acrobatics, Skill.Athletics, Skill.History, Skill.Insight, Skill.Religion, Skill.Stealth] }] },
-        savingThrows: [Ability.Strength, Ability.Constitution],
-        effect: ClassObject.prototype.effect,
-        equipmentProficiency: {
-            inherent: [
-                ...AllArmor,
-                ...AllWeapons,
-                ...Shields,
-            ],
-            selectable: null
-        },
-        hitDie: Die.D10,
-        startingEquipment: { inherent: null, selectable: null },
-    },
-    Monk: {
-        skill: { inherent: null, selectable: [{ num: 2, options: [Skill.Acrobatics, Skill.Athletics, Skill.History, Skill.Insight, Skill.Religion, Skill.Stealth] }] },
-        savingThrows: [Ability.Strength, Ability.Dexterity],
-        effect: ClassObject.prototype.effect,
-        equipmentProficiency: {
-            inherent: [
-                ...SimpleWeapons,
-                Equipment.Shortsword,
-            ],
-            selectable: null
-        },
-        hitDie: Die.D8,
-        startingEquipment: { inherent: [ { quantity: 10, ...Equipment.Dart } as WeaponObject ], selectable: null },
-    },
-    Paladin: {
-        skill: { inherent: null, selectable: [{ num: 2, options: [Skill.Athletics, Skill.Insight, Skill.Intimidation, Skill.Medicine, Skill.Persuasion, Skill.Religion] }] },
-        savingThrows: [Ability.Wisdom, Ability.Charisma],
-        effect: ClassObject.prototype.effect,
-        equipmentProficiency: {
-            inherent: [
-                ...AllArmor,
-                ...AllWeapons,
-                ...Shields,
-            ],
-            selectable: null
-        },
-        hitDie: Die.D10,
-        startingEquipment: { inherent: [ Equipment.ChainMail ], selectable: null },
-    },
-    Ranger: {
-        skill: { inherent: null, selectable: [{ num: 3, options: [Skill.AnimalHandling, Skill.Athletics, Skill.Insight, Skill.Investigation, Skill.Nature, Skill.Perception, Skill.Stealth, Skill.Survival] }] },
-        savingThrows: [Ability.Strength, Ability.Dexterity],
-        effect: ClassObject.prototype.effect,
-        equipmentProficiency: {
-            inherent: [
-                ...LightArmor,
-                ...MediumArmor,
-                ...AllWeapons,
-                ...Shields,
-            ],
-            selectable: null
-        },
-        hitDie: Die.D10,
-        startingEquipment: { inherent: [ Equipment.Longbow, { quantity: 20, ...Equipment.Arrow } as WeaponObject ], selectable: null },
-    },
-    Rogue: {
-        skill: { inherent: null, selectable: [{ num: 4, options: [Skill.Acrobatics, Skill.Athletics, Skill.Deception, Skill.Insight, Skill.Intimidation, Skill.Investigation, Skill.Perception, Skill.Performance, Skill.Persuasion, Skill.SleightOfHand, Skill.Stealth] }] },
-        savingThrows: [Ability.Dexterity, Ability.Intelligence],
-        effect: ClassObject.prototype.effect,
-        equipmentProficiency: {
-            inherent: [
-                ...LightArmor,
-                ...SimpleWeapons,
-                Equipment.Longsword,
-                Equipment.Rapier,
-                Equipment.Shortsword,
-                Equipment.CrossbowHand,
-                Equipment.ThievesTools,
-            ],
-            selectable: null
-        },
-        hitDie: Die.D8,
-        startingEquipment: { inherent: [Equipment.Leather, { quantity: 2, ...Equipment.Dagger } as WeaponObject, Equipment.ThievesTools ], selectable: null },
-    },
-    Sorcerer: {
-        skill: { inherent: null, selectable: [{ num: 2, options: [Skill.Arcana, Skill.Deception, Skill.Insight, Skill.Intimidation, Skill.Persuasion, Skill.Religion] }] },
-        savingThrows: [Ability.Constitution, Ability.Charisma],
-        effect: ClassObject.prototype.effect,
-        equipmentProficiency: {
-            inherent: [
-                Equipment.Dagger,
-                Equipment.Quarterstaff,
-                Equipment.Dart,
-                Equipment.Sling,
-            ],
-            selectable: null
-        },
-        hitDie: Die.D6,
-        startingEquipment: { inherent: [ { quantity: 2, ...Equipment.Dagger } as WeaponObject ], selectable: null },
-    },
-    Warlock: {
-        skill: { inherent: null, selectable: [{ num: 2, options: [Skill.Arcana, Skill.Deception, Skill.History, Skill.Intimidation, Skill.Investigation, Skill.Nature, Skill.Religion] }] },
-        savingThrows: [Ability.Wisdom, Ability.Charisma],
-        effect: ClassObject.prototype.effect,
-        equipmentProficiency: {
-            inherent: [
-                ...LightArmor,
-                ...SimpleWeapons,
-            ],
-            selectable: null
-        },
-        hitDie: Die.D8,
-        startingEquipment: { inherent: [{ quantity: 2, ...Equipment.Dagger } as WeaponObject, Equipment.Leather ], selectable: null },
-    },
-    Wizard: {
-        skill: { inherent: null, selectable: [{ num: 2, options: [Skill.Arcana, Skill.History, Skill.Insight, Skill.Investigation, Skill.Medicine, Skill.Religion] }] },
-        savingThrows: [Ability.Intelligence, Ability.Wisdom],
-        effect: ClassObject.prototype.effect,
-        equipmentProficiency: {
-            inherent: [
-                Equipment.Dagger,
-                Equipment.Quarterstaff,
-                Equipment.Dart,
-                Equipment.Sling,
-            ],
-            selectable: null
-        },
-        hitDie: Die.D6,
-        startingEquipment: { inherent: [ Equipment.Spellbook ], selectable: null },
-    },
+    Barbarian: new ClassObject({
+      description: "",
+      skill: { inherent: null, selectable: [{ num: 2, options: [Skill.AnimalHandling, Skill.Athletics, Skill.Intimidation, Skill.Nature, Skill.Perception, Skill.Survival] }] },
+      savingThrows: [Ability.Strength, Ability.Constitution],
+      equipmentProficiency: {
+         inherent: [
+               ...LightArmor,
+               ...MediumArmor,
+               ...Shields,
+               ...AllWeapons,
+         ],
+         selectable: null
+      },
+      hitDie: Die.D12,
+      startingEquipment: { inherent: [ Equipment.ExplorerPack, { quantity: 4, ...Equipment.Javelin } as WeaponObject ], selectable: null },
+    }),
+    Bard: new ClassObject({
+      description: "",
+      skill: { inherent: null, selectable: [{ num: 3, options: [Skill.Athletics, Skill.Acrobatics, Skill.SleightOfHand, Skill.Stealth, Skill.Arcana, Skill.History, Skill.Investigation, Skill.Nature, Skill.Religion, Skill.AnimalHandling, Skill.Insight, Skill.Medicine, Skill.Perception, Skill.Survival, Skill.Deception, Skill.Intimidation, Skill.Performance, Skill.Persuasion] }] },
+      savingThrows: [Ability.Dexterity, Ability.Charisma],
+      equipmentProficiency: {
+         inherent: [
+               ...LightArmor,
+               ...SimpleWeapons,
+               Equipment.Longsword,
+               Equipment.Rapier,
+               Equipment.Shortsword,
+               Equipment.CrossbowHand,
+         ],
+         selectable: null
+      },
+      hitDie: Die.D8,
+      // get leather armor and dagger, can choose 
+      startingEquipment: { inherent: [ Equipment.Leather, Equipment.Dagger ], selectable: null },
+    }),
+    Cleric: new ClassObject({
+      description: "",
+      skill: { inherent: null, selectable: [{ num: 2, options: [Skill.History, Skill.Insight, Skill.Medicine, Skill.Persuasion, Skill.Religion] }] },
+      savingThrows: [Ability.Wisdom, Ability.Charisma],
+      equipmentProficiency: {
+         inherent: [
+               ...LightArmor,
+               ...MediumArmor,
+               ...Shields,
+               ...SimpleWeapons,
+         ],
+         selectable: null
+      },
+      hitDie: Die.D8,
+      // get shield and can choose from crossbow and bolts or any simple weapon
+      // selectable: [{num:1, options:[ [Equipment.CrossBow, {quantity:20, }], SimpleWeapons]}]
+      // { quantity: 10, ...Equipment.Dart } as WeaponObject
+      startingEquipment: { 
+         inherent: [Equipment.Shield],
+         selectable: null
+         // [
+         //     {   groups: [ 
+         //             [{ quantity: 20, ...Equipment.CrossbowBolt }, Equipment.CrossbowHand  ],
+         //             SimpleWeapons
+         //         ], num: 1 
+         //     }, 
+         //     {   groups: [
+         //             [{ quantity: 20, ...Equipment.CrossbowBolt }, Equipment.CrossbowHand],
+         //             SimpleWeapons
+         //         ], num: 1
+         //     },
+         // ]
+      },
+    }),
+    Druid: new ClassObject({
+      description: "",
+      skill: { inherent: null, selectable: [{ num: 2, options: [Skill.Acrobatics, Skill.AnimalHandling, Skill.Athletics, Skill.History, Skill.Insight, Skill.Intimidation, Skill.Perception, Skill.Survival] }] },
+      savingThrows: [Ability.Intelligence, Ability.Wisdom],
+      equipmentProficiency: {
+         inherent: [
+               ...LightArmor,
+               ...MediumArmor,
+               ...Shields,
+               Equipment.Club,
+               Equipment.Dagger,
+               Equipment.Javelin,
+               Equipment.Mace,
+               Equipment.Quarterstaff,
+               Equipment.Sickle,
+               Equipment.Spear,
+               Equipment.Dart,
+               Equipment.Sling,
+               Equipment.Scimitar,
+               Equipment.HerbalismKit,
+         ],
+         selectable: null
+      },
+      hitDie: Die.D8,
+      startingEquipment: { inherent: [ Equipment.Leather, Equipment.ExplorerPack ], selectable: null },
+    }),
+    Fighter: new ClassObject({
+      description: "",
+      skill: { inherent: null, selectable: [{ num: 2, options: [Skill.Acrobatics, Skill.Athletics, Skill.History, Skill.Insight, Skill.Religion, Skill.Stealth] }] },
+      savingThrows: [Ability.Strength, Ability.Constitution],
+      equipmentProficiency: {
+         inherent: [
+               ...AllArmor,
+               ...AllWeapons,
+               ...Shields,
+         ],
+         selectable: null
+      },
+      hitDie: Die.D10,
+      startingEquipment: { inherent: null, selectable: null },
+    }),
+    Monk: new ClassObject({
+      description: "",
+      skill: { inherent: null, selectable: [{ num: 2, options: [Skill.Acrobatics, Skill.Athletics, Skill.History, Skill.Insight, Skill.Religion, Skill.Stealth] }] },
+      savingThrows: [Ability.Strength, Ability.Dexterity],
+      equipmentProficiency: {
+         inherent: [
+               ...SimpleWeapons,
+               Equipment.Shortsword,
+         ],
+         selectable: null
+      },
+      hitDie: Die.D8,
+      startingEquipment: { inherent: [ { quantity: 10, ...Equipment.Dart } as WeaponObject ], selectable: null },
+    }),
+    Paladin: new ClassObject({
+      description: "",
+      skill: { inherent: null, selectable: [{ num: 2, options: [Skill.Athletics, Skill.Insight, Skill.Intimidation, Skill.Medicine, Skill.Persuasion, Skill.Religion] }] },
+      savingThrows: [Ability.Wisdom, Ability.Charisma],
+      equipmentProficiency: {
+         inherent: [
+               ...AllArmor,
+               ...AllWeapons,
+               ...Shields,
+         ],
+         selectable: null
+      },
+      hitDie: Die.D10,
+      startingEquipment: { inherent: [ Equipment.ChainMail ], selectable: null },
+    }),
+    Ranger: new ClassObject({
+      description: "",
+      skill: { inherent: null, selectable: [{ num: 3, options: [Skill.AnimalHandling, Skill.Athletics, Skill.Insight, Skill.Investigation, Skill.Nature, Skill.Perception, Skill.Stealth, Skill.Survival] }] },
+      savingThrows: [Ability.Strength, Ability.Dexterity],
+      equipmentProficiency: {
+         inherent: [
+               ...LightArmor,
+               ...MediumArmor,
+               ...AllWeapons,
+               ...Shields,
+         ],
+         selectable: null
+      },
+      hitDie: Die.D10,
+      startingEquipment: { inherent: [ Equipment.Longbow, { quantity: 20, ...Equipment.Arrow } as WeaponObject ], selectable: null },
+    }),
+    Rogue: new ClassObject({
+      description: "",
+      skill: { inherent: null, selectable: [{ num: 4, options: [Skill.Acrobatics, Skill.Athletics, Skill.Deception, Skill.Insight, Skill.Intimidation, Skill.Investigation, Skill.Perception, Skill.Performance, Skill.Persuasion, Skill.SleightOfHand, Skill.Stealth] }] },
+      savingThrows: [Ability.Dexterity, Ability.Intelligence],
+      equipmentProficiency: {
+         inherent: [
+               ...LightArmor,
+               ...SimpleWeapons,
+               Equipment.Longsword,
+               Equipment.Rapier,
+               Equipment.Shortsword,
+               Equipment.CrossbowHand,
+               Equipment.ThievesTools,
+         ],
+         selectable: null
+      },
+      hitDie: Die.D8,
+      startingEquipment: { inherent: [Equipment.Leather, { quantity: 2, ...Equipment.Dagger } as WeaponObject, Equipment.ThievesTools ], selectable: null },
+    }),
+    Sorcerer: new ClassObject({
+      description: "",
+      skill: { inherent: null, selectable: [{ num: 2, options: [Skill.Arcana, Skill.Deception, Skill.Insight, Skill.Intimidation, Skill.Persuasion, Skill.Religion] }] },
+      savingThrows: [Ability.Constitution, Ability.Charisma],
+      equipmentProficiency: {
+         inherent: [
+               Equipment.Dagger,
+               Equipment.Quarterstaff,
+               Equipment.Dart,
+               Equipment.Sling,
+         ],
+         selectable: null
+      },
+      hitDie: Die.D6,
+      startingEquipment: { inherent: [ { quantity: 2, ...Equipment.Dagger } as WeaponObject ], selectable: null },
+    }),
+    Warlock: new ClassObject({
+      description: "",
+      skill: { inherent: null, selectable: [{ num: 2, options: [Skill.Arcana, Skill.Deception, Skill.History, Skill.Intimidation, Skill.Investigation, Skill.Nature, Skill.Religion] }] },
+      savingThrows: [Ability.Wisdom, Ability.Charisma],
+      equipmentProficiency: {
+         inherent: [
+               ...LightArmor,
+               ...SimpleWeapons,
+         ],
+         selectable: null
+      },
+      hitDie: Die.D8,
+      startingEquipment: { inherent: [{ quantity: 2, ...Equipment.Dagger } as WeaponObject, Equipment.Leather ], selectable: null },
+    }),
+    Wizard: new ClassObject({
+      description: "",
+      skill: { inherent: null, selectable: [{ num: 2, options: [Skill.Arcana, Skill.History, Skill.Insight, Skill.Investigation, Skill.Medicine, Skill.Religion] }] },
+      savingThrows: [Ability.Intelligence, Ability.Wisdom],
+      equipmentProficiency: {
+         inherent: [
+               Equipment.Dagger,
+               Equipment.Quarterstaff,
+               Equipment.Dart,
+               Equipment.Sling,
+         ],
+         selectable: null
+      },
+      hitDie: Die.D6,
+      startingEquipment: { inherent: [ Equipment.Spellbook ], selectable: null },
+    }),
 };
 
 /**

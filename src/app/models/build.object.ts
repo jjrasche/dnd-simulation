@@ -1,10 +1,6 @@
 import { Build } from "./build.model";
 import { BaseObject, IBaseObject } from "./base.object";
 
-export interface BuildAffectingObject {
-    effect(b: Build): void;
-}
-
 /**
  * Describes objects that can alter properties on a build.
  * To better track interactions when applying changes to build properties,
@@ -13,7 +9,7 @@ export interface BuildAffectingObject {
  * 
  * each effect should change only one property on a build 
  */
-export interface BuildAffectingObject2 {
+export interface BuildAffectingObject {
     mod?: BuildEffect[];
 }
 
@@ -21,14 +17,14 @@ export interface ActionableObject {
     can: (b: Build) => boolean;
 }
 
-export type BaseBuildAffectingConstructor = IBaseObject & BuildAffectingObject2;
+export type BaseBuildAffectingConstructor = IBaseObject & BuildAffectingObject;
 
 /**
  * Object inherited by any system object that can make modifications to a build.
  * 
  * @param mod is a list of buildEffect that will be applied to the build.
  */
-export abstract class BaseBuildAffectingObject extends BaseObject implements BuildAffectingObject2 {
+export abstract class BaseBuildAffectingObject extends BaseObject implements BuildAffectingObject {
     mod: BuildEffect[];
 
     constructor(obj: BaseBuildAffectingConstructor) {

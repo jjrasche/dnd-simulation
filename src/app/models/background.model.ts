@@ -1,84 +1,76 @@
 import { Build } from "./build.model";
 import { SkillObject, Skill } from "./skill.model";
-import { BaseObject } from "./base.object";
-import { BuildAffectingObject, applyToBuild } from "./build.object";
+import { applyToBuild, BaseBuildAffectingObject, BaseBuildAffectingConstructor, BuildEffect } from "./build.object";
 import { settings } from "./setting.model";
 import { BackgroundEnum } from "../enum/background.enum";
 
-export class BackgroundObject implements BaseObject, BuildAffectingObject {
-    description: string;
+interface IBackgroundObject {
+    skill: settings<SkillObject>;
+}
+type BackgroundConstructor = IBackgroundObject & BaseBuildAffectingConstructor;
+
+export class BackgroundObject extends BaseBuildAffectingObject {
     skill: settings<SkillObject>;
 
-    // default effect without any alteration
-    effect(b: Build): void {
-        applyToBuild(() => this.skill.inherent, k => b.skill[k] = true);
-    };
+    constructor(obj: BackgroundConstructor) {
+        super(obj);
+        this.skill = obj.skill;
+
+        this.mod.push(new BuildEffect("background", "skills", (b: Build) => applyToBuild(() => this.skill.inherent, k => b.skill[k] = true)));
+    }
 }
 
 export const Background: { [key in BackgroundEnum]: BackgroundObject } = {
-    Acolyte: {
+    Acolyte: new BackgroundObject({
         description: "",
         skill: { inherent: [Skill.Insight, Skill.Religion], selectable: null },
-        effect: BackgroundObject.prototype.effect,
-    },
-    Charlatan: {
+    }),
+    Charlatan: new BackgroundObject({
         description: "",
         skill: { inherent: [Skill.Deception, Skill.SleightOfHand], selectable: null },
-        effect: BackgroundObject.prototype.effect,
-    },
-    Criminal: {
+    }),
+    Criminal: new BackgroundObject({
         description: "",
         skill: { inherent: [Skill.Deception, Skill.Stealth], selectable: null },
-        effect: BackgroundObject.prototype.effect,
-    },
-    Entertainer: {
+    }),
+    Entertainer: new BackgroundObject({
         description: "",
         skill: { inherent: [Skill.Acrobatics, Skill.Performance], selectable: null },
-        effect: BackgroundObject.prototype.effect,
-    },
-    Folk: {
+    }),
+    Folk: new BackgroundObject({
         description: "",
         skill: { inherent: [Skill.AnimalHandling, Skill.Survival], selectable: null },
-        effect: BackgroundObject.prototype.effect,
-    },
-    Guild: {
+    }),
+    Guild: new BackgroundObject({
         description: "",
         skill: { inherent: [Skill.Insight, Skill.Persuasion], selectable: null },
-        effect: BackgroundObject.prototype.effect,
-    },
-    Hermit: {
+    }),
+    Hermit: new BackgroundObject({
         description: "",
         skill: { inherent: [Skill.Medicine, Skill.Religion], selectable: null },
-        effect: BackgroundObject.prototype.effect,
-    },
-    Noble: {
+    }),
+    Noble: new BackgroundObject({
         description: "",
         skill: { inherent: [Skill.History, Skill.Persuasion], selectable: null },
-        effect: BackgroundObject.prototype.effect,
-    },
-    Outlander: {
+    }),
+    Outlander: new BackgroundObject({
         description: "",
         skill: { inherent: [Skill.Athletics, Skill.Survival], selectable: null },
-        effect: BackgroundObject.prototype.effect,
-    },
-    Sage: {
+    }),
+    Sage: new BackgroundObject({
         description: "",
         skill: { inherent: [Skill.Arcana, Skill.History], selectable: null },
-        effect: BackgroundObject.prototype.effect,
-    },
-    Sailor: {
+    }),
+    Sailor: new BackgroundObject({
         description: "",
         skill: { inherent: [Skill.Athletics, Skill.Perception], selectable: null },
-        effect: BackgroundObject.prototype.effect,
-    },
-    Soldier: {
+    }),
+    Soldier: new BackgroundObject({
         description: "",
         skill: { inherent: [Skill.Athletics, Skill.Intimidation], selectable: null },
-        effect: BackgroundObject.prototype.effect,
-    },
-    Urchin: {
+    }),
+    Urchin: new BackgroundObject({
         description: "",
         skill: { inherent: [Skill.SleightOfHand, Skill.Stealth], selectable: null },
-        effect: BackgroundObject.prototype.effect,
-    },
+    }),
 }

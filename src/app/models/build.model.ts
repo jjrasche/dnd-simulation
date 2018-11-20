@@ -13,7 +13,8 @@ import { EquipmentObject } from "./equipment/equipment.model";
 import { SpellObject } from "./spell.model";
 import { ConditionObject } from "./condition.model";
 import { initializeObjects } from "./base.object.data";
-import { BuildAffectingObject, BuildEffect, BuildAffectingObject2 } from "./build.object";
+import { BuildAffectingObject, BuildEffect } from "./build.object";
+import { SubRaceObject } from "./subRace.model";
 
 
 /**
@@ -33,12 +34,13 @@ var handler = {
         let buildCopy: Build = copyBuild(build);
         buildCopy.takeBase = true;
         // run all modifiers
-        buildCopy.apply(buildCopy.race);
-        buildCopy.apply(buildCopy.class);
-        buildCopy.apply(buildCopy.background);
+        buildCopy.addModification(buildCopy.race);
+        buildCopy.addModification(buildCopy.subRace);
+        buildCopy.addModification(buildCopy.class);
+        buildCopy.addModification(buildCopy.background);
         buildCopy.addModification(buildCopy.level);
         buildCopy.addModifications(buildCopy.conditions);
-        buildCopy.applyAll(buildCopy.spellsInAffect);
+        buildCopy.addModifications(buildCopy.spellsInAffect);
         // console.log(`2 getting property '${prop}' from build '${build.takeBase}'. value was '${JSON.stringify(origValue)}' now '${JSON.stringify(build[prop])}'`);
         // return buildProps[prop];
         return buildCopy[prop];
@@ -54,11 +56,12 @@ var handler = {
 
 export class Build {
     // build properties that involve an initial choice
-    race: RaceObject = null;
-    class: ClassObject = null;
+    race: RaceObject;
+    subRace: SubRaceObject;
+    class: ClassObject;
     level: LevelObject;
-    background: BackgroundObject = null;
-    language: LanguageObject[]
+    background: BackgroundObject;
+    language: Array<LanguageObject>;
     maxHealth: number = 0;
     ability: { [key in AbilityEnum]: number } = defaultAbilityScore;
     skill: { [key in SkillEnum]: boolean } = defaultSkill;    
@@ -162,36 +165,25 @@ export class Build {
        * 
        */
 
-    public apply(obj: BuildAffectingObject): void {
-        if (obj && obj.effect) {
-            obj.effect(this);
-        }
-    }
-
-    public applyAll(objects: Array<BuildAffectingObject>): void {
-        if (objects != null) {
-            objects.forEach((obj: BuildAffectingObject) => this.apply(obj));
-        }
-    }
-
     private applyEffect(obj: BuildEffect): void {
         if (obj && obj.effect) {
             obj.effect(this);
         }
     }
 
-    public addModification(obj: BuildAffectingObject2): void {
+    public addModification(obj: BuildAffectingObject): void {
         if (obj && obj.mod) {
             let mods: BuildEffect[] = obj.mod;
+            this.modifications = { ...this.modifications, ...mods};
             mods.forEach((mod: BuildEffect) => {
                 this.applyEffect(mod);
             });
         }
     }
 
-    public addModifications(objs: BuildAffectingObject2[]): void {
+    public addModifications(objs: BuildAffectingObject[]): void {
         if (objs) {
-            objs.forEach((obj: BuildAffectingObject2) => {
+            objs.forEach((obj: BuildAffectingObject) => {
                 this.addModification(obj);
             });
         }

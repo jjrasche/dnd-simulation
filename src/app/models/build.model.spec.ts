@@ -9,51 +9,74 @@ import { BuildEffect } from './build.object';
 import { LevelObject } from './level.model';
 import { ClassObject } from './class.model';
 import { Ability } from './ability.model';
+import { SubRaceObject } from './subRace.model';
 
 
 describe('BuildModel', () => {
 
     // single modifier effect
-    xit("racial ability modifier: given a build with race specific and base ability, the result is the combination of both", () => {
+    it("racial ability modifier: given a build with race specific and base ability, the result is the combination of both", () => {
         let build = new Build();
         build.ability = { Strength: 2, Dexterity: 1, Constitution: 2, Intelligence: 0, Wisdom: -3, Charisma: 0 };
         
-        let race = new RaceObject();
-        race.abilityModifier = { Strength: 1, Dexterity: 1, Constitution: 2, Intelligence: 0, Wisdom: 0, Charisma: -1 };
-        race.effect = RaceObject.prototype.effect,
+        let race = new RaceObject({
+            description: "",
+            subRaces: null,
+            abilityModifier: { Strength: 1, Dexterity: 1, Constitution: 2, Intelligence: 0, Wisdom: 0, Charisma: -1 },
+            size: null,
+            speed: null,
+            equipmentProficiency: null,
+            skillProficiency: null,
+            languages: null,
+            traits: null,
+        });
         build.race = race;
 
         let expected = { Strength: 3, Dexterity:2, Constitution: 4, Intelligence: 0, Wisdom: -3, Charisma: -1 };
         expect(build.ability).toEqual(expected);
     });
-    xit("racial trait modifier: given a build with a race based darkvision to 120 feet and spell with dark vision to 60 feet, build.darkVision returns 120", () => {
+    it("racial trait modifier: given a build with a race based darkvision to 120 feet and spell with dark vision to 60 feet, build.darkVision returns 120", () => {
         let build = new Build();
         build.darkVision = 10;
 
-        let race = new RaceObject();
-        let trait = new TraitObject();
-        trait.effect = (b: Build): void => { b.darkVision = 120 };
-        race.traits.push(trait);
+        let race = new RaceObject({
+            description: "",
+            subRaces: null,
+            abilityModifier: null,
+            size: null,
+            speed: null,
+            equipmentProficiency: null,
+            skillProficiency: null,
+            languages: null,
+            traits: [new TraitObject({
+                description: "",
+                mod: [new BuildEffect("trait", "darkvision", (b: Build): void => { b.darkVision = 120 })],
+            })]
+        });        
         build.race = race;
 
         expect(build.darkVision).toEqual(120);
     });
-    xit("spell modifier: given a build with a spell with dark vision to 60 feet, build.darkVision returns 60", () => {
+    it("spell modifier: given a build with a spell with dark vision to 60 feet, build.darkVision returns 60", () => {
         let build = new Build();
         build.darkVision = 0
 
-        let spell = new SpellObject();
-        spell.effect = (b: Build): void => { b.darkVision = 60 };
+        let spell = new SpellObject({
+            description: "A shimmering green arrow streaks toward a target within range and bursts in a spray of acid. Make a ranged spell attack against the target. On a hit, the target takes 4d4 acid damage immediately and 2d4 acid damage at the end of its next turn. On a miss, the arrow splashes the target with acid for half as much of the initial damage and no damage at the end of its next turn.",
+            mod: [new BuildEffect("condition", "proficiencyBonus", (b: Build): void => { b.darkVision = 60 })],
+        });
         build.spellsInAffect.push(spell);
 
         expect(build.darkVision).toEqual(60);
     });
 
-    xit("default background modifier: given a build with a background that gives proficiency in stealth and animal handling, build.skill.stealth = true and build.skill.AnimalHandling = true", () => {
+    it("default background modifier: given a build with a background that gives proficiency in stealth and animal handling, build.skill.stealth = true and build.skill.AnimalHandling = true", () => {
         let build = new Build();
 
-        let background = new BackgroundObject();
-        background.skill = { inherent: [Skill.AnimalHandling, Skill.Stealth], selectable: null },
+        let background = new BackgroundObject({
+            description: "",
+            skill: { inherent: [Skill.AnimalHandling, Skill.Stealth], selectable: null },
+        });
         build.background = background;
 
         Object.keys(Skill).forEach(key => {
@@ -62,13 +85,15 @@ describe('BuildModel', () => {
         })
     });
 
-    xit("specific background modifier: given a build with a background that has a permenant invisible condition, build.condition contains Invisible", () => {
+    it("specific background modifier: given a build with a background that has a permenant invisible condition, build.condition contains Invisible", () => {
         let build = new Build();
 
-        let background = new BackgroundObject();
-        background.effect = (b: Build) => {
-            b.conditions.push(Condition.Invisible);
-        };
+        let be = new BuildEffect("background", "condition", (b: Build) => b.conditions.push(Condition.Invisible));
+        let background = new BackgroundObject({
+            description: "",
+            skill: null,
+            mod: [be],
+        });
         build.background = background;
 
         expect(build.conditions[0]).toEqual(Condition.Invisible);
@@ -98,115 +123,172 @@ describe('BuildModel', () => {
         expect(build.proficiencyBonus).toEqual(3);
     });
 
-    xit("class modifier: given a build with a class that has saving throws of int, dex, and cha, build.savingThrows has those as proficient", () => {
+    it("class modifier: given a build with a class that has saving throws of int, dex, and cha, build.savingThrows has those as proficient", () => {
         let build = new Build();
 
-        let c = new ClassObject();
-        c.savingThrows = [Ability.Intelligence, Ability.Dexterity, Ability.Charisma],
-        build.class = c;
+        build.class = new ClassObject({
+            description: "",
+            skill: null,
+            savingThrows: [Ability.Intelligence, Ability.Dexterity, Ability.Charisma],
+            equipmentProficiency: null,
+            hitDie: null,
+            startingEquipment: null,
+        });
 
         let expected = { Strength: false, Dexterity: true, Constitution: false, Intelligence: true, Wisdom: false, Charisma: true };
         expect(build.savingThrow).toEqual(expected);
     });
 
-    xit("subClass modifier: given a build with a class that has a subclass, build.savingThrows has those as proficient", () => {
+    it("subRace modifier: given a build with a race that has a subRace, subrace modifications are applied", () => {
         let build = new Build();
 
-        let c = new ClassObject();
-        c.savingThrows = [Ability.Intelligence, Ability.Dexterity, Ability.Dexterity],
-            build.class = c;
+        build.subRace = new SubRaceObject({
+            description: "",
+            abilityModifier: { Strength: 1, Dexterity: 1, Constitution: 1, Intelligence: 0, Wisdom: 0, Charisma: -1 },
+            mod: [new BuildEffect("subrace", "speed", (b: Build): void => { b.speed = Math.max(b.speed, 25) })],
+        })
 
-        let expected = { Strength: false, Dexterity: true, Constitution: false, Intelligence: true, Wisdom: false, Charisma: true };
-        expect(build.savingThrow).toEqual(expected);
+        expect(build.ability).toEqual({ Strength: 1, Dexterity: 1, Constitution: 1, Intelligence: 0, Wisdom: 0, Charisma: -1 });
+        expect(build.speed).toEqual(25);
     });
 
     // multiple modifier interaction
-    xit("order on max: given a build with racial dark vision of 120 and spell with darkvision of 60, build.darkVision returns the higher one", () => {
+    it("order on max: given a build with racial dark vision of 120 and spell with darkvision of 60, build.darkVision returns the higher one", () => {
         let build = new Build();
 
-        let race = new RaceObject();
-        let trait = new TraitObject();
-        // TOOD: thought about adding number prototype extension to do b.darkVision.max(120) --> set this to higher of darkvision or 120
-        trait.effect = (b: Build): void => { b.darkVision = Math.max(b.darkVision, 120) };
-        race.traits.push(trait);
-        build.race = race;
+        build.race = new RaceObject({
+            description: "",
+            subRaces: null,
+            abilityModifier: null,
+            size: null,
+            speed: null,
+            equipmentProficiency: null,
+            skillProficiency: null,
+            languages: null,
+            traits: [new TraitObject({
+                description: "",
+                // TOOD: thought about adding number prototype extension to do b.darkVision.max(120) --> set this to higher of darkvision or 120
+                mod: [new BuildEffect("trait", "darkvision", (b: Build): void => { b.darkVision = Math.max(b.darkVision, 120) })],
+            })]
+        });
 
-        let spell = new SpellObject();
-        spell.effect = (b: Build): void => { b.darkVision = Math.max(b.darkVision, 60) };
+        let spell = new SpellObject({
+            description: "A shimmering green arrow streaks toward a target within range and bursts in a spray of acid. Make a ranged spell attack against the target. On a hit, the target takes 4d4 acid damage immediately and 2d4 acid damage at the end of its next turn. On a miss, the arrow splashes the target with acid for half as much of the initial damage and no damage at the end of its next turn.",
+            mod: [new BuildEffect("condition", "proficiencyBonus", (b: Build): void => { b.darkVision = Math.max(b.darkVision, 60) })],
+        });
         build.spellsInAffect.push(spell);
 
         expect(build.darkVision).toEqual(120);
     });
 
-    xit("order on max: given a build with racial dark vision of 60 and spell with darkvision of 120, build.darkVision returns the higher one", () => {
+    it("order on max: given a build with racial dark vision of 60 and spell with darkvision of 120, build.darkVision returns the higher one", () => {
         let build = new Build();
 
-        let race = new RaceObject();
-        let trait = new TraitObject();
-        trait.effect = (b: Build): void => { b.darkVision = Math.max(b.darkVision, 60) };
-        race.traits.push(trait);
+        let race = new RaceObject({
+            description: "",
+            abilityModifier: null,
+            size: null,
+            speed: null,
+            equipmentProficiency: null,
+            skillProficiency: null,
+            languages: null,
+            traits: [new TraitObject({
+                description: "",
+                // TOOD: thought about adding number prototype extension to do b.darkVision.max(120) --> set this to higher of darkvision or 120
+                mod: [new BuildEffect("trait", "darkvision", (b: Build): void => { b.darkVision = Math.max(b.darkVision, 60) })],
+            })]
+        });
         build.race = race;
 
-        let spell = new SpellObject();
-        spell.effect = (b: Build): void => { b.darkVision = Math.max(b.darkVision, 120) };
+        let spell = new SpellObject({
+            description: "A shimmering green arrow streaks toward a target within range and bursts in a spray of acid. Make a ranged spell attack against the target. On a hit, the target takes 4d4 acid damage immediately and 2d4 acid damage at the end of its next turn. On a miss, the arrow splashes the target with acid for half as much of the initial damage and no damage at the end of its next turn.",
+            mod: [new BuildEffect("condition", "proficiencyBonus", (b: Build): void => { b.darkVision = Math.max(b.darkVision, 120) })],
+        });
         build.spellsInAffect.push(spell);
 
         expect(build.darkVision).toEqual(120);
     });
 
-    // // AC = 10 -1 + 1 - 1 + 2 + 2  - 1  + Dex Mod = 2  / 2 = 7
-    // xit("comlex multi-operation modifiers: given a build with race(-1 AC), class(+1 AC), weapon(-1 AC), Armor(+2 AC), shield(+2 AC), spell(-1 AC), spell(+1 Dex), ability.dex = 13, and Condition that halves AC , build.AC = 7", () => {
-    //     let build = new Build();
-    //     build.ability.Dexterity = 13;
+    // AC = 10 -1 + 1 - 1 + 2 + 2  - 1  + Dex Mod = 2  / 2 = 7
+    it("comlex multi-operation modifiers: given a build with race(-1 AC), class(+1 AC), weapon(-1 AC), Armor(+2 AC), shield(+2 AC), spell(-1 AC), spell(+1 Dex), ability.dex = 13, and Condition that halves AC , build.AC = 7", () => {
+        let build = new Build();
+        build.ability.Dexterity = 13;
 
-    //     // race with -1 AC trait
-    //     let race = new RaceObject();
-    //     let trait = new TraitObject();
-    //     trait.effect = (b: Build): void => { b.armorClass -= 1 };
-    //     race.traits.push(trait);
+        // race with -1 AC trait
+        build.race = new RaceObject({
+            description: "",
+            subRaces: null,
+            abilityModifier: null,
+            size: null,
+            speed: null,
+            equipmentProficiency: null,
+            skillProficiency: null,
+            languages: null,
+            traits: [new TraitObject({
+                description: "",
+                mod: [new BuildEffect("trait", "armorClass", (b: Build): void => { b.armorClass -= 1 })],
+            })]
+        });
 
-    //     // class grants +1 AC
-    //     let clazz = new ClassObject();
-    //     clazz.effect = (b: Build): void => { b.armorClass += 1 };
+        // class grants +1 AC
+        build.class = new ClassObject({
+            description: "",
+            skill: null,
+            savingThrows: null,
+            equipmentProficiency: null,
+            hitDie: null,
+            startingEquipment: null,
+            mod: [new BuildEffect("class", "armorClass", (b: Build): void => { b.armorClass += 1 })],
+        });
 
-    //     // weapon with -1 AC
-    //     let weapon = new WeaponObject();
-    //     let weaponProperty = new WeaponPropertyObject();
-    //     weaponProperty.effect = (b: Build): void => { b.armorClass -= 1 };
-    //     weapon.properties.push(weaponProperty);
-    //     weapon.inUse = true;
+        // weapon with -1 AC
+        build.class = new ClassObject({
+            description: "",
+            skill: null,
+            savingThrows: null,
+            equipmentProficiency: null,
+            hitDie: null,
+            startingEquipment: null,
+            mod: [new BuildEffect("class", "armorClass", (b: Build): void => { b.armorClass += 1 })],
+        });
+        
+        let weapon = new WeaponObject();
+        let weaponProperty = new WeaponPropertyObject();
+        weaponProperty.effect = (b: Build): void => { b.armorClass -= 1 };
+        weapon.properties.push(weaponProperty);
+        weapon.inUse = true;
 
-    //     // armor with +2 AC
-    //     let armor = new ArmorObject();
-    //     armor.category = ArmorCategory.Medium
-    //     armor.effect = (b: Build): void => { b.armorClass += 2 };
-    //     armor.inUse = true;
+        // armor with +2 AC
+        let armor = new ArmorObject();
+        armor.category = ArmorCategory.Medium
+        armor.effect = (b: Build): void => { b.armorClass += 2 };
+        armor.inUse = true;
 
-    //     // shield with +2 AC
-    //     let shield = new ArmorObject();
-    //     armor.category = ArmorCategory.Shield
-    //     shield.effect = (b: Build): void => { b.armorClass += 2 };
-    //     shield.inUse = true;
+        // shield with +2 AC
+        let shield = new ArmorObject();
+        armor.category = ArmorCategory.Shield
+        shield.effect = (b: Build): void => { b.armorClass += 2 };
+        shield.inUse = true;
 
-    //     // spell with -1 AC
-    //     let spellMinusAC = new SpellObject();
-    //     spellMinusAC.effect = (b: Build): void => { b.armorClass -= 1 };
+        // spell with -1 AC
+        let spellMinusAC = new SpellObject();
+        spellMinusAC.effect = (b: Build): void => { b.armorClass -= 1 };
 
-    //     // spell with +1 Dex
-    //     let spellPlusDex = new SpellObject();
-    //     spellPlusDex.effect = (b: Build): void => { b.ability.Dexterity += 1 };
+        // spell with +1 Dex
+        let spellPlusDex = new SpellObject();
+        spellPlusDex.effect = (b: Build): void => { b.ability.Dexterity += 1 };
 
-    //     let condition = new ConditionObject();
-    //     condition.effect = (b: Build): void => { b.armorClass /= 2 };
+        let condition = new ConditionObject();
+        condition.effect = (b: Build): void => { b.armorClass /= 2 };
 
-    //     build.race = race;
-    //     build.class = clazz;
-    //     build.equipment = [weapon, armor, shield];
-    //     build.spellsInAffect = [spellMinusAC, spellPlusDex];
-    //     build.conditions = [condition];
+        build.race = race;
+        build.class = clazz;
+        build.equipment = [weapon, armor, shield];
+        build.spellsInAffect = [spellMinusAC, spellPlusDex];
+        build.conditions = [condition];
 
-    //     expect(build.armorClass).toEqual(7);
-    // });
+        expect(build.armorClass).toEqual(7);
+    });
 
     /**
      * If you wear armor that you lack proficiency with, you have disadvantage on any ability check, saving throw, or attack roll 
@@ -218,7 +300,7 @@ describe('BuildModel', () => {
      *  - add an action
      * 
      */
-    // xit("multi-modifier effect on proficiency: given build is using armor it is not proficient in, then disadvantage on ability, throw, attacks for dex/str and can't cast spells.", () => {
+    // it("multi-modifier effect on proficiency: given build is using armor it is not proficient in, then disadvantage on ability, throw, attacks for dex/str and can't cast spells.", () => {
     //     let build = new Build();
     //     build.ability.Dexterity = 13;
 

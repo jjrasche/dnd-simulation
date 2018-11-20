@@ -1,5 +1,5 @@
-import { EquipmentObject } from "./equipment.model";
-import { BuildAffectingObject } from "../build.object";
+import { BaseBuildAffectingEquipmentObject, BaseBuildAffectingEquipmentConstructor } from "./equipment.model";
+import { BuildEffect } from "../build.object";
 import { DieDamage, AmountDamage, DamageType } from "../damage.model";
 import { WeaponPropertyObject, WeaponProperty } from "./weaponProperty.model";
 import { Build } from "../build.model";
@@ -8,36 +8,51 @@ import { WeaponEnum } from "src/app/enum/equipment/weapon.enum";
 import { Die } from "src/app/enum/die.enum";
 import { WeaponCategory } from "src/app/enum/equipment/weapon-category.enum";
 
+interface IWeaponObject {
+    category: WeaponCategory;
+    range?: Range;
+    damage: DieDamage | AmountDamage;
+    properties?: Array<WeaponPropertyObject>;
+}
+type WeaponConstructor = IWeaponObject & BaseBuildAffectingEquipmentConstructor;
 
 export interface Range {
     normal: number
     long: number
 }
 
-export class WeaponObject extends EquipmentObject implements BuildAffectingObject {
+export class WeaponObject extends BaseBuildAffectingEquipmentObject {
     category: WeaponCategory;
-    range: Range;
+    range?: Range;
     damage: DieDamage | AmountDamage;   // TODO: test handling of difference here
-    properties: WeaponPropertyObject[] = [];
+    properties?: WeaponPropertyObject[] = [];
 
-    effect = function(b: Build): void {
-        // apply weapon properties
-        if (this.properties) {
-            Object.keys(this.properties).forEach(key => WeaponPropertyObject[key].effect(b));
-        }
-        // add a hit action to all Melee weapons
+    constructor(obj: WeaponConstructor) {
+        super(obj);
+        this.category = obj.category;
+        this.range = obj.range;
+        this.damage = obj.damage;
+        this.properties = obj.properties;
+
         if ([WeaponCategory.SimpleMelee, WeaponCategory.MartialMelee].includes(this.category)) {
-            b.actions.push({object: this, actionType: ActionTypeEnum.Hit});
+            this.mod.push(new BuildEffect("weapon", "actions", (b: Build) => b.actions.push({ object: this, actionType: ActionTypeEnum.Hit })));
+            this.mod.push(new BuildEffect("weapon", "actions", (b: Build) => b.actions.push({ object: this, actionType: ActionTypeEnum.Throw })));
         }
         if ([WeaponCategory.SimpleRange, WeaponCategory.MartialRange].includes(this.category)) {
-            b.actions.push({ object: this, actionType: ActionTypeEnum.Shoot });
+            this.mod.push(new BuildEffect("weapon", "actions", (b: Build) => b.actions.push({ object: this, actionType: ActionTypeEnum.Shoot })));
         }
-    };
+
+        if (this.properties) {
+            this.properties.map((prop: WeaponPropertyObject) => prop.mod)
+                .forEach((effects: BuildEffect[]) => effects
+                    .forEach((be: BuildEffect) => this.mod.push(be)));
+        }
+    }
 };
 
 export type WeaponMapType = { [key in WeaponEnum]: WeaponObject };
 export const Weapon: WeaponMapType = {
-    Club: {
+    Club: new WeaponObject({
         category: WeaponCategory.SimpleMelee,
         cost: .1,
         weight: 2,
@@ -45,9 +60,8 @@ export const Weapon: WeaponMapType = {
         damage: { numDie: 1, die: Die.D4, type: DamageType.Bludgeoning },
         description: null,
         properties: [WeaponProperty.Light, WeaponProperty.Monk],
-        effect: WeaponObject.prototype.effect,
-    },
-    Dagger: {
+    }),
+    Dagger: new WeaponObject({
         category: WeaponCategory.SimpleMelee,
         cost: 2,
         weight: 1,
@@ -55,9 +69,8 @@ export const Weapon: WeaponMapType = {
         damage: { numDie: 1, die: Die.D4, type: DamageType.Piercing },
         description: null,
         properties: [WeaponProperty.Finesse, WeaponProperty.Light, WeaponProperty.Thrown, WeaponProperty.Monk],
-        effect: WeaponObject.prototype.effect,
-    },
-    Greatclub: {
+    }),
+    Greatclub: new WeaponObject({
         category: WeaponCategory.SimpleMelee,
         cost: .2,
         weight: 10,
@@ -65,9 +78,8 @@ export const Weapon: WeaponMapType = {
         damage: { numDie: 1, die: Die.D8, type: DamageType.Bludgeoning },
         description: null,
         properties: [WeaponProperty.TwoHanded],
-        effect: WeaponObject.prototype.effect,
-    },
-    Handaxe: {
+    }),
+    Handaxe: new WeaponObject({
         category: WeaponCategory.SimpleMelee,
         cost: 5,
         weight: 2,
@@ -75,9 +87,8 @@ export const Weapon: WeaponMapType = {
         damage: { numDie: 1, die: Die.D6, type: DamageType.Slashing },
         description: null,
         properties: [WeaponProperty.Light, WeaponProperty.Thrown, WeaponProperty.Monk],
-        effect: WeaponObject.prototype.effect,
-    },
-    Javelin: {
+    }),
+    Javelin: new WeaponObject({
         category: WeaponCategory.SimpleMelee,
         cost: .5,
         weight: 2,
@@ -85,9 +96,8 @@ export const Weapon: WeaponMapType = {
         damage: { numDie: 1, die: Die.D6, type: DamageType.Piercing },
         description: null,
         properties: [WeaponProperty.Thrown, WeaponProperty.Monk],
-        effect: WeaponObject.prototype.effect,
-    },
-    LightHammer: {
+    }),
+    LightHammer: new WeaponObject({
         category: WeaponCategory.SimpleMelee,
         cost: 2,
         weight: 2,
@@ -95,9 +105,8 @@ export const Weapon: WeaponMapType = {
         damage: { numDie: 1, die: Die.D4, type: DamageType.Bludgeoning },
         description: null,
         properties: [WeaponProperty.Light, WeaponProperty.Thrown, WeaponProperty.Monk],
-        effect: WeaponObject.prototype.effect,
-    },
-    Mace: {
+    }),
+    Mace: new WeaponObject({
         category: WeaponCategory.SimpleMelee,
         cost: 5,
         weight: 4,
@@ -105,9 +114,8 @@ export const Weapon: WeaponMapType = {
         damage: { numDie: 1, die: Die.D6, type: DamageType.Bludgeoning },
         description: null,
         properties: [WeaponProperty.Monk],
-        effect: WeaponObject.prototype.effect,
-    },
-    Quarterstaff: {
+    }),
+    Quarterstaff: new WeaponObject({
         category: WeaponCategory.SimpleMelee,
         cost: .2,
         weight: 4,
@@ -115,9 +123,8 @@ export const Weapon: WeaponMapType = {
         damage: { numDie: 1, die: Die.D6, type: DamageType.Bludgeoning },
         description: null,
         properties: [WeaponProperty.Versatile, WeaponProperty.Monk],
-        effect: WeaponObject.prototype.effect,
-    },
-    Sickle: {
+    }),
+    Sickle: new WeaponObject({
         category: WeaponCategory.SimpleMelee,
         cost: 1,
         weight: 2,
@@ -125,9 +132,8 @@ export const Weapon: WeaponMapType = {
         damage: { numDie: 1, die: Die.D4, type: DamageType.Slashing },
         description: null,
         properties: [WeaponProperty.Light, WeaponProperty.Monk],
-        effect: WeaponObject.prototype.effect,
-    },
-    Spear: {
+    }),
+    Spear: new WeaponObject({
         category: WeaponCategory.SimpleMelee,
         cost: 1,
         weight: 3,
@@ -135,9 +141,8 @@ export const Weapon: WeaponMapType = {
         damage: { numDie: 1, die: Die.D4, type: DamageType.Piercing },
         description: null,
         properties: [WeaponProperty.Thrown, WeaponProperty.Versatile, WeaponProperty.Monk],
-        effect: WeaponObject.prototype.effect,
-    },
-    CrossbowLight: {
+    }),
+    CrossbowLight: new WeaponObject({
         category: WeaponCategory.SimpleRange,
         cost: 25,
         weight: 5,
@@ -145,9 +150,8 @@ export const Weapon: WeaponMapType = {
         damage: { numDie: 1, die: Die.D8, type: DamageType.Piercing },
         description: null,
         properties: [WeaponProperty.Ammunition, WeaponProperty.Loading, WeaponProperty.TwoHanded],
-        effect: WeaponObject.prototype.effect,
-    },
-    Dart: {
+    }),
+    Dart: new WeaponObject({
         category: WeaponCategory.SimpleRange,
         cost: .05,
         weight: 0.25,
@@ -155,9 +159,8 @@ export const Weapon: WeaponMapType = {
         damage: { numDie: 1, die: Die.D4, type: DamageType.Piercing },
         description: null,
         properties: [WeaponProperty.Finesse, WeaponProperty.Thrown],
-        effect: WeaponObject.prototype.effect,
-    },
-    Shortbow: {
+    }),
+    Shortbow: new WeaponObject({
         category: WeaponCategory.SimpleRange,
         cost: 25,
         weight: 2,
@@ -165,9 +168,8 @@ export const Weapon: WeaponMapType = {
         damage: { numDie: 1, die: Die.D6, type: DamageType.Piercing },
         description: null,
         properties: [WeaponProperty.Ammunition, WeaponProperty.TwoHanded],
-        effect: WeaponObject.prototype.effect,
-    },
-    Sling: {
+    }),
+    Sling: new WeaponObject({
         category: WeaponCategory.SimpleRange,
         cost: .1,
         weight: 0,
@@ -175,9 +177,8 @@ export const Weapon: WeaponMapType = {
         damage: { numDie: 1, die: Die.D4, type: DamageType.Bludgeoning },
         description: null,
         properties: [WeaponProperty.Ammunition],
-        effect: WeaponObject.prototype.effect,
-    },
-    Battleaxe: {
+    }),
+    Battleaxe: new WeaponObject({
         category: WeaponCategory.MartialMelee,
         cost: 10,
         weight: 4,
@@ -185,9 +186,8 @@ export const Weapon: WeaponMapType = {
         damage: { numDie: 1, die: Die.D8, type: DamageType.Slashing },
         description: null,
         properties: [WeaponProperty.Versatile],
-        effect: WeaponObject.prototype.effect,
-    },
-    Flail: {
+    }),
+    Flail: new WeaponObject({
         category: WeaponCategory.MartialMelee,
         cost: 10,
         weight: 2,
@@ -195,9 +195,8 @@ export const Weapon: WeaponMapType = {
         damage: { numDie: 1, die: Die.D8, type: DamageType.Bludgeoning },
         description: null,
         properties: [],
-        effect: WeaponObject.prototype.effect,
-    },
-    Glaive: {
+    }),
+    Glaive: new WeaponObject({
         category: WeaponCategory.MartialMelee,
         cost: 20,
         weight: 6,
@@ -205,9 +204,8 @@ export const Weapon: WeaponMapType = {
         damage: { numDie: 1, die: Die.D10, type: DamageType.Slashing },
         description: null,
         properties: [WeaponProperty.Heavy, WeaponProperty.Reach, WeaponProperty.TwoHanded],
-        effect: WeaponObject.prototype.effect,
-    },
-    Greataxe: {
+    }),
+    Greataxe: new WeaponObject({
         category: WeaponCategory.MartialMelee,
         cost: 30,
         weight: 7,
@@ -215,9 +213,8 @@ export const Weapon: WeaponMapType = {
         damage: { numDie: 1, die: Die.D12, type: DamageType.Slashing },
         description: null,
         properties: [WeaponProperty.Heavy, WeaponProperty.TwoHanded],
-        effect: WeaponObject.prototype.effect,
-    },
-    Greatsword: {
+    }),
+    Greatsword: new WeaponObject({
         category: WeaponCategory.MartialMelee,
         cost: 50,
         weight: 6,
@@ -225,9 +222,8 @@ export const Weapon: WeaponMapType = {
         damage: { numDie: 2, die: Die.D6, type: DamageType.Slashing },
         description: null,
         properties: [WeaponProperty.Heavy, WeaponProperty.TwoHanded],
-        effect: WeaponObject.prototype.effect,
-    },
-    Halberd: {
+    }),
+    Halberd: new WeaponObject({
         category: WeaponCategory.MartialMelee,
         cost: 20,
         weight: 6,
@@ -235,9 +231,8 @@ export const Weapon: WeaponMapType = {
         damage: { numDie: 1, die: Die.D10, type: DamageType.Slashing },
         description: null,
         properties: [WeaponProperty.Heavy, WeaponProperty.Reach, WeaponProperty.TwoHanded],
-        effect: WeaponObject.prototype.effect,
-    },
-    Lance: {
+    }),
+    Lance: new WeaponObject({
         category: WeaponCategory.MartialMelee,
         cost: 10,
         weight: 6,
@@ -245,9 +240,8 @@ export const Weapon: WeaponMapType = {
         damage: { numDie: 1, die: Die.D12, type: DamageType.Piercing },
         description: null,
         properties: [WeaponProperty.Reach, WeaponProperty.Special],
-        effect: WeaponObject.prototype.effect,
-    },
-    Longsword: {
+    }),
+    Longsword: new WeaponObject({
         category: WeaponCategory.MartialMelee,
         cost: 15,
         weight: 3,
@@ -255,9 +249,8 @@ export const Weapon: WeaponMapType = {
         damage: { numDie: 1, die: Die.D8, type: DamageType.Slashing },
         description: null,
         properties: [WeaponProperty.Versatile],
-        effect: WeaponObject.prototype.effect,
-    },
-    Maul: {
+    }),
+    Maul: new WeaponObject({
         category: WeaponCategory.MartialMelee,
         cost: 10,
         weight: 10,
@@ -265,9 +258,8 @@ export const Weapon: WeaponMapType = {
         damage: { numDie: 2, die: Die.D6, type: DamageType.Bludgeoning },
         description: null,
         properties: [WeaponProperty.Heavy, WeaponProperty.TwoHanded],
-        effect: WeaponObject.prototype.effect,
-    },
-    Morningstar: {
+    }),
+    Morningstar: new WeaponObject({
         category: WeaponCategory.MartialMelee,
         cost: 15,
         weight: 4,
@@ -275,9 +267,8 @@ export const Weapon: WeaponMapType = {
         damage: { numDie: 1, die: Die.D8, type: DamageType.Piercing },
         description: null,
         properties: [],
-        effect: WeaponObject.prototype.effect,
-    },
-    Pike: {
+    }),
+    Pike: new WeaponObject({
         category: WeaponCategory.MartialMelee,
         cost: 5,
         weight: 18,
@@ -285,9 +276,8 @@ export const Weapon: WeaponMapType = {
         damage: { numDie: 1, die: Die.D10, type: DamageType.Piercing },
         description: null,
         properties: [WeaponProperty.Heavy, WeaponProperty.Reach, WeaponProperty.TwoHanded],
-        effect: WeaponObject.prototype.effect,
-    },
-    Rapier: {
+    }),
+    Rapier: new WeaponObject({
         category: WeaponCategory.MartialMelee,
         cost: 25,
         weight: 2,
@@ -295,9 +285,8 @@ export const Weapon: WeaponMapType = {
         damage: { numDie: 1, die: Die.D8, type: DamageType.Piercing },
         description: null,
         properties: [WeaponProperty.Finesse],
-        effect: WeaponObject.prototype.effect,
-    },
-    Scimitar: {
+    }),
+    Scimitar: new WeaponObject({
         category: WeaponCategory.MartialMelee,
         cost: 25,
         weight: 3,
@@ -305,9 +294,8 @@ export const Weapon: WeaponMapType = {
         damage: { numDie: 1, die: Die.D6, type: DamageType.Slashing },
         description: null,
         properties: [WeaponProperty.Finesse, WeaponProperty.Light],
-        effect: WeaponObject.prototype.effect,
-    },
-    Shortsword: {
+    }),
+    Shortsword: new WeaponObject({
         category: WeaponCategory.MartialMelee,
         cost: 10,
         weight: 2,
@@ -315,9 +303,8 @@ export const Weapon: WeaponMapType = {
         damage: { numDie: 1, die: Die.D6, type: DamageType.Piercing },
         description: null,
         properties: [WeaponProperty.Finesse, WeaponProperty.Light, WeaponProperty.Monk],
-        effect: WeaponObject.prototype.effect,
-    },
-    Trident: {
+    }),
+    Trident: new WeaponObject({
         category: WeaponCategory.MartialMelee,
         cost: 5,
         weight: 4,
@@ -325,9 +312,8 @@ export const Weapon: WeaponMapType = {
         damage: { numDie: 1, die: Die.D6, type: DamageType.Slashing },
         description: null,
         properties: [WeaponProperty.Thrown, WeaponProperty.Versatile],
-        effect: WeaponObject.prototype.effect,
-    },
-    WarPick: {
+    }),
+    WarPick: new WeaponObject({
         category: WeaponCategory.MartialMelee,
         cost: 5,
         weight: 2,
@@ -335,9 +321,8 @@ export const Weapon: WeaponMapType = {
         damage: { numDie: 1, die: Die.D8, type: DamageType.Piercing },
         description: null,
         properties: [],
-        effect: WeaponObject.prototype.effect,
-    },
-    Warhammer: {
+    }),
+    Warhammer: new WeaponObject({
         category: WeaponCategory.MartialMelee,
         cost: 15,
         weight: 2,
@@ -345,9 +330,8 @@ export const Weapon: WeaponMapType = {
         damage: { numDie: 1, die: Die.D8, type: DamageType.Bludgeoning },
         description: null,
         properties: [WeaponProperty.Versatile],
-        effect: WeaponObject.prototype.effect,
-    },
-    Whip: {
+    }),
+    Whip: new WeaponObject({
         category: WeaponCategory.MartialMelee,
         cost: 2,
         weight: 3,
@@ -355,9 +339,8 @@ export const Weapon: WeaponMapType = {
         damage: { numDie: 1, die: Die.D4, type: DamageType.Slashing },
         description: null,
         properties: [WeaponProperty.Finesse, WeaponProperty.Reach],
-        effect: WeaponObject.prototype.effect,
-    },
-    Blowgun: {
+    }),
+    Blowgun: new WeaponObject({
         category: WeaponCategory.MartialRange,
         cost: 10,
         weight: 1,
@@ -365,9 +348,8 @@ export const Weapon: WeaponMapType = {
         damage: { amount: 1, type: DamageType.Piercing },
         description: null,
         properties: [WeaponProperty.Ammunition, WeaponProperty.Loading],
-        effect: WeaponObject.prototype.effect,
-    },
-    CrossbowHand: {
+    }),
+    CrossbowHand: new WeaponObject({
         category: WeaponCategory.MartialRange,
         cost: 75,
         weight: 3,
@@ -375,9 +357,8 @@ export const Weapon: WeaponMapType = {
         damage: { numDie: 1, die: Die.D6, type: DamageType.Piercing },
         description: null,
         properties: [WeaponProperty.Ammunition, WeaponProperty.Light, WeaponProperty.Loading],
-        effect: WeaponObject.prototype.effect,
-    },
-    CrossbowHeavy: {
+    }),
+    CrossbowHeavy: new WeaponObject({
         category: WeaponCategory.MartialRange,
         cost: 50,
         weight: 18,
@@ -385,9 +366,8 @@ export const Weapon: WeaponMapType = {
         damage: { numDie: 1, die: Die.D10, type: DamageType.Piercing },
         description: null,
         properties: [WeaponProperty.Ammunition, WeaponProperty.Light, WeaponProperty.Loading, WeaponProperty.TwoHanded],
-        effect: WeaponObject.prototype.effect,
-    },
-    Longbow: {
+    }),
+    Longbow: new WeaponObject({
         category: WeaponCategory.MartialRange,
         cost: 50,
         weight: 2,
@@ -395,9 +375,8 @@ export const Weapon: WeaponMapType = {
         damage: { numDie: 1, die: Die.D8, type: DamageType.Piercing },
         description: null,
         properties: [WeaponProperty.Ammunition, WeaponProperty.Heavy, WeaponProperty.TwoHanded],
-        effect: WeaponObject.prototype.effect,
-    },
-    Net: {
+    }),
+    Net: new WeaponObject({
         category: WeaponCategory.MartialRange,
         cost: 1,
         weight: 3,
@@ -405,12 +384,8 @@ export const Weapon: WeaponMapType = {
         damage: { amount: 0, type: DamageType.Slashing },
         description: null,
         properties: [WeaponProperty.Thrown, WeaponProperty.Special],
-        effect: WeaponObject.prototype.effect,
-    },
+    }),
 };
-
-// // Add EquipmentCategory.Tools to all tools.
-// Object.keys(Weapon).forEach(key => Weapon[key].EquipmentCategory = EquipmentCategory.Weapon);
 
 // TODO: why is this typing weird and I cant export const SimpleMeleeWeapons: WeaponMapType   -->   Type 'WeaponObject[]' is not assignable to type 'WeaponMapType'. Property 'Club' is missing in type 'WeaponObject[]'. [2322]
 export const AllWeapons: WeaponObject[] = Object.keys(Weapon).map(key => Weapon[key]);

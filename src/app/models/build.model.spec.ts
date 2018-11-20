@@ -10,6 +10,12 @@ import { LevelObject } from './level.model';
 import { ClassObject } from './class.model';
 import { Ability } from './ability.model';
 import { SubRaceObject } from './subRace.model';
+import { WeaponCategory } from '../enum/equipment/weapon-category.enum';
+import { DamageType } from './damage.model';
+import { WeaponObject } from './equipment/weapon.model';
+import { WeaponPropertyObject } from './equipment/weaponProperty.model';
+import { ArmorObject } from './equipment/armor.model';
+import { ArmorCategory } from '../enum/equipment/armor-category.enum';
 
 
 describe('BuildModel', () => {
@@ -103,10 +109,9 @@ describe('BuildModel', () => {
         let build = new Build();
         build.speed = 20;
 
-        let be = new BuildEffect("condition", "speed", (b: Build) => b.speed /= 2);
         let condition = new ConditionObject({
             description: "",
-            mod: [be]
+            mod: [new BuildEffect("condition", "speed", (b: Build) => b.speed /= 2)]
         });
         build.conditions.push(condition);
 
@@ -241,51 +246,61 @@ describe('BuildModel', () => {
             mod: [new BuildEffect("class", "armorClass", (b: Build): void => { b.armorClass += 1 })],
         });
 
-        // weapon with -1 AC
-        build.class = new ClassObject({
-            description: "",
-            skill: null,
-            savingThrows: null,
-            equipmentProficiency: null,
-            hitDie: null,
-            startingEquipment: null,
-            mod: [new BuildEffect("class", "armorClass", (b: Build): void => { b.armorClass += 1 })],
-        });
-        
-        let weapon = new WeaponObject();
-        let weaponProperty = new WeaponPropertyObject();
-        weaponProperty.effect = (b: Build): void => { b.armorClass -= 1 };
-        weapon.properties.push(weaponProperty);
-        weapon.inUse = true;
+        // weapon with -1 AC        
+        build.equipment.push(new WeaponObject({
+            description: null,
+            cost: 5,
+            weight: 10,
+            category: WeaponCategory.MartialMelee,
+            damage: {amount: 17, type: DamageType.Acid},
+            inUse: true,
+            properties: [new WeaponPropertyObject({
+                description: null,
+                mod: [new BuildEffect("weaponProperty", "armorClass", (b: Build): void => { b.armorClass -= 1 })],
+            })]
+        }));
 
         // armor with +2 AC
-        let armor = new ArmorObject();
-        armor.category = ArmorCategory.Medium
-        armor.effect = (b: Build): void => { b.armorClass += 2 };
-        armor.inUse = true;
+        build.equipment.push(new ArmorObject({
+            description: null,
+            category: ArmorCategory.Light,
+            strengthNeeded: 0,
+            stealthDisadvantage: false,
+            weight: 8,
+            cost: 5,
+            inUse: true,
+            armorClass: { base: 12, addDex: false, maxDex: null },
+        }));
 
         // shield with +2 AC
-        let shield = new ArmorObject();
-        armor.category = ArmorCategory.Shield
-        shield.effect = (b: Build): void => { b.armorClass += 2 };
-        shield.inUse = true;
+        build.equipment.push(new ArmorObject({
+            description: null,
+            category: ArmorCategory.Shield,
+            strengthNeeded: 0,
+            stealthDisadvantage: false,
+            weight: 8,
+            cost: 5,
+            inUse: true,
+            armorClass: null,
+            mod: [new BuildEffect("shield", "armorClass", (b: Build): void => { b.armorClass += 2 })],
+        }));
 
         // spell with -1 AC
-        let spellMinusAC = new SpellObject();
-        spellMinusAC.effect = (b: Build): void => { b.armorClass -= 1 };
+        build.spellsInAffect.push(new SpellObject({
+            description: null,
+            mod: [new BuildEffect("spell", "armorClass", (b: Build): void => { b.armorClass -= 1 })],
+        }));
 
         // spell with +1 Dex
-        let spellPlusDex = new SpellObject();
-        spellPlusDex.effect = (b: Build): void => { b.ability.Dexterity += 1 };
+        build.spellsInAffect.push(new SpellObject({
+            description: null,
+            mod: [new BuildEffect("spell", "armorClass", (b: Build): void => { b.armorClass += 1 })],
+        }));
 
-        let condition = new ConditionObject();
-        condition.effect = (b: Build): void => { b.armorClass /= 2 };
-
-        build.race = race;
-        build.class = clazz;
-        build.equipment = [weapon, armor, shield];
-        build.spellsInAffect = [spellMinusAC, spellPlusDex];
-        build.conditions = [condition];
+        build.conditions.push(new ConditionObject({
+            description: "",
+            mod: [new BuildEffect("condition", "speed", (b: Build) => b.armorClass /= 2)]
+        }));
 
         expect(build.armorClass).toEqual(7);
     });

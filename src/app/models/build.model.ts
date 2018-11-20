@@ -67,7 +67,7 @@ export class Build {
     skill: { [key in SkillEnum]: boolean } = defaultSkill;    
 
     // current state of build properties
-    equipment: EquipmentObject[];
+    equipment: EquipmentObject[] = [];
     spellsInAffect: SpellObject[] = [];
     conditions: ConditionObject[] = [];
     damage: number = 0;

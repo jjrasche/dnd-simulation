@@ -1,19 +1,6 @@
-import { BuildAffectingObject } from "src/app/models/common";
 import { Build } from "src/app/models/build.model";
-
-export enum WeaponPropertyEnum {
-    Ammunition = "Ammunition",
-    Finesse = "Finesse",
-    Heavy = "Heavy",
-    Light = "Light",
-    Loading = "Loading",
-    Reach = "Reach",
-    Special = "Special",
-    Thrown = "Thrown",
-    TwoHanded = "TwoHanded",
-    Versatile = "Versatile",
-    Monk = "Monk",
-};
+import { BuildAffectingObject } from "../build.object";
+import { WeaponPropertyEnum } from "src/app/enum/equipment/weapon-property.enum";
 
 export class WeaponPropertyObject implements BuildAffectingObject {
     description: string;

@@ -1,4 +1,4 @@
-import { BaseObject } from "../base-object.model";
+import { BaseObject } from "../../models/base.object";
 
 export enum EquipmentCategory {
     Gear = "Gear",

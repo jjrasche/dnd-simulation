@@ -11,9 +11,6 @@ export enum ActionType {
     Use
 }
 
-/**
- * describes 
- */
 export enum ActionTypeEnum {
     Throw = "Throw",
     Hit = "Hit",

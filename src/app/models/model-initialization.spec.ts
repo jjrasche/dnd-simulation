@@ -1,4 +1,4 @@
-import { enumKeysCount, enumsDuplicated, addKeyModifier, modifyDataStructure, verifyEnumKeyUniqueness,  } from './common';
+import { verifyEnumKeyUniqueness, modifyDataStructure, addKeyModifier, enumKeysCount, enumsDuplicated } from "./model-initialization";
 
 describe('BuildModel', () => {
 

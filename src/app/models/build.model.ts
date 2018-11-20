@@ -1,17 +1,20 @@
-import { ClassObject } from "../enum/class.enum";
-import { RaceObject } from "../enum/race.enum";
-import { SpellObject } from "../enum/spell.enum";
-import { SkillEnum, defaultSkill } from "../enum/skill.enum";
-import { LevelObject } from "../enum/level.enum";
-import { AbilityEnum, defaultAbilityScore, defaultSavingThrow, AbilityObject } from "../enum/ability.enum";
 import { copyBuild } from "../utils/objectManipulation";
-import { LanguageObject } from "../enum/language.enum";
-import { BackgroundObject } from "../enum/background.enum";
-import { EquipmentObject } from "../enum/equipment/equipment.model";
 import { ActionTypeEnum } from "../enum/action-type.enum";
-import { BuildAffectingObject, BuildAffectingObject2, BuildEffect } from "./common";
-import { ConditionObject } from "../enum/condition.enum";
-import { initializeObjects } from "../enum/base-object";
+import { RaceObject } from "./race.model";
+import { ClassObject } from "./class.model";
+import { LevelObject } from "./level.model";
+import { BackgroundObject } from "./background.model";
+import { LanguageObject } from "./language.model";
+import { AbilityEnum } from "../enum/ability.enum";
+import { defaultAbilityScore, defaultSavingThrow } from "./ability.model";
+import { SkillEnum } from "../enum/skill.enum";
+import { defaultSkill } from "./skill.model";
+import { EquipmentObject } from "./equipment/equipment.model";
+import { SpellObject } from "./spell.model";
+import { ConditionObject } from "./condition.model";
+import { initializeObjects } from "./base.object.data";
+import { BuildAffectingObject, BuildEffect, BuildAffectingObject2 } from "./build.object";
+
 
 /**
  * Anytime a property is retrieved, this method applies all modifying effects
@@ -34,8 +37,8 @@ var handler = {
         buildCopy.apply(buildCopy.class);
         buildCopy.apply(buildCopy.background);
         buildCopy.addModification(buildCopy.level);
+        buildCopy.addModifications(buildCopy.conditions);
         buildCopy.applyAll(buildCopy.spellsInAffect);
-        buildCopy.applyAll(buildCopy.conditions);
         // console.log(`2 getting property '${prop}' from build '${build.takeBase}'. value was '${JSON.stringify(origValue)}' now '${JSON.stringify(build[prop])}'`);
         // return buildProps[prop];
         return buildCopy[prop];
@@ -182,6 +185,14 @@ export class Build {
             let mods: BuildEffect[] = obj.mod;
             mods.forEach((mod: BuildEffect) => {
                 this.applyEffect(mod);
+            });
+        }
+    }
+
+    public addModifications(objs: BuildAffectingObject2[]): void {
+        if (objs) {
+            objs.forEach((obj: BuildAffectingObject2) => {
+                this.addModification(obj);
             });
         }
     }

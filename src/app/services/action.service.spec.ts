@@ -1,9 +1,6 @@
 import { TestBed } from '@angular/core/testing';
 
 import { ActionService } from './action.service';
-import { Class } from '../enum/class.enum';
-import { Build } from '../models/build.model';
-
 
 describe('ActionService', () => {
   beforeEach(() => TestBed.configureTestingModule({}));

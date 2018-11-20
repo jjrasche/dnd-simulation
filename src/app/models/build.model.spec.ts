@@ -1,20 +1,15 @@
 import { Build } from './build.model';
-import { GetBasicBarbarianBuild } from './build.model.spec.data';
-import { Class, ClassObject } from '../enum/class.enum';
-import { Race, RaceObject } from '../enum/race.enum';
-import { Spell, SpellObject } from '../enum/spell.enum';
-import { Condition, ConditionObject } from '../enum/condition.enum';
-import { Tool, ToolByCategory } from '../enum/equipment/tools.enum';
-import { TraitObject } from '../enum/trait.enum';
-import { BackgroundObject, Background } from '../enum/background.enum';
-import { Skill } from '../enum/skill.enum';
-import { Ability } from '../enum/ability.enum';
-import { WeaponObject, SimpleMeleeWeapons, Weapon, SimpleRangeWeapons, MartialeMeleeWeapons, MartialRangeWeapons } from '../enum/equipment/weapon.enum';
-import { WeaponPropertyObject } from '../enum/equipment/weaponProperty.enum';
-import { LightArmor, ArmorObject, ArmorCategory } from '../enum/equipment/armor.enum';
-import { GearCategories, AllGear, GearCategory, GearObject, GearByCategory } from '../enum/equipment/gear.enum';
-import { Equipment } from '../enum/equipment/equipment';
-import { LevelObject } from '../enum/level.enum';
+import { RaceObject } from './race.model';
+import { TraitObject } from './trait.model';
+import { SpellObject } from './spell.model';
+import { BackgroundObject } from './background.model';
+import { Skill } from './skill.model';
+import { Condition, ConditionObject } from './condition.model';
+import { BuildEffect } from './build.object';
+import { LevelObject } from './level.model';
+import { ClassObject } from './class.model';
+import { Ability } from './ability.model';
+
 
 describe('BuildModel', () => {
 
@@ -83,8 +78,11 @@ describe('BuildModel', () => {
         let build = new Build();
         build.speed = 20;
 
-        let condition = new ConditionObject();
-        condition.effect = (b: Build): void => { b.speed /= 2 };
+        let be = new BuildEffect("condition", "speed", (b: Build) => b.speed /= 2);
+        let condition = new ConditionObject({
+            description: "",
+            mod: [be]
+        });
         build.conditions.push(condition);
 
         expect(build.speed).toEqual(10);
@@ -103,8 +101,6 @@ describe('BuildModel', () => {
     xit("class modifier: given a build with a class that has saving throws of int, dex, and cha, build.savingThrows has those as proficient", () => {
         let build = new Build();
 
-        console.log(WeaponObject.name);
-        
         let c = new ClassObject();
         c.savingThrows = [Ability.Intelligence, Ability.Dexterity, Ability.Charisma],
         build.class = c;

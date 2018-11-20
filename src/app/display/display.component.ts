@@ -1,5 +1,4 @@
 import { Component, OnInit } from '@angular/core';
-import { Equipment } from "../enum/equipment/equipment";
 
 
 @Component({
@@ -9,10 +8,7 @@ import { Equipment } from "../enum/equipment/equipment";
 
 })
 export class DisplayComponent implements OnInit {
-
-  public equipment;
   constructor() { 
-    this.equipment = Equipment;
   }
 
   ngOnInit() {

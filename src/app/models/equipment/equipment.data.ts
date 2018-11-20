@@ -1,9 +1,14 @@
-import { Weapon, WeaponEnum, WeaponObject } from "./weapon.enum";
-import { Tool, ToolEnum, ToolObject } from "./tools.enum";
-import { GearObject, GearEnum, Gear } from "./gear.enum";
-import { PackEnum, PackObject, Pack } from "./pack.enum";
-import { ArmorEnum, ArmorObject, Armor } from "./armor.enum";
-import { modifyDataStructure, verifyEnumKeyUniqueness, ObjectModifier } from "src/app/models/common";
+import { WeaponEnum } from "src/app/enum/equipment/weapon.enum";
+import { ToolEnum } from "src/app/enum/equipment/tools.enum";
+import { GearEnum } from "src/app/enum/equipment/gear.enum";
+import { PackEnum } from "src/app/enum/equipment/pack.enum";
+import { ArmorEnum } from "src/app/enum/equipment/armor.enum";
+import { WeaponObject, Weapon } from "./weapon.model";
+import { ToolObject, Tool } from "./tools.model";
+import { GearObject, Gear } from "./gear.model";
+import { PackObject, Pack } from "./pack.model";
+import { ArmorObject, Armor } from "./armor.model";
+import { verifyEnumKeyUniqueness, ObjectModifier } from "../model-initialization";
 import { EquipmentCategory } from "./equipment.model";
 
 // needed to separate this from equipment.enum.ts to prevent circular dependencies

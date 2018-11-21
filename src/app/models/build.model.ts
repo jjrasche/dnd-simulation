@@ -41,6 +41,11 @@ var handler = {
         buildCopy.addModification(buildCopy.level);
         buildCopy.addModifications(buildCopy.conditions);
         buildCopy.addModifications(buildCopy.spellsInAffect);
+
+        console.log(buildCopy.modifications);
+        buildCopy.modifications.forEach((mod: BuildEffect) => {
+            buildCopy.applyEffect(mod);
+        });
         // console.log(`2 getting property '${prop}' from build '${build.takeBase}'. value was '${JSON.stringify(origValue)}' now '${JSON.stringify(build[prop])}'`);
         // return buildProps[prop];
         return buildCopy[prop];
@@ -165,7 +170,7 @@ export class Build {
        * 
        */
 
-    private applyEffect(obj: BuildEffect): void {
+    public applyEffect(obj: BuildEffect): void {
         if (obj && obj.effect) {
             obj.effect(this);
         }
@@ -174,10 +179,7 @@ export class Build {
     public addModification(obj: BuildAffectingObject): void {
         if (obj && obj.mod) {
             let mods: BuildEffect[] = obj.mod;
-            this.modifications = { ...this.modifications, ...mods};
-            mods.forEach((mod: BuildEffect) => {
-                this.applyEffect(mod);
-            });
+            this.modifications = [ ...this.modifications, ...mods];
         }
     }
 
@@ -191,5 +193,5 @@ export class Build {
      
     // used to prevent looping when using getters within effects.
     takeBase: boolean = false;
-    modifications: Array<BuildEffect>;
+    modifications: Array<BuildEffect> = [];
 }

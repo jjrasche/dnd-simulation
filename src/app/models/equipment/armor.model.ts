@@ -33,7 +33,13 @@ export class ArmorObject extends BaseBuildAffectingEquipmentObject {
 
         // proficiency check if not dex/str checks, throws, attacks have disadvantage, prevent spell casting actions
         this.mod.push(new BuildEffect("armor", "armorClass", (b: Build) => {
-            // how to ensure dex is retreived after all effects
+            // how to ensure dex is retreived after all effects. 
+            /**
+             * this is a generically hard problem for a rule engine to solve. Circular dependencies.
+             * 
+             * could use unapplied modifications 
+             * stop processing command within effect
+             */
             let armorEffect = (this.armorClass.base - 10);
             let dexEffect = this.armorClass.addDex ? b.ability.Dexterity : 0;
             dexEffect = this.armorClass.maxDex && dexEffect > this.armorClass.maxDex ? this.armorClass.maxDex : dexEffect;

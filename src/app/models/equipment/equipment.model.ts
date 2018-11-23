@@ -1,5 +1,5 @@
 import { BaseObject, IBaseObject } from "../../models/base.object";
-import { BuildAffectingObject, BuildEffect, BaseBuildAffectingConstructor } from "../build.object";
+import { BuildAffectingObject, BuildEffect, BaseBuildAffectingConstructor, BaseBuildAffectingObject } from "../build.object";
 
 export interface IEquipmentObject {
     cost: number;
@@ -11,7 +11,7 @@ export interface IEquipmentObject {
 export type EquipmentObjectConstructor = IBaseObject & IEquipmentObject;
 export type BaseBuildAffectingEquipmentConstructor = IBaseObject & IEquipmentObject & BuildAffectingObject;
 
-export abstract class EquipmentObject extends BaseObject {
+export abstract class EquipmentObject extends BaseBuildAffectingObject {
     cost: number;
     weight: number;
     inUse?: boolean = false;

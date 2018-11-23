@@ -7,6 +7,7 @@ import { ActionTypeEnum } from "src/app/enum/action-type.enum";
 import { WeaponEnum } from "src/app/enum/equipment/weapon.enum";
 import { Die } from "src/app/enum/die.enum";
 import { WeaponCategory } from "src/app/enum/equipment/weapon-category.enum";
+import { Action } from "../action.model";
 
 interface IWeaponObject {
     category: WeaponCategory;
@@ -34,14 +35,14 @@ export class WeaponObject extends BaseBuildAffectingEquipmentObject {
         this.damage = obj.damage;
         this.properties = obj.properties;
 
+        // Add default actions based on weapon type.
         if ([WeaponCategory.SimpleMelee, WeaponCategory.MartialMelee].includes(this.category)) {
-            this.mod.push(new BuildEffect("weapon", "actions", (b: Build) => b.actions.push({ object: this, actionType: ActionTypeEnum.Hit })));
-            this.mod.push(new BuildEffect("weapon", "actions", (b: Build) => b.actions.push({ object: this, actionType: ActionTypeEnum.Throw })));
+            this.mod.push(new BuildEffect("weapon", "actions", (b: Build) => b.actions.push(new Action())));
         }
         if ([WeaponCategory.SimpleRange, WeaponCategory.MartialRange].includes(this.category)) {
-            this.mod.push(new BuildEffect("weapon", "actions", (b: Build) => b.actions.push({ object: this, actionType: ActionTypeEnum.Shoot })));
+            this.mod.push(new BuildEffect("weapon", "actions", (b: Build) => b.actions.push(new Action())));
         }
-
+        // Add build affecting properties from each weapon.
         if (this.properties) {
             this.properties.map((prop: WeaponPropertyObject) => prop.mod)
                 .forEach((effects: BuildEffect[]) => effects

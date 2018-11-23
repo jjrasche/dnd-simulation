@@ -16,6 +16,7 @@ import { initializeObjects } from "./base.object.data";
 import { BuildAffectingObject, BuildEffect } from "./build.object";
 import { SubRaceObject } from "./subRace.model";
 import { DamageTypeEnum } from "../enum/damage.enum";
+import { Action } from "./action.model";
 
 
 /**
@@ -41,9 +42,10 @@ var handler = {
         buildCopy.addModification(buildCopy.background);
         buildCopy.addModification(buildCopy.level);
         buildCopy.addModifications(buildCopy.conditions);
+        buildCopy.addModifications(buildCopy.equipment);
         buildCopy.addModifications(buildCopy.spellsInAffect);
 
-        // console.log(buildCopy.modifications);
+        console.log(`${prop}\t\t${JSON.stringify(buildCopy.modifications)}`);
         // applyEffects
         buildCopy.modifications.forEach((mod: BuildEffect) => {
             buildCopy.applyEffect(mod);
@@ -88,7 +90,7 @@ export class Build {
     savingThrow: { [key in AbilityEnum]: boolean } = defaultSavingThrow;
     armorClass: number = 10;
     // allows each piece of equipment to dictate what you can do
-    actions: [{ object: EquipmentObject, actionType: ActionTypeEnum }] // do x with y 
+    actions: Action[] = []// do x with y 
 
 
     constructor() {
@@ -176,7 +178,11 @@ export class Build {
 
     public applyEffect(obj: BuildEffect): void {
         if (obj && obj.effect) {
+            let prevValue = JSON.stringify(this[obj.property]);
             obj.effect(this);
+            if (obj.property == "armorClass") {
+                console.log(`${obj.name} changed property ${obj.property} from '${prevValue}' to '${JSON.stringify(this[obj.property])}'`);
+            }
         }
     }
 

@@ -15,6 +15,7 @@ import { ConditionObject } from "./condition.model";
 import { initializeObjects } from "./base.object.data";
 import { BuildAffectingObject, BuildEffect } from "./build.object";
 import { SubRaceObject } from "./subRace.model";
+import { DamageTypeEnum } from "../enum/damage.enum";
 
 
 /**
@@ -42,7 +43,8 @@ var handler = {
         buildCopy.addModifications(buildCopy.conditions);
         buildCopy.addModifications(buildCopy.spellsInAffect);
 
-        console.log(buildCopy.modifications);
+        // console.log(buildCopy.modifications);
+        // applyEffects
         buildCopy.modifications.forEach((mod: BuildEffect) => {
             buildCopy.applyEffect(mod);
         });
@@ -73,8 +75,10 @@ export class Build {
 
     // current state of build properties
     equipment: EquipmentObject[] = [];
+    spells: SpellObject[] = [];
     spellsInAffect: SpellObject[] = [];
     conditions: ConditionObject[] = [];
+    damageModifier: { [key in DamageTypeEnum]: string}; // current resistance, vulnerability, and immunity tied to a given damageType
     damage: number = 0;
 
     // calcualable properties

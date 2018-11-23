@@ -11,7 +11,7 @@ export class ConditionObject extends BaseBuildAffectingObject {
 export const Condition: { [key in ConditionEnum]: ConditionObject } = {
     Blinded: new ConditionObject({
         description: "A blinded creature can’t see and automatically fails any ability check that requires sight. Attack rolls against the creature have advantage, and the creature’s attack rolls have disadvantage." ,
-        mod: [new BuildEffect("condition", "proficiencyBonus", (b: Build) => {
+        mod: [new BuildEffect("condition", "", (b: Build) => {
             // TODO: add sight component to build.
             // TODO: how to determine what ability checks require sight.
             b = b 

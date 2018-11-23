@@ -123,7 +123,7 @@ export class ActionEffect {
 export class BuildEffect {
     initiator: string; // who/what/why the effect started
     property: string; // the property accessible through Build["property"]
-    operation: BuildOperation; // type of operation performed on build property e.g. takeLower, subtract
+    operation: string; // ???type of operation performed on build property e.g. takeLower, subtract
     amount: number
 }
 

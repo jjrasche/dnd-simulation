@@ -19,3 +19,9 @@ dynamic outcomes: a build's impact on an encounter given other builds turn by tu
 - with this method builds action's will have a chance based definitive outcome on the encounter
 - the actions of other builds in the encounter will modify both the environemnt and builds engaged in the encounter
  
+
+ ## long term ideas
+ - a platform for creating and selling modules by builidng enviornments, objects, and NPCs 
+ - campaign log
+    - add facts that become cannon
+ - npcs track negative/positive experiences with player characters

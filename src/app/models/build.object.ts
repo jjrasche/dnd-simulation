@@ -74,29 +74,31 @@ export function groupList<T>(categories: any, list: Array<T>, groupingMethod: (t
  * })
  * 
  * @param name of the source of the effect e.g. "chain mail - armor".
- * @param property name of the buid property being modified e.g. "ability.intelligence".
+ * @param modifyingProperty name of the buid property being modified e.g. "ability.intelligence".
+ * @param dependentProperties properties of the build that are needed to calculate value of the change.
  * @param operation to apply to the build property (increase, decrease, add, remove, override, initialize).
- * @param value of the change made e.g number, object
+ * @param value of the change made, may need to make this a mini DSL to utilize the dependentProperties in the calculatio
  *
  */
 export class BuildEffect {
     name: string;
-    property: string;
-    effect: (b: Build) => void;
-    operation?: BuildEffectOperation;
-    value?: object | number | string;
+    modifyingProperty: string;
+    dependentProperties?: string[];
+    // effect: (b: Build) => void;
+    operation: BuildEffectOperation;
+    value: number | object | string;
 
-    // constructor(obj: BuildEffect) {
-    //     this.name = obj.name;
-    //     this.property = obj.property;
-    //     this.operation = obj.operation;
-    //     this.value = obj.value;
-    // }
-    constructor(name: string, property: string, effect: (b: Build) => void) {
-        this.name = name;
-        this.property = property;
-        this.effect = effect;
+    constructor(obj: BuildEffect) {
+        this.name = obj.name;
+        this.modifyingProperty = obj.modifyingProperty;
+        this.operation = obj.operation;
+        this.value = obj.value;
     }
+    // constructor(name: string, property: string, effect: (b: Build) => void) {
+    //     this.name = name;
+    //     this.property = property;
+    //     this.effect = effect;
+    // }
 }
 
 /**

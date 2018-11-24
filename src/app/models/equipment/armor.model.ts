@@ -1,7 +1,7 @@
 import { BaseBuildAffectingEquipmentConstructor, BaseBuildAffectingEquipmentObject } from "./equipment.model";
 import { Build } from "src/app/models/build.model";
 import { ArmorEnum } from "src/app/enum/equipment/armor.enum";
-import { BuildEffect } from "../build.object";
+import { BuildEffect, BuildEffectOperation } from "../build.object";
 import { ArmorCategory } from "src/app/enum/equipment/armor-category.enum";
 import { Ability } from "../ability.model";
 
@@ -67,17 +67,35 @@ export class ArmorObject extends BaseBuildAffectingEquipmentObject {
 
         // proficiency check if not dex/str checks, throws, attacks have disadvantage, prevent spell casting actions
         if (this.armorEffect instanceof OverWriteEffect) {
-            this.mod.push(new BuildEffect("armor", "armorClass", (b: Build) => {
                 let effect = this.armorEffect as OverWriteEffect;
-                let dexEffect = effect.addDex ? b.getAbilityModifier(Ability.Dexterity) : 0;
-                dexEffect = effect.maxDex && dexEffect > effect.maxDex ? effect.maxDex : dexEffect;
-                let ac = effect.base + dexEffect;
+                        let dexEffect = effect.addDex ? b.getAbilityModifier(Ability.Dexterity) : 0;
+                        dexEffect = effect.maxDex && dexEffect > effect.maxDex ? effect.maxDex : dexEffect;
+            this.mod.push(
+                new BuildEffect({
+                    name: "armor",
+                    modifyingProperty: "armorClass", 
+                    dependentProperties: ["abilityMod.Dexterity"],
+                    operation: BuildEffectOperation.Initialize,
+                    /**
+                     * TODO: need to find a way around using functions... 
+                     * maybe declare both the build propety you change and the build properties you need
+                     * the runner will attempt to run all independent variables before dependent ones
+                     * will make it easier to detect loops
+                     */
+                    // value: (b: Build) => {
 
-                b.armorClass += ac;
-            }));
+                    //     let ac = effect.base + dexEffect;
+                    //     b.armorClass += ac;
+                    // },
+                    value: 
+                })
+            );
         } else if (this.armorEffect instanceof AdditiveEffect) {
-            this.mod.push(new BuildEffect("armor", "armorClass", (b: Build) => {
-                b.armorClass += (this.armorEffect as AdditiveEffect).add;
+            this.mod.push(new BuildEffect({
+                name: "armor",
+                modifyingProperty: "armorClass",
+                operation: BuildEffectOperation.Add,
+                value: (this.armorEffect as AdditiveEffect).add
             }));
         }
 

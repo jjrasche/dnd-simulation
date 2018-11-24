@@ -1,5 +1,6 @@
 import { Build } from "./build.model";
 import { BaseObject, IBaseObject } from "./base.object";
+import { Type } from "@angular/compiler";
 
 /**
  * Describes objects that can alter properties on a build.
@@ -33,20 +34,95 @@ export abstract class BaseBuildAffectingObject extends BaseObject implements Bui
     }
 }
 
-export class BuildEffect {
-    // Name of the mofifying BuildAffectingObject.
-    name: string;
-    // The property on the build that will be modified.
-    property: string;
-    // Possible means to control order of application e.g. ApplyLast.
-    type?: any;
-    effect: (b: Build) => void;
+/**
+ * Aggregates BuildEffects and runs them.
+ * 
+ * @returns a build with all the buildEffect modifications
+ */
+export function RunBuildEffects(effects: Array<BuildEffect>): Build {
+    // order in groups by BuildEffect
+    const effectsByOperation = groupList<BuildEffect>(BuildEffectOperation, effects, 
+        (be: BuildEffect, op: BuildEffectOperation) => be.operation === op);
+    
+    console.log(effectsByOperation)
+    return null;
+    
+}
 
+/**
+ * @returns a 
+ */
+export function groupList<T>(categories: any, list: Array<T>, groupingMethod: (t: T, category: any) => boolean): Object {
+    let categoriesList = Object.keys(categories);
+    let groupedList = {};
+    categoriesList.forEach(category => {
+        groupedList[category] = list.filter((item: T) => groupingMethod(item, category));
+    });
+    return groupedList;
+}
+
+/**
+ * Describing how to carry out the modification of a single build property.
+ * 
+ * @example
+ * // +1 to intelligence
+ * new BuildEffect({
+ *  name: "chain mail - armor",
+ *  property: "ability.intelligence",
+ *  operation: BuildEffectOperation.Add,
+ *  value: 1,
+ * })
+ * 
+ * @param name of the source of the effect e.g. "chain mail - armor".
+ * @param property name of the buid property being modified e.g. "ability.intelligence".
+ * @param operation to apply to the build property (increase, decrease, add, remove, override, initialize).
+ * @param value of the change made e.g number, object
+ *
+ */
+export class BuildEffect {
+    name: string;
+    property: string;
+    effect: (b: Build) => void;
+    operation?: BuildEffectOperation;
+    value?: object | number | string;
+
+    // constructor(obj: BuildEffect) {
+    //     this.name = obj.name;
+    //     this.property = obj.property;
+    //     this.operation = obj.operation;
+    //     this.value = obj.value;
+    // }
     constructor(name: string, property: string, effect: (b: Build) => void) {
         this.name = name;
         this.property = property;
         this.effect = effect;
     }
+}
+
+/**
+ * Type of change to make to the build. Operations are listed in the order in which they are applied. 
+ * Any push or remove effect will be applied first as they can alter current BuildEffects by adding or removing BuildAffectingObjects
+ * No use of initialize on object is forseen.
+ * 
+ * 
+ * @property {enum} Push            - (array) adds element to a list    e.g. a spell that lets you speak Elvish.
+ * @property {enum} Remove          - (array) removes an element from a list    e.g. magic armor that removes the exhausted condition.
+ * @property {enum} Initialize      - (number | string) sets the value of the property before any other build effects are applied.
+ * @property {enum} Add             - (number) addition operation on a number property.
+ * @property {enum} Subtract        - (number) subtraction operation on a number property.
+ * @property {enum} Multiply        - (number) multiplication operation on a number property.
+ * @property {enum} Divide          - (number) division operation on a number property.
+ * @property {enum} Override        - (number | string) overwrites the value of the property even if other build effects modify the propety.
+ */
+export enum BuildEffectOperation {
+    Push = "Push",
+    Remove = "Remove",
+    Initialize = "Initialize",
+    Add = "Add",
+    Subtract = "Subtract",
+    Multiply = "Multiply",
+    Divide = "Divide",
+    Override = "Override",
 }
 
 /**

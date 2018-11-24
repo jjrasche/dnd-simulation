@@ -1,13 +1,25 @@
-import { GearObject, Gear } from "./gear.model";
+import { GearObject, Gear, IGearObject } from "./gear.model";
 import { PackEnum } from "src/app/enum/equipment/pack.enum";
 import { GearCategory } from "src/app/enum/equipment/gear-category.enum";
+import { BaseBuildAffectingEquipmentConstructor } from "./equipment.model";
+
+interface IPackObject {
+    contents: GearObject[];
+}
+type PackConstructor = IGearObject & IPackObject & BaseBuildAffectingEquipmentConstructor;
+
 
 export class PackObject extends GearObject {
     contents: GearObject[];
+    
+    constructor(obj: PackConstructor) {
+        super(obj);
+        this.category = obj.category;
+    }
 };
 
 export const Pack: { [key in PackEnum]: PackObject } = {
-    BurglarPack: {
+    BurglarPack: new PackObject({
         category: GearCategory.EquipmentPack,
         cost: 16,
         weight: null,
@@ -26,8 +38,8 @@ export const Pack: { [key in PackEnum]: PackObject } = {
             Gear.Tinderbox,
             Gear.Waterskin
         ],
-    },
-    DiplomatPack: {
+    }),
+    DiplomatPack: new PackObject({
         category: GearCategory.EquipmentPack,
         cost: 39,
         weight: null,
@@ -45,8 +57,8 @@ export const Pack: { [key in PackEnum]: PackObject } = {
             Gear.SealingWax,
             Gear.Soap
         ],
-    },
-    DungeoneerPack: {
+    }),
+    DungeoneerPack: new PackObject({
         category: GearCategory.EquipmentPack,
         cost: 12,
         weight: null,
@@ -61,8 +73,8 @@ export const Pack: { [key in PackEnum]: PackObject } = {
             Gear.Torch,
             Gear.Waterskin
         ],
-    },
-    EntertainerPack: {
+    }),
+    EntertainerPack: new PackObject({
         category: GearCategory.EquipmentPack,
         cost: 40,
         weight: null,
@@ -76,8 +88,8 @@ export const Pack: { [key in PackEnum]: PackObject } = {
             Gear.Rations,
             Gear.Waterskin,
         ],
-    },
-    ExplorerPack: {
+    }),
+    ExplorerPack: new PackObject({
         category: GearCategory.EquipmentPack,
         cost: 10,
         weight: null,
@@ -92,8 +104,8 @@ export const Pack: { [key in PackEnum]: PackObject } = {
             Gear.Torch,
             Gear.Waterskin,
         ]
-    },
-    PriestPack: {
+    }),
+    PriestPack: new PackObject({
         category: GearCategory.EquipmentPack,
         cost: 19,
         weight: null,
@@ -106,8 +118,8 @@ export const Pack: { [key in PackEnum]: PackObject } = {
             { ...Gear.Tinderbox, quantity: 2 },
             Gear.Waterskin,
         ]
-    },
-    ScholarPack: {
+    }),
+    ScholarPack: new PackObject({
         category: GearCategory.EquipmentPack,
         cost: 40,
         weight: null,
@@ -119,5 +131,5 @@ export const Pack: { [key in PackEnum]: PackObject } = {
             Gear.InkPen,
             { ...Gear.ParchmentSheet, quantity: 10 },
         ]
-    }, 
+    }), 
 };

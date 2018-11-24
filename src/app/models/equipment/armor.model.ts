@@ -3,18 +3,44 @@ import { Build } from "src/app/models/build.model";
 import { ArmorEnum } from "src/app/enum/equipment/armor.enum";
 import { BuildEffect } from "../build.object";
 import { ArmorCategory } from "src/app/enum/equipment/armor-category.enum";
+import { Ability } from "../ability.model";
 
-export interface ArmorClassObject {
+/**
+ * For instances where armor sets base from the default.
+ * 
+ * @param base the new base armor class.
+ * @param addDex whether this armor allows adding dex.
+ * @param maxDex the limit on how much dex can be added to AC.
+ */
+export class OverWriteEffect {
     base: number;
     addDex: boolean;
     maxDex: number;
+    constructor(obj: OverWriteEffect) {
+        this.base = obj.base;
+        this.addDex = obj.addDex;
+        this.maxDex = obj.maxDex;
+    }
 }
+
+/**
+ * For instances armor simply adds to current AC.
+ */
+export class AdditiveEffect {
+    add: number;
+    constructor(obj: AdditiveEffect) {
+        this.add = obj.add;
+    }
+}
+
+type ArmorEffect = OverWriteEffect | AdditiveEffect;
+
 
 interface IArmorObject {
     category: ArmorCategory;
     strengthNeeded: number;
     stealthDisadvantage: boolean;
-    armorClass: ArmorClassObject;
+    armorEffect: ArmorEffect;
 }
 type ArmorConstructor = IArmorObject & BaseBuildAffectingEquipmentConstructor;
 
@@ -22,30 +48,39 @@ export class ArmorObject extends BaseBuildAffectingEquipmentObject {
     category: ArmorCategory;
     strengthNeeded: number;
     stealthDisadvantage: boolean;
-    armorClass: ArmorClassObject;
+    armorEffect: ArmorEffect;
 
     constructor(obj: ArmorConstructor) {
         super(obj);
         this.category = obj.category;
         this.strengthNeeded = obj.strengthNeeded;
         this.stealthDisadvantage = obj.stealthDisadvantage;
-        this.armorClass = obj.armorClass;
+        this.armorEffect = obj.armorEffect;
+
+        // how to ensure dex is retreived after all effects. 
+        /**
+         * this is a generically hard problem for a rule engine to solve. Circular dependencies.
+         * 
+         * could use unapplied modifications 
+         * stop processing command within effect
+         */
 
         // proficiency check if not dex/str checks, throws, attacks have disadvantage, prevent spell casting actions
-        this.mod.push(new BuildEffect("armor", "armorClass", (b: Build) => {
-            // how to ensure dex is retreived after all effects. 
-            /**
-             * this is a generically hard problem for a rule engine to solve. Circular dependencies.
-             * 
-             * could use unapplied modifications 
-             * stop processing command within effect
-             */
-            let armorEffect = (this.armorClass.base - 10);
-            let dexEffect = this.armorClass.addDex ? b.ability.Dexterity : 0;
-            dexEffect = this.armorClass.maxDex && dexEffect > this.armorClass.maxDex ? this.armorClass.maxDex : dexEffect;
-            
-            b.armorClass += armorEffect + dexEffect;
-        }));
+        if (this.armorEffect instanceof OverWriteEffect) {
+            this.mod.push(new BuildEffect("armor", "armorClass", (b: Build) => {
+                let effect = this.armorEffect as OverWriteEffect;
+                let dexEffect = effect.addDex ? b.getAbilityModifier(Ability.Dexterity) : 0;
+                dexEffect = effect.maxDex && dexEffect > effect.maxDex ? effect.maxDex : dexEffect;
+                let ac = effect.base + dexEffect;
+
+                b.armorClass += ac;
+            }));
+        } else if (this.armorEffect instanceof AdditiveEffect) {
+            this.mod.push(new BuildEffect("armor", "armorClass", (b: Build) => {
+                b.armorClass += (this.armorEffect as AdditiveEffect).add;
+            }));
+        }
+
 
     }
 };
@@ -59,7 +94,7 @@ export const Armor: ArmorMapType = {
         stealthDisadvantage: true,
         weight: 8,
         cost: 5,
-        armorClass: { base: 11, addDex: true, maxDex: null },
+        armorEffect: new OverWriteEffect({ base: 11, addDex: true, maxDex: null }),
     }),
     Leather: new ArmorObject({
         description: "",
@@ -68,7 +103,7 @@ export const Armor: ArmorMapType = {
         stealthDisadvantage: false,
         weight: 10,
         cost: 10,
-        armorClass: { base: 11, addDex: true, maxDex: null },
+        armorEffect: new OverWriteEffect({ base: 11, addDex: true, maxDex: null }),
     }),
     StuddedLeather: new ArmorObject({
         description: "",
@@ -77,7 +112,7 @@ export const Armor: ArmorMapType = {
         stealthDisadvantage: false,
         weight: 13,
         cost: 45,
-        armorClass: { base: 12, addDex: true, maxDex: null },
+        armorEffect: new OverWriteEffect({ base: 12, addDex: true, maxDex: null }),
     }),
     Hide: new ArmorObject({
         description: "",
@@ -86,7 +121,7 @@ export const Armor: ArmorMapType = {
         stealthDisadvantage: false,
         weight: 12,
         cost: 10,
-        armorClass: { base: 12, addDex: true, maxDex: 2 },
+        armorEffect: new OverWriteEffect({ base: 12, addDex: true, maxDex: 2 }),
     }),
     ChainShirt: new ArmorObject({
         description: "",
@@ -95,7 +130,7 @@ export const Armor: ArmorMapType = {
         stealthDisadvantage: false,
         weight: 20,
         cost: 50,
-        armorClass: { base: 13, addDex: true, maxDex: 2 },
+        armorEffect: new OverWriteEffect({ base: 13, addDex: true, maxDex: 2 }),
     }),
     ScaleMail: new ArmorObject({
         description: "",
@@ -104,7 +139,7 @@ export const Armor: ArmorMapType = {
         stealthDisadvantage: true,
         weight: 45,
         cost: 50,
-        armorClass: { base: 14, addDex: true, maxDex: 2 },
+        armorEffect: new OverWriteEffect({ base: 14, addDex: true, maxDex: 2 }),
     }),
     Breastplate: new ArmorObject({
         description: "",
@@ -113,7 +148,7 @@ export const Armor: ArmorMapType = {
         stealthDisadvantage: false,
         weight: 20,
         cost: 400,
-        armorClass: { base: 14, addDex: true, maxDex: 2 },
+        armorEffect: new OverWriteEffect({ base: 14, addDex: true, maxDex: 2 }),
     }),
     HalfPlate: new ArmorObject({
         description: "",
@@ -122,7 +157,7 @@ export const Armor: ArmorMapType = {
         stealthDisadvantage: true,
         weight: 40,
         cost: 750,
-        armorClass: { base: 15, addDex: true, maxDex: 2 },
+        armorEffect: new OverWriteEffect({ base: 15, addDex: true, maxDex: 2 }),
     }),
     RingMail: new ArmorObject({
         description: "",
@@ -131,7 +166,7 @@ export const Armor: ArmorMapType = {
         stealthDisadvantage: true,
         weight: 40,
         cost: 30,
-        armorClass: { base: 14, addDex: false, maxDex: null },
+        armorEffect: new OverWriteEffect({ base: 14, addDex: false, maxDex: null }),
     }),
     ChainMail: new ArmorObject({
         description: "",
@@ -140,7 +175,7 @@ export const Armor: ArmorMapType = {
         stealthDisadvantage: true,
         weight: 55,
         cost: 75,
-        armorClass: { base: 16, addDex: false, maxDex: null },
+        armorEffect: new OverWriteEffect({ base: 16, addDex: false, maxDex: null }),
     }),
     Splint: new ArmorObject({
         description: "",
@@ -149,7 +184,7 @@ export const Armor: ArmorMapType = {
         stealthDisadvantage: true,
         weight: 60,
         cost: 200,
-        armorClass: { base: 17, addDex: false, maxDex: null },
+        armorEffect: new OverWriteEffect({ base: 17, addDex: false, maxDex: null }),
     }),
     Plate: new ArmorObject({
         description: "",
@@ -158,7 +193,7 @@ export const Armor: ArmorMapType = {
         stealthDisadvantage: true,
         weight: 65,
         cost: 1500,
-        armorClass: { base: 18, addDex: false, maxDex: null },
+        armorEffect: new OverWriteEffect({ base: 18, addDex: false, maxDex: null }),
     }),
     Shield: new ArmorObject({
         description: "",
@@ -167,7 +202,7 @@ export const Armor: ArmorMapType = {
         stealthDisadvantage: false,
         weight: 6,
         cost: 10,
-        armorClass: { base: 2, addDex: false, maxDex: null },
+        armorEffect: new AdditiveEffect({add: 2}),
     }),
 };
 

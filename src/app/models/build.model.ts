@@ -6,14 +6,14 @@ import { LevelObject } from "./level.model";
 import { BackgroundObject } from "./background.model";
 import { LanguageObject } from "./language.model";
 import { AbilityEnum } from "../enum/ability.enum";
-import { defaultAbilityScore, defaultSavingThrow } from "./ability.model";
+import { defaultAbilityScore, defaultSavingThrow, AbilityObject } from "./ability.model";
 import { SkillEnum } from "../enum/skill.enum";
 import { defaultSkill } from "./skill.model";
 import { EquipmentObject } from "./equipment/equipment.model";
 import { SpellObject } from "./spell.model";
 import { ConditionObject } from "./condition.model";
 import { initializeObjects } from "./base.object.data";
-import { BuildAffectingObject, BuildEffect } from "./build.object";
+import { BuildAffectingObject, BuildEffect, RunBuildEffects } from "./build.object";
 import { SubRaceObject } from "./subRace.model";
 import { DamageTypeEnum } from "../enum/damage.enum";
 import { Action } from "./action.model";
@@ -30,12 +30,10 @@ var handler = {
             return origValue;
         }
 
-        // order of applying effects: race, class, background, level, conditions, spells, equipment
-
 
         let buildCopy: Build = copyBuild(build);
         buildCopy.takeBase = true;
-        // run all modifiers
+        // accumulate all modifiers
         buildCopy.addModification(buildCopy.race);
         buildCopy.addModification(buildCopy.subRace);
         buildCopy.addModification(buildCopy.class);
@@ -47,9 +45,10 @@ var handler = {
 
         console.log(`${prop}\t\t${JSON.stringify(buildCopy.modifications)}`);
         // applyEffects
-        buildCopy.modifications.forEach((mod: BuildEffect) => {
-            buildCopy.applyEffect(mod);
-        });
+        // buildCopy.modifications.forEach((mod: BuildEffect) => {
+        //     buildCopy.applyEffect(mod);
+        // });
+        RunBuildEffects(buildCopy.modifications);
         // console.log(`2 getting property '${prop}' from build '${build.takeBase}'. value was '${JSON.stringify(origValue)}' now '${JSON.stringify(build[prop])}'`);
         // return buildProps[prop];
         return buildCopy[prop];
@@ -199,6 +198,10 @@ export class Build {
                 this.addModification(obj);
             });
         }
+    }
+
+    public getAbilityModifier(ability: AbilityObject): number {
+        return Math.floor((this.ability[ability.key] - 10) / 2);
     }
      
     // used to prevent looping when using getters within effects.

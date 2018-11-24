@@ -9,6 +9,11 @@ import { Die } from "src/app/enum/die.enum";
 import { WeaponCategory } from "src/app/enum/equipment/weapon-category.enum";
 import { Action } from "../action.model";
 
+export interface Range {
+    normal: number
+    long: number
+}
+
 interface IWeaponObject {
     category: WeaponCategory;
     range?: Range;
@@ -16,11 +21,6 @@ interface IWeaponObject {
     properties?: Array<WeaponPropertyObject>;
 }
 type WeaponConstructor = IWeaponObject & BaseBuildAffectingEquipmentConstructor;
-
-export interface Range {
-    normal: number
-    long: number
-}
 
 export class WeaponObject extends BaseBuildAffectingEquipmentObject {
     category: WeaponCategory;

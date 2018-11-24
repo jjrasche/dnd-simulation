@@ -14,8 +14,9 @@ import { WeaponCategory } from '../enum/equipment/weapon-category.enum';
 import { DamageType } from './damage.model';
 import { WeaponObject } from './equipment/weapon.model';
 import { WeaponPropertyObject } from './equipment/weaponProperty.model';
-import { ArmorObject } from './equipment/armor.model';
+import { ArmorObject, OverWriteEffect, AdditiveEffect } from './equipment/armor.model';
 import { ArmorCategory } from '../enum/equipment/armor-category.enum';
+import { AbilityEnum } from '../enum/ability.enum';
 
 
 describe('BuildModel', () => {
@@ -214,6 +215,94 @@ describe('BuildModel', () => {
         expect(build.darkVision).toEqual(120);
     });
 
+    it("order of operations: given an initialize build effect (speed = 20) an add  build effect (+10 speed) and a divide build effect (speed / 2), build.speed will be  ", () => {
+        let build = new Build();
+
+        // race with -1 AC trait
+        build.race = new RaceObject({
+            description: "",
+            subRaces: null,
+            abilityModifier: null,
+            size: null,
+            speed: null,
+            equipmentProficiency: null,
+            skillProficiency: null,
+            languages: null,
+            traits: [new TraitObject({
+                description: "",
+                mod: [new BuildEffect("trait", "armorClass", (b: Build): void => { b.armorClass -= 1 })],
+            })]
+        });
+
+        // class grants +1 AC
+        build.class = new ClassObject({
+            description: "",
+            skill: null,
+            savingThrows: null,
+            equipmentProficiency: null,
+            hitDie: null,
+            startingEquipment: null,
+            mod: [new BuildEffect("class", "armorClass", (b: Build): void => { b.armorClass += 1 })],
+        });
+
+        // weapon with -1 AC        
+        build.equipment.push(new WeaponObject({
+            description: null,
+            cost: 5,
+            weight: 10,
+            category: WeaponCategory.MartialMelee,
+            damage: { amount: 17, type: DamageType.Acid },
+            inUse: true,
+            properties: [new WeaponPropertyObject({
+                description: null,
+                mod: [new BuildEffect("weaponProperty", "armorClass", (b: Build): void => { b.armorClass -= 1 })],
+            })]
+        }));
+
+        // armor 
+        build.equipment.push(new ArmorObject({
+            description: null,
+            category: ArmorCategory.Light,
+            strengthNeeded: 0,
+            stealthDisadvantage: false,
+            weight: 8,
+            cost: 5,
+            inUse: true,
+            armorEffect: new OverWriteEffect({ base: 12, addDex: false, maxDex: null }),
+        }));
+
+        // shield with +2 AC
+        build.equipment.push(new ArmorObject({
+            description: null,
+            category: ArmorCategory.Shield,
+            strengthNeeded: 0,
+            stealthDisadvantage: false,
+            weight: 8,
+            cost: 5,
+            inUse: true,
+            armorEffect: new AdditiveEffect({ add: 2 }),
+        }));
+
+        // spell with -1 AC
+        build.spellsInAffect.push(new SpellObject({
+            description: null,
+            mod: [new BuildEffect("spell", "armorClass", (b: Build): void => { b.armorClass -= 1 })],
+        }));
+
+        // spell with +1 Dex
+        build.spellsInAffect.push(new SpellObject({
+            description: null,
+            mod: [new BuildEffect("spell", "armorClass", (b: Build): void => { b.armorClass += 1 })],
+        }));
+
+        build.conditions.push(new ConditionObject({
+            description: "",
+            mod: [new BuildEffect("condition", "armorClass", (b: Build) => b.armorClass /= 2)]
+        }));
+
+        expect(build.armorClass).toEqual(7);
+    });
+
     // AC = 10 -1 + 1 - 1 + 2 + 2  - 1  + Dex Mod = 2  / 2 = 7
     it("comlex multi-operation modifiers: given a build with race(-1 AC), class(+1 AC), weapon(-1 AC), Armor(+2 AC), shield(+2 AC), spell(-1 AC), spell(+1 Dex), ability.dex = 13, and Condition that halves AC , build.AC = 7", () => {
         let build = new Build();
@@ -260,7 +349,7 @@ describe('BuildModel', () => {
             })]
         }));
 
-        // armor with +2 AC
+        // armor 
         build.equipment.push(new ArmorObject({
             description: null,
             category: ArmorCategory.Light,
@@ -269,7 +358,7 @@ describe('BuildModel', () => {
             weight: 8,
             cost: 5,
             inUse: true,
-            armorClass: { base: 12, addDex: false, maxDex: null },
+            armorEffect: new OverWriteEffect({ base: 12, addDex: false, maxDex: null }),
         }));
 
         // shield with +2 AC
@@ -281,8 +370,7 @@ describe('BuildModel', () => {
             weight: 8,
             cost: 5,
             inUse: true,
-            armorClass: null,
-            mod: [new BuildEffect("shield", "armorClass", (b: Build): void => { b.armorClass += 2 })],
+            armorEffect: new AdditiveEffect({ add: 2 }),
         }));
 
         // spell with -1 AC
@@ -299,10 +387,20 @@ describe('BuildModel', () => {
 
         build.conditions.push(new ConditionObject({
             description: "",
-            mod: [new BuildEffect("condition", "speed", (b: Build) => b.armorClass /= 2)]
+            mod: [new BuildEffect("condition", "armorClass", (b: Build) => b.armorClass /= 2)]
         }));
 
         expect(build.armorClass).toEqual(7);
+    });
+
+    xit("modifier", () => {
+        let build = new Build();
+        build.ability = { Strength: 14, Dexterity: 13, Constitution: 11, Intelligence: 5, Wisdom: 20, Charisma: 0 };
+        
+        let actual = Object.keys(Ability).map(key => build.getAbilityModifier(Ability[key]));
+
+        expect(actual).toEqual([2,1,0,-3,5, -5]);
+
     });
 
     /**

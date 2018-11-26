@@ -44,8 +44,11 @@ export class RaceObject extends BaseBuildAffectingObject {
         this.speed = obj.speed;
         this.traits = obj.traits;
 
-        this.mod.push(new BuildEffect("race", "ability", (b: Build) => 
-            applyToBuildFromObject(() => this.abilityModifier, (k, a) => b.ability[k] += a[k])));
+        this.mod.push(new BuildEffect({
+            name: "race",
+            modifyingProperty: "ability",
+            effect: (b: Build) => applyToBuildFromObject(() => this.abilityModifier, (k, a) => b.ability[k] += a[k])
+        }));
         
         if (this.traits) {
             this.traits.map((trait: TraitObject) => trait.mod)

@@ -57,45 +57,47 @@ export class ArmorObject extends BaseBuildAffectingEquipmentObject {
         this.stealthDisadvantage = obj.stealthDisadvantage;
         this.armorEffect = obj.armorEffect;
 
-        // how to ensure dex is retreived after all effects. 
-        /**
-         * this is a generically hard problem for a rule engine to solve. Circular dependencies.
-         * 
-         * could use unapplied modifications 
-         * stop processing command within effect
-         */
-
-        // proficiency check if not dex/str checks, throws, attacks have disadvantage, prevent spell casting actions
         if (this.armorEffect instanceof OverWriteEffect) {
-                let effect = this.armorEffect as OverWriteEffect;
-                        let dexEffect = effect.addDex ? b.getAbilityModifier(Ability.Dexterity) : 0;
-                        dexEffect = effect.maxDex && dexEffect > effect.maxDex ? effect.maxDex : dexEffect;
+                // let effect = this.armorEffect as OverWriteEffect;
+                //         let dexEffect = effect.addDex ? b.getAbilityModifier(Ability.Dexterity) : 0;
+                //         dexEffect = effect.maxDex && dexEffect > effect.maxDex ? effect.maxDex : dexEffect;
+            // add dex && no max dex
             this.mod.push(
                 new BuildEffect({
                     name: "armor",
                     modifyingProperty: "armorClass", 
-                    dependentProperties: ["abilityMod.Dexterity"],
                     operation: BuildEffectOperation.Initialize,
-                    /**
-                     * TODO: need to find a way around using functions... 
-                     * maybe declare both the build propety you change and the build properties you need
-                     * the runner will attempt to run all independent variables before dependent ones
-                     * will make it easier to detect loops
-                     */
-                    // value: (b: Build) => {
-
-                    //     let ac = effect.base + dexEffect;
-                    //     b.armorClass += ac;
-                    // },
-                    value: 
+                    condition: "obj.armorEffect.addDex && obj.armorEffect.maxDex === null",
+                    value: "obj.armorEffect.base + build.ability.Dexterity"
+                })
+            );
+            // add dex && max dex
+            this.mod.push(
+                new BuildEffect({
+                    name: "armor",
+                    modifyingProperty: "armorClass",
+                    operation: BuildEffectOperation.Initialize,
+                    condition: "obj.armorEffect.addDex && obj.armorEffect.maxDex != null",
+                    value: "obj.armorEffect.base + build.ability.Dexterity > obj.armorEffect.maxDex ? obj.armorEffect.maxDex : build.ability.Dexterity"
+                })
+            );
+            // don't add dex
+            this.mod.push(
+                new BuildEffect({
+                    name: "armor",
+                    modifyingProperty: "armorClass",
+                    operation: BuildEffectOperation.Initialize,
+                    condition: "!obj.armorEffect.addDex",
+                    value: "obj.armorEffect.base"
                 })
             );
         } else if (this.armorEffect instanceof AdditiveEffect) {
+            let val = (this.armorEffect as AdditiveEffect).add;
             this.mod.push(new BuildEffect({
                 name: "armor",
                 modifyingProperty: "armorClass",
                 operation: BuildEffectOperation.Add,
-                value: (this.armorEffect as AdditiveEffect).add
+                value: val.toString()
             }));
         }
 

@@ -37,10 +37,18 @@ export class WeaponObject extends BaseBuildAffectingEquipmentObject {
 
         // Add default actions based on weapon type.
         if ([WeaponCategory.SimpleMelee, WeaponCategory.MartialMelee].includes(this.category)) {
-            this.mod.push(new BuildEffect("weapon", "actions", (b: Build) => b.actions.push(new Action())));
+            this.mod.push(new BuildEffect({
+                name: "weapon",
+                modifyingProperty: "actions",
+                effect: (b: Build) => b.actions.push(new Action())
+            }));
         }
         if ([WeaponCategory.SimpleRange, WeaponCategory.MartialRange].includes(this.category)) {
-            this.mod.push(new BuildEffect("weapon", "actions", (b: Build) => b.actions.push(new Action())));
+            this.mod.push(new BuildEffect({
+                name: "weapon",
+                modifyingProperty: "actions",
+                effect: (b: Build) => b.actions.push(new Action())
+            }));
         }
         // Add build affecting properties from each weapon.
         if (this.properties) {

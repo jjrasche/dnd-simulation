@@ -11,11 +11,6 @@ export class SpellObject extends BaseBuildAffectingObject {
 export const Spell: { [key in SpellEnum]: SpellObject } = {
     AcidArrow: new SpellObject({
         description: "A shimmering green arrow streaks toward a target within range and bursts in a spray of acid. Make a ranged spell attack against the target. On a hit, the target takes 4d4 acid damage immediately and 2d4 acid damage at the end of its next turn. On a miss, the arrow splashes the target with acid for half as much of the initial damage and no damage at the end of its next turn.",
-        mod: [new BuildEffect("spell", "", (b: Build) => {
-            // TODO: add sight component to build.
-            // TODO: how to determine what ability checks require sight.
-            b = b
-        })],
     }),
     AcidSplash: new SpellObject({
         description: "You hurl a bubble of acid. Choose one creature within range, or choose two creatures within range that are within 5 feet of each other. A target must succeed on a dexterity saving throw or take 1d6 acid damage. This spellâ€™s damage increases by 1d6 when you reach 5th level (2d6), 11th level (3d6), and 17th level (4d6).",

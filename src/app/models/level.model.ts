@@ -18,7 +18,11 @@ export class LevelObject extends BaseBuildAffectingObject {
         this.proficiencyBonus = obj.proficiencyBonus;
         
         // Add generic level effects.
-        let be = new BuildEffect("level", "proficiencyBonus", (b: Build) => b.proficiencyBonus = this.proficiencyBonus);
+        let be = new BuildEffect({
+            name: "level",
+            modifyingProperty: "proficiencyBonus",
+            effect: (b: Build) => b.proficiencyBonus = this.proficiencyBonus
+        });
         this.mod.push(be);
     }
 }

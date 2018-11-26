@@ -31,8 +31,11 @@ export class SubRaceObject extends BaseBuildAffectingObject {
         this.languages = obj.languages;
         this.traits = obj.traits;
 
-        this.mod.push(new BuildEffect("subrace", "ability", (b: Build) =>
-            applyToBuildFromObject(() => this.abilityModifier, (k, a) => b.ability[k] += a[k])));
+        this.mod.push(new BuildEffect({
+            name: "subrace",
+            modifyingProperty: "ability",
+            effect: (b: Build) => applyToBuildFromObject(() => this.abilityModifier, (k, a) => b.ability[k] += a[k])
+        }));
 
         if (this.traits) {
             this.traits.inherent.map((trait: TraitObject) => trait.mod)

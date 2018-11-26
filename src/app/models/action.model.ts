@@ -1,5 +1,6 @@
 import { ActionType } from "../enum/action-type.enum";
 import { Build } from "./build.model";
+import { BuildEffect } from "./build.object";
 
 /**
  * bonus actions
@@ -113,18 +114,6 @@ export class ActionEffect {
     success: Effect[];
     failure: Effect[];
     finally: Effect[];
-}
-
-// every change to a build property is an effect
-// need to be able to add objects to a build e.g. push modifier into equipment.modifier
-/**
- * The only way to modify a property on a build. When a build affect is invoked
- */
-export class BuildEffect {
-    initiator: string; // who/what/why the effect started
-    property: string; // the property accessible through Build["property"]
-    operation: string; // ???type of operation performed on build property e.g. takeLower, subtract
-    amount: number
 }
 
 

@@ -35,8 +35,16 @@ export class ClassObject extends BaseBuildAffectingObject {
       this.hitDie = obj.hitDie;
       this.startingEquipment = obj.startingEquipment;
 
-      this.mod.push(new BuildEffect("class", "skill", (b: Build) => applyToBuild(() => this.skill.inherent, k => b.skill[k] = true)));
-      this.mod.push(new BuildEffect("class", "savingThrow", (b: Build) => applyToBuild(() => this.savingThrows, k => b.savingThrow[k] = true)));
+      this.mod.push(new BuildEffect({
+         name: "class",
+         modifyingProperty: "skill",
+         effect: (b: Build) => applyToBuild(() => this.skill.inherent, k => b.skill[k] = true)
+      }));
+      this.mod.push(new BuildEffect({
+         name: "class",
+         modifyingProperty: "savingThrow",
+         effect: (b: Build) => applyToBuild(() => this.savingThrows, k => b.savingThrow[k] = true)
+      }));
    }
 };
 

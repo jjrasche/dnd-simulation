@@ -13,7 +13,7 @@ import { EquipmentObject } from "./equipment/equipment.model";
 import { SpellObject } from "./spell.model";
 import { ConditionObject } from "./condition.model";
 import { initializeObjects } from "./base.object.data";
-import { BuildAffectingObject, BuildEffect, RunBuildEffects } from "./build.object";
+import { BuildAffectingObject, BuildEffect, RunBuildEffects, BuildEffectOperation, checkExpression } from "./build.object";
 import { SubRaceObject } from "./subRace.model";
 import { DamageTypeEnum } from "../enum/damage.enum";
 import { Action } from "./action.model";
@@ -25,7 +25,7 @@ import { Action } from "./action.model";
 var handler = {
     get: function (build, prop) {
         let origValue = build[prop];
-        // console.log(`1 getting property '${prop}' from build '${build.takeBase}'`);
+        console.log(`1 getting property '${prop}' from build '${build.takeBase}'`);
         if (build.takeBase) {
             return origValue;
         }
@@ -48,8 +48,8 @@ var handler = {
         // buildCopy.modifications.forEach((mod: BuildEffect) => {
         //     buildCopy.applyEffect(mod);
         // });
-        RunBuildEffects(buildCopy.modifications);
-        // console.log(`2 getting property '${prop}' from build '${build.takeBase}'. value was '${JSON.stringify(origValue)}' now '${JSON.stringify(build[prop])}'`);
+        RunBuildEffects(buildCopy);
+        console.log(`2 getting property '${prop}' from build '${build.takeBase}'. value was '${JSON.stringify(origValue)}' now '${JSON.stringify(build[prop])}'`);
         // return buildProps[prop];
         return buildCopy[prop];
     }
@@ -63,6 +63,35 @@ var handler = {
 };
 
 export class Build {
+    /**
+     *              Decision impacts 
+     * The un modified value of these variables, what you would get by calling JSON.stringify(build)
+     * represents the state of properties resulting from decisions made about this build.
+     * e.g. JSON.parse(JSON.stringify(build))["language"] will contain all the languages decisions that were specifically made for this build.
+     *  so if build.race.languages.selectable = {num: 1, options: [Language.Dwarvish, Language.Elvish]} and when prompted, the user picked Dwarvish,
+     *  JSON.parse(JSON.stringify(build))["language"] = [Language.Dwarvish]
+     * 
+     *              Object impacts
+     * The proxy will intercept all get requests and add all BuildEffects from BuildAffectingObjects.
+     * e.g if build.race.languages.inherent = [Language.Orc, Language.Goblin] then a call to build.languages will be intercepted by the proxy
+     * and the race BuildEffect will add both Orc and Goblin to build.languages.
+     *
+     *              Action impacts
+     * Actions can modify a build with BuildEffects. When these effects have a duration of affect they are
+     * IterimBuildEffects. The game engine will apply these effects at the startTime and unapply at the end of the duration.
+     * Any IterimBuildEffects that start at 0 will be applied by the ActionRunner.
+     * All others will be applied by the game engine which will also updated the IterimBuildEffect to reflect the passing of time units.
+     * e.g. a target is hit with a sword that poisons it for 3 rounds. 
+     * IterimBuildEffect({
+     *  name: "posioned by sword hit from ____",
+     *  modifyingProperty: "conditions",
+     *  operation: BuildEffectOperation.Push,
+     *  value: "Poisoned",
+     *  start: {type: Turn, num: 0},
+     *  duration: {type: Round, num: 3}
+     * })
+     * 
+     */
     // build properties that involve an initial choice
     race: RaceObject;
     subRace: SubRaceObject;
@@ -81,6 +110,7 @@ export class Build {
     conditions: ConditionObject[] = [];
     damageModifier: { [key in DamageTypeEnum]: string}; // current resistance, vulnerability, and immunity tied to a given damageType
     damage: number = 0;
+    buildEffects: BuildEffect[] = [];
 
     // calcualable properties
     darkVision: number = 0;
@@ -175,20 +205,27 @@ export class Build {
        * 
        */
 
-    public applyEffect(obj: BuildEffect): void {
-        if (obj && obj.effect) {
-            let prevValue = JSON.stringify(this[obj.property]);
-            obj.effect(this);
-            if (obj.property == "armorClass") {
-                console.log(`${obj.name} changed property ${obj.property} from '${prevValue}' to '${JSON.stringify(this[obj.property])}'`);
-            }
-        }
-    }
-
     public addModification(obj: BuildAffectingObject): void {
+        let build = this;
         if (obj && obj.mod) {
-            let mods: BuildEffect[] = obj.mod;
-            this.modifications = [ ...this.modifications, ...mods];
+            // run eval when there is access to the BAO and build
+            for (let index = 0; index < obj.mod.length; index++) {
+                let be = obj.mod[index];
+                // evaluate condition 
+                if (be.condition) {
+                    checkExpression(be.condition);
+                    be.condition = eval(be.condition);
+                } else {
+                    be.condition = true;
+                }
+                // evaluate value
+                if (be.value) {
+                    checkExpression(be.value);
+                    be.value = eval(be.value);
+                }
+            }
+
+            this.modifications = [ ...this.modifications, ...obj.mod];
         }
     }
 

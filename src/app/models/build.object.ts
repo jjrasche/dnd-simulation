@@ -34,17 +34,46 @@ export abstract class BaseBuildAffectingObject extends BaseObject implements Bui
     }
 }
 
+
+
+function applyEffect(build: Build, be: BuildEffect): void {
+    if(be /*&& obj.effect*/) {
+        let prevValue = JSON.stringify(build[be.modifyingProperty]);
+
+        // use effect for BuildEffects that still use functions 
+        if (be.effect) {
+            be.effect(build);
+        }
+        // use eval for BuildEffects using new method
+        else {
+            if (be.condition) {
+                switch (be.operation) {
+                    case BuildEffectOperation.Add:
+                        build[be.modifyingProperty] += be.value;
+                        break;
+                }
+            }
+        }
+
+        if (be.modifyingProperty == "armorClass") {
+            console.log(`${be.name} changed property ${be.modifyingProperty} from '${prevValue}' to '${JSON.stringify(build[be.modifyingProperty])}'`);
+        }
+    }
+}
+
 /**
  * Aggregates BuildEffects and runs them.
  * 
  * @returns a build with all the buildEffect modifications
  */
-export function RunBuildEffects(effects: Array<BuildEffect>): Build {
+export function RunBuildEffects(build: Build): Build {
+    let effects: Array<BuildEffect> = build.modifications;
     // order in groups by BuildEffect
     const effectsByOperation = groupList<BuildEffect>(BuildEffectOperation, effects, 
         (be: BuildEffect, op: BuildEffectOperation) => be.operation === op);
-    
     console.log(effectsByOperation)
+
+    effects.forEach((be: BuildEffect) => applyEffect(build, be));
     return null;
     
 }
@@ -53,6 +82,9 @@ export function RunBuildEffects(effects: Array<BuildEffect>): Build {
  * @returns a 
  */
 export function groupList<T>(categories: any, list: Array<T>, groupingMethod: (t: T, category: any) => boolean): Object {
+    if (list == null) {
+        return {};
+    }
     let categoriesList = Object.keys(categories);
     let groupedList = {};
     categoriesList.forEach(category => {
@@ -60,6 +92,7 @@ export function groupList<T>(categories: any, list: Array<T>, groupingMethod: (t
     });
     return groupedList;
 }
+
 
 /**
  * Describing how to carry out the modification of a single build property.
@@ -75,30 +108,60 @@ export function groupList<T>(categories: any, list: Array<T>, groupingMethod: (t
  * 
  * @param name of the source of the effect e.g. "chain mail - armor".
  * @param modifyingProperty name of the buid property being modified e.g. "ability.intelligence".
- * @param dependentProperties properties of the build that are needed to calculate value of the change.
+ * @para dependentProperties properties of the build that are needed to calculate value of the change.
  * @param operation to apply to the build property (increase, decrease, add, remove, override, initialize).
  * @param value of the change made, may need to make this a mini DSL to utilize the dependentProperties in the calculatio
- *
+ * @param condition a logical statement that will be ran to determine if this buildEffect is applied.
+ *  this string is limited to the conditional operators, logic operators, letters, numbers, and '.'.
+ *  null defaults to true.
+ * 
+ * @todo There is a conflict between needing to describe complex conditional behavior like armor's effect on AC
+ *  and not giving a BuildEffect the full power of functions.  Serializable 
+ *  - I don't want BuildEffect to store functions because it's
+ *      - dangerous to allow users to run their own functions
+ *      - harder to track cause and effect of changes
+ *      - would make the UX of creating a BuildEffect more difficult and require programming knowledge.
+ *  - value can depend on inputs, affected build, initiator, Object action is tied to.
+ *  - can have conditions tied to the BuildEffect being applied
+ * 
+ * armor AC value = 
+ *  if (add dex)
+ *      if ( no max dex)
+ *          return armor.armorEffect.base + b.abilityModifier.Dexterity
+ *      else 
+ *          return armor.armorEffect.base + Math.min(b.abilityModifier.Dexterity, armor.armorEffect.maxDex)
+ *  else
+ *      return armor.armorEffect.base
  */
 export class BuildEffect {
     name: string;
     modifyingProperty: string;
-    dependentProperties?: string[];
-    // effect: (b: Build) => void;
-    operation: BuildEffectOperation;
-    value: number | object | string;
+    // dependentProperties?: string[];
+    operation?: BuildEffectOperation;
+    value?: any;
+    condition?: any;
+
+    effect?: (b: Build) => void;
 
     constructor(obj: BuildEffect) {
         this.name = obj.name;
         this.modifyingProperty = obj.modifyingProperty;
         this.operation = obj.operation;
         this.value = obj.value;
+        this.condition = obj.condition;
+        this.effect = obj.effect;
     }
-    // constructor(name: string, property: string, effect: (b: Build) => void) {
-    //     this.name = name;
-    //     this.property = property;
-    //     this.effect = effect;
-    // }
+}
+
+// alpha numberic, logic operators, compare operators, and basic math operators
+const expresionStringInvalidCharacters = /[^a-zA-Z0-9\.\s=!<>&|+-/*?:]+/g;
+export function checkExpression(expression: string) {
+    // Verify expression can only have limited set of characters.
+    console.log(expression);
+    if (expression && expression.match(expresionStringInvalidCharacters)) {
+        let invlalidCharacters = expression.match(expresionStringInvalidCharacters).join();
+        throw new Error(`The expression '${expression}' contains invalid characters '${invlalidCharacters}'`)
+    }
 }
 
 /**

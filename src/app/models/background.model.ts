@@ -16,7 +16,11 @@ export class BackgroundObject extends BaseBuildAffectingObject {
         super(obj);
         this.skill = obj.skill;
 
-        this.mod.push(new BuildEffect("background", "skills", (b: Build) => applyToBuild(() => this.skill.inherent, k => b.skill[k] = true)));
+        this.mod.push(new BuildEffect({
+            name: "background",
+            modifyingProperty: "skills", 
+            effect: (b: Build) => applyToBuild(() => this.skill.inherent, k => b.skill[k] = true)
+        }));
     }
 }
 

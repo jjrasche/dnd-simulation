@@ -1,4 +1,4 @@
-import { copyBuild } from "../utils/objectManipulation";
+import { copyBuild, propertyCopy } from "../utils/objectManipulation";
 import { RaceObject } from "./race.model";
 import { ClassObject } from "./class.model";
 import { LevelObject } from "./level.model";
@@ -201,10 +201,12 @@ export class Build {
     public addModification(obj: BuildAffectingObject): void {
         let build = this;
         if (obj && obj.mod) {
+            let effects = new Array<BuildEffect>();
             // run eval when there is access to the BAO and build
             for (let index = 0; index < obj.mod.length; index++) {
-                let be = obj.mod[index];
+                let be = propertyCopy(obj.mod[index]);
                 if (be.condition != null) {
+                    console.log(`outside condition: ${be.condition}`);
                     checkExpression(be.condition);
                     be.condition = eval(be.condition);
                 } else {
@@ -212,11 +214,13 @@ export class Build {
                 }
                 
                 if (be.value != null) {
+                    console.log(`outside Value: ${be.value}`);
                     checkExpression(be.value);
                     be.value = eval(be.value);
                 }
+                effects.push(be);
             }
-            this.modifications = [ ...this.modifications, ...obj.mod];
+            this.modifications = [...this.modifications, ...effects];
         }
     }
 

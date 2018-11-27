@@ -57,7 +57,7 @@ function applyEffect(build: Build, be: BuildEffect): void {
             }
         }
 
-        if (be.modifyingProperty == "armorClass") {
+        if (be.modifyingProperty == "armorClass" && be.condition) {
             console.log(`${be.name} changed property ${be.modifyingProperty} from '${prevValue}' to '${JSON.stringify(build[be.modifyingProperty])}'`);
         }
     }
@@ -159,7 +159,7 @@ export class BuildEffect {
 const expresionStringInvalidCharacters = /[^a-zA-Z0-9\.\s=!<>&|+-/*?:]+/g;
 export function checkExpression(expression: string) {
     // Verify expression can only have limited set of characters.
-    // console.log(expression);
+    console.log(`inside: ${expression}`);
     if (expression && expression.match(expresionStringInvalidCharacters)) {
         let invlalidCharacters = expression.match(expresionStringInvalidCharacters).join();
         throw new Error(`The expression '${expression}' contains invalid characters '${invlalidCharacters}'`)

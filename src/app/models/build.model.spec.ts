@@ -284,17 +284,17 @@ describe('BuildModel', () => {
             armorEffect: new OverWriteEffect({ base: 12, addDex: false, maxDex: null }),
         }));
 
-        // // shield with +2 AC
-        // build.equipment.push(new ArmorObject({
-        //     description: null,
-        //     category: ArmorCategory.Shield,
-        //     strengthNeeded: 0,
-        //     stealthDisadvantage: false,
-        //     weight: 8,
-        //     cost: 5,
-        //     inUse: true,
-        //     armorEffect: new AdditiveEffect({ add: 2 }),
-        // }));
+        // shield with +2 AC
+        build.equipment.push(new ArmorObject({
+            description: null,
+            category: ArmorCategory.Shield,
+            strengthNeeded: 0,
+            stealthDisadvantage: false,
+            weight: 8,
+            cost: 5,
+            inUse: true,
+            armorEffect: new AdditiveEffect({ add: 2 }),
+        }));
 
         expect(build.armorClass).toEqual(14);
     });

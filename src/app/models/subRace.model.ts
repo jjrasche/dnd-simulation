@@ -33,7 +33,7 @@ export class SubRaceObject extends BaseBuildAffectingObject {
 
         this.mod.push(new BuildEffect({
             name: "subrace",
-            modifyingProperty: "ability",
+            property: "ability",
             effect: (b: Build) => applyToBuildFromObject(() => this.abilityModifier, (k, a) => b.ability[k] += a[k])
         }));
 

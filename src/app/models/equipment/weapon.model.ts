@@ -39,14 +39,14 @@ export class WeaponObject extends BaseBuildAffectingEquipmentObject {
         if ([WeaponCategory.SimpleMelee, WeaponCategory.MartialMelee].includes(this.category)) {
             this.mod.push(new BuildEffect({
                 name: "weapon",
-                modifyingProperty: "actions",
+                property: "actions",
                 effect: (b: Build) => b.actions.push(new Action())
             }));
         }
         if ([WeaponCategory.SimpleRange, WeaponCategory.MartialRange].includes(this.category)) {
             this.mod.push(new BuildEffect({
                 name: "weapon",
-                modifyingProperty: "actions",
+                property: "actions",
                 effect: (b: Build) => b.actions.push(new Action())
             }));
         }

@@ -38,7 +38,7 @@ export abstract class BaseBuildAffectingObject extends BaseObject implements Bui
 
 function applyEffect(build: Build, be: BuildEffect): void {
     if(be /*&& obj.effect*/) {
-        let prevValue = JSON.stringify(build[be.modifyingProperty]);
+        let prevValue = JSON.stringify(build[be.property]);
 
         // use effect for BuildEffects that still use functions  TODO: remove when all BEs converted
         if (be.effect) {
@@ -48,17 +48,35 @@ function applyEffect(build: Build, be: BuildEffect): void {
             if (be.condition) {
                 switch (be.operation) {
                     case BuildEffectOperation.Add:
-                        build[be.modifyingProperty] += be.value;
+                        build[be.property] += be.value;
+                        break;
+                    case BuildEffectOperation.Subtract:
+                        build[be.property] -= be.value;
+                        break;
+                    case BuildEffectOperation.Multiply:
+                        build[be.property] *= be.value;
+                        break;
+                    case BuildEffectOperation.Divide:
+                        build[be.property] /= be.value;
                         break;
                     case BuildEffectOperation.Initialize:
-                        build[be.modifyingProperty] = be.value;
+                    case BuildEffectOperation.Override:
+                        build[be.property] = be.value;
                         break;
+                    case BuildEffectOperation.Push:
+                        build[be.property].push(be.value);
+                        break;
+                    case BuildEffectOperation.Remove:
+                        delete build[be.property];
+                        break;
+                    default:
+                        throw new Error(`Invalid Build Effect Operation '${be.operation}'`);
                 }
             }
         }
 
-        if (be.modifyingProperty == "armorClass" && be.condition) {
-            console.log(`${be.name} changed property ${be.modifyingProperty} from '${prevValue}' to '${JSON.stringify(build[be.modifyingProperty])}'`);
+        if (be.condition) {
+            console.log(`${be.name} changed property ${be.property} from '${prevValue}' to '${JSON.stringify(build[be.property])}'`);
         }
     }
 }
@@ -109,7 +127,7 @@ export function groupList<T>(categories: any, list: Array<T>, groupingMethod: (t
  * })
  * 
  * @param name of the source of the effect e.g. "chain mail - armor".
- * @param modifyingProperty name of the buid property being modified e.g. "ability.intelligence".
+ * @param property name of the buid property being modified e.g. "ability.intelligence".
  * @para dependentProperties properties of the build that are needed to calculate value of the change.
  * @param operation to apply to the build property (increase, decrease, add, remove, override, initialize).
  * @param value of the change made, may need to make this a mini DSL to utilize the dependentProperties in the calculatio
@@ -137,7 +155,7 @@ export function groupList<T>(categories: any, list: Array<T>, groupingMethod: (t
  */
 export class BuildEffect {
     name: string;
-    modifyingProperty: string;
+    property: string;
     // dependentProperties?: string[];
     operation?: BuildEffectOperation;
     value?: any;
@@ -147,7 +165,7 @@ export class BuildEffect {
 
     constructor(obj: BuildEffect) {
         this.name = obj.name;
-        this.modifyingProperty = obj.modifyingProperty;
+        this.property = obj.property;
         this.operation = obj.operation;
         this.value = obj.value;
         this.condition = obj.condition;

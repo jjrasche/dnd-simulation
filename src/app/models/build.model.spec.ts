@@ -22,10 +22,12 @@ import { AbilityEnum } from '../enum/ability.enum';
 describe('BuildModel', () => {
 
     // single modifier effect
-    xit("racial ability modifier: given a build with race specific and base ability, the result is the combination of both", () => {
+    it("racial ability modifier: given a build with race specific and base ability, the result is the combination of both", () => {
         let build = new Build();
         build.ability = { Strength: 2, Dexterity: 1, Constitution: 2, Intelligence: 0, Wisdom: -3, Charisma: 0 };
         
+        build.ability.Wisdom += -5;
+        console.log(build.ability.Wisdom)
         let race = new RaceObject({
             description: "",
             subRaces: null,
@@ -42,7 +44,7 @@ describe('BuildModel', () => {
         let expected = { Strength: 3, Dexterity:2, Constitution: 4, Intelligence: 0, Wisdom: -3, Charisma: -1 };
         expect(build.ability).toEqual(expected);
     });
-    xit("racial trait modifier: given a build with a race based darkvision to 120 feet and spell with dark vision to 60 feet, build.darkVision returns 120", () => {
+    it("racial trait modifier: given a build with a race based darkvision to 120 feet and spell with dark vision to 60 feet, build.darkVision returns 120", () => {
         let build = new Build();
         build.darkVision = 10;
 
@@ -59,10 +61,9 @@ describe('BuildModel', () => {
                 description: "",
                 mod: [new BuildEffect({
                     name: "trait",
-                    modifyingProperty: "darkvision",
-                    // (b: Build): void => { b.darkVision = 120 },
-                    operation: BuildEffectOperation.Add,
-                    value: 1
+                    property: "darkVision",
+                    operation: BuildEffectOperation.Override,
+                    value: "120"
                 })],
             })]
         });        
@@ -78,7 +79,7 @@ describe('BuildModel', () => {
             description: "A shimmering green arrow streaks toward a target within range and bursts in a spray of acid. Make a ranged spell attack against the target. On a hit, the target takes 4d4 acid damage immediately and 2d4 acid damage at the end of its next turn. On a miss, the arrow splashes the target with acid for half as much of the initial damage and no damage at the end of its next turn.",
             mod: [new BuildEffect({
                 name: "condition",
-                modifyingProperty: "proficiencyBonus",
+                property: "proficiencyBonus",
                 // (b: Build): void => { b.darkVision = 60 },
                 operation: BuildEffectOperation.Add,
                 value: 1
@@ -109,7 +110,7 @@ describe('BuildModel', () => {
 
         let be = new BuildEffect({
             name: "background",
-            modifyingProperty: "condition",
+            property: "condition",
             // (b: Build) => b.conditions.push(Condition.Invisible,
             operation: BuildEffectOperation.Add,
             value: 1
@@ -132,7 +133,7 @@ describe('BuildModel', () => {
             description: "",
             mod: [new BuildEffect({
                 name: "condition",
-                modifyingProperty: "speed",
+                property: "speed",
                 // (b: Build) => b.speed /= ,
                 operation: BuildEffectOperation.Add,
                 value: 1
@@ -177,7 +178,7 @@ describe('BuildModel', () => {
             abilityModifier: { Strength: 1, Dexterity: 1, Constitution: 1, Intelligence: 0, Wisdom: 0, Charisma: -1 },
             mod: [new BuildEffect({
                 name: "subrace",
-                modifyingProperty: "speed",
+                property: "speed",
                 // (b: Build): void => { b.speed = Math.max(b.speed, 25) },
                 operation: BuildEffectOperation.Add,
                 value: 1
@@ -206,7 +207,7 @@ describe('BuildModel', () => {
                 // TOOD: thought about adding number prototype extension to do b.darkVision.max(120) --> set this to higher of darkvision or 120
                 mod: [new BuildEffect({
                     name: "trait",
-                    modifyingProperty: "darkvision",
+                    property: "darkvision",
                     // (b: Build): void => { b.darkVision = Math.max(b.darkVision, 120) },
                     operation: BuildEffectOperation.Add,
                     value: 1
@@ -218,7 +219,7 @@ describe('BuildModel', () => {
             description: "A shimmering green arrow streaks toward a target within range and bursts in a spray of acid. Make a ranged spell attack against the target. On a hit, the target takes 4d4 acid damage immediately and 2d4 acid damage at the end of its next turn. On a miss, the arrow splashes the target with acid for half as much of the initial damage and no damage at the end of its next turn.",
             mod: [new BuildEffect({
                 name: "condition",
-                modifyingProperty: "proficiencyBonus",
+                property: "proficiencyBonus",
                 // (b: Build): void => { b.darkVision = Math.max(b.darkVision, 60) },
                 operation: BuildEffectOperation.Add,
                 value: 1
@@ -245,7 +246,7 @@ describe('BuildModel', () => {
                 // TOOD: thought about adding number prototype extension to do b.darkVision.max(120) --> set this to higher of darkvision or 120
                 mod: [new BuildEffect({
                     name: "trait",
-                    modifyingProperty: "darkvision",
+                    property: "darkvision",
                     // (b: Build): void => { b.darkVision = Math.max(b.darkVision, 60) },
                     operation: BuildEffectOperation.Add,
                     value: 1
@@ -258,7 +259,7 @@ describe('BuildModel', () => {
             description: "A shimmering green arrow streaks toward a target within range and bursts in a spray of acid. Make a ranged spell attack against the target. On a hit, the target takes 4d4 acid damage immediately and 2d4 acid damage at the end of its next turn. On a miss, the arrow splashes the target with acid for half as much of the initial damage and no damage at the end of its next turn.",
             mod: [new BuildEffect({
                 name: "condition",
-                modifyingProperty: "proficiencyBonus",
+                property: "proficiencyBonus",
                 // (b: Build): void => { b.darkVision = Math.max(b.darkVision, 120) },
                 operation: BuildEffectOperation.Add,
                 value: 1
@@ -269,7 +270,7 @@ describe('BuildModel', () => {
         expect(build.darkVision).toEqual(120);
     });
 
-    it("Evaluating string BuildEffects, the buid should process BuildEffects with EvaluatedStrings without usig functions", () => {
+    xit("Evaluating string BuildEffects, the buid should process BuildEffects with EvaluatedStrings without usig functions", () => {
         let build = new Build();
 
         // armor 
@@ -316,7 +317,7 @@ describe('BuildModel', () => {
                 description: "",
                 mod: [new BuildEffect({
                     name: "trait",
-                    modifyingProperty: "armorClass",
+                    property: "armorClass",
                     // (b: Build): void => { b.armorClass -= 1 },
                     operation: BuildEffectOperation.Subtract,
                     value: 1
@@ -334,7 +335,7 @@ describe('BuildModel', () => {
             startingEquipment: null,
             mod: [new BuildEffect({
                 name: "class",
-                modifyingProperty: "armorClass",
+                property: "armorClass",
                 // (b: Build): void => { b.armorClass += 1 },
                 operation: BuildEffectOperation.Add,
                 value: 1
@@ -353,7 +354,7 @@ describe('BuildModel', () => {
                 description: null,
                 mod: [new BuildEffect({
                     name: "weaponProperty",
-                    modifyingProperty: "armorClass",
+                    property: "armorClass",
                     // (b: Build): void => { b.armorClass -= 1 },
                     operation: BuildEffectOperation.Subtract,
                     value: 1
@@ -390,7 +391,7 @@ describe('BuildModel', () => {
             description: null,
             mod: [new BuildEffect({
                 name: "spell",
-                modifyingProperty: "armorClass",
+                property: "armorClass",
                 // (b: Build): void => { b.armorClass -= 1 },
                 operation: BuildEffectOperation.Add,
                 value: 1
@@ -402,7 +403,7 @@ describe('BuildModel', () => {
             description: null,
             mod: [new BuildEffect({
                 name: "spell",
-                modifyingProperty: "armorClass",
+                property: "armorClass",
                 // (b: Build): void => { b.armorClass += 1 },
                 operation: BuildEffectOperation.Add,
                 value: 1
@@ -413,7 +414,7 @@ describe('BuildModel', () => {
             description: "",
             mod: [new BuildEffect({
                 name: "condition",
-                modifyingProperty: "armorClass",
+                property: "armorClass",
                 // (b: Build) => b.armorClass /= 2,
                 operation: BuildEffectOperation.Add,
                 value: 1
@@ -442,7 +443,7 @@ describe('BuildModel', () => {
                 description: "",
                 mod: [new BuildEffect({
                     name: "trait",
-                    modifyingProperty: "armorClass",
+                    property: "armorClass",
                     // (b: Build): void => { b.armorClass -= 1 },
                     operation: BuildEffectOperation.Add,
                     value: 1
@@ -460,7 +461,7 @@ describe('BuildModel', () => {
             startingEquipment: null,
             mod: [new BuildEffect({
                 name: "class",
-                modifyingProperty: "armorClass",
+                property: "armorClass",
                 // (b: Build): void => { b.armorClass += 1 },
                 operation: BuildEffectOperation.Add,
                 value: 1
@@ -479,7 +480,7 @@ describe('BuildModel', () => {
                 description: null,
                 mod: [new BuildEffect({
                     name: "weaponProperty",
-                    modifyingProperty: "armorClass",
+                    property: "armorClass",
                     // (b: Build): void => { b.armorClass -= 1 },
                     operation: BuildEffectOperation.Add,
                     value: 1
@@ -516,7 +517,7 @@ describe('BuildModel', () => {
             description: null,
             mod: [new BuildEffect({
                 name: "spell",
-                modifyingProperty: "armorClass",
+                property: "armorClass",
                 // (b: Build): void => { b.armorClass -= 1 },
                 operation: BuildEffectOperation.Add,
                 value: 1
@@ -528,7 +529,7 @@ describe('BuildModel', () => {
             description: null,
             mod: [new BuildEffect({
                 name: "spell",
-                modifyingProperty: "armorClass",
+                property: "armorClass",
                 // (b: Build): void => { b.armorClass += 1 },
                 operation: BuildEffectOperation.Add,
                 value: 1
@@ -539,7 +540,7 @@ describe('BuildModel', () => {
             description: "",
             mod: [new BuildEffect({
                 name: "condition",
-                modifyingProperty: "armorClass",
+                property: "armorClass",
                 // (b: Build) => b.armorClass /=2 ,
                 operation: BuildEffectOperation.Add,
                 value: 1

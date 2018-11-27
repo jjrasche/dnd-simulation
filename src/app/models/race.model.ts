@@ -1,4 +1,4 @@
-import { applyToBuildFromObject, BaseBuildAffectingConstructor, BaseBuildAffectingObject, BuildEffect } from "./build.object";
+import { applyToBuildFromObject, BaseBuildAffectingConstructor, BaseBuildAffectingObject, BuildEffect, BuildEffectOperation } from "./build.object";
 import { SubRaceObject, SubRace } from "./subRace.model";
 import { AbilityEnum } from "../enum/ability.enum";
 import { Size } from "../enum/size.enum";
@@ -44,11 +44,16 @@ export class RaceObject extends BaseBuildAffectingObject {
         this.speed = obj.speed;
         this.traits = obj.traits;
 
-        this.mod.push(new BuildEffect({
-            name: "race",
-            modifyingProperty: "ability",
-            effect: (b: Build) => applyToBuildFromObject(() => this.abilityModifier, (k, a) => b.ability[k] += a[k])
-        }));
+
+        Object.keys(this.abilityModifier || {}).forEach(key => {
+            let bonus: number = this.abilityModifier[key];
+            this.mod.push(new BuildEffect({
+                name: "race",
+                property: `ability.${key}`,
+                operation: BuildEffectOperation.Add,
+                value: bonus.toString()
+            }));
+        });
         
         if (this.traits) {
             this.traits.map((trait: TraitObject) => trait.mod)

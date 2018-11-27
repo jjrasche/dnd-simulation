@@ -65,7 +65,7 @@ export class ArmorObject extends BaseBuildAffectingEquipmentObject {
             this.mod.push(
                 new BuildEffect({
                     name: "armor",
-                    modifyingProperty: "armorClass", 
+                    property: "armorClass", 
                     operation: BuildEffectOperation.Initialize,
                     condition: "obj.armorEffect.addDex && obj.armorEffect.maxDex === null",
                     value: "obj.armorEffect.base + build.ability.Dexterity"
@@ -75,7 +75,7 @@ export class ArmorObject extends BaseBuildAffectingEquipmentObject {
             this.mod.push(
                 new BuildEffect({
                     name: "armor",
-                    modifyingProperty: "armorClass",
+                    property: "armorClass",
                     operation: BuildEffectOperation.Initialize,
                     condition: "obj.armorEffect.addDex && obj.armorEffect.maxDex != null",
                     value: "obj.armorEffect.base + build.ability.Dexterity > obj.armorEffect.maxDex ? obj.armorEffect.maxDex : build.ability.Dexterity"
@@ -85,7 +85,7 @@ export class ArmorObject extends BaseBuildAffectingEquipmentObject {
             this.mod.push(
                 new BuildEffect({
                     name: "armor",
-                    modifyingProperty: "armorClass",
+                    property: "armorClass",
                     operation: BuildEffectOperation.Initialize,
                     condition: "!obj.armorEffect.addDex",
                     value: "obj.armorEffect.base"
@@ -95,7 +95,7 @@ export class ArmorObject extends BaseBuildAffectingEquipmentObject {
             let val = (this.armorEffect as AdditiveEffect).add;
             this.mod.push(new BuildEffect({
                 name: "armor",
-                modifyingProperty: "armorClass",
+                property: "armorClass",
                 operation: BuildEffectOperation.Add,
                 value: val.toString()
             }));

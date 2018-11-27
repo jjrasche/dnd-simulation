@@ -69,7 +69,7 @@ var handler = {
  * e.g. a target is hit with a sword that poisons it for 3 rounds. 
  * IterimBuildEffect({
  *  name: "posioned by sword hit from ____",
- *  modifyingProperty: "conditions",
+ *  property: "conditions",
  *  operation: BuildEffectOperation.Push,
  *  value: "Poisoned",
  *  start: {type: Turn, num: 0},

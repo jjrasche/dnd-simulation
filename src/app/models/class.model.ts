@@ -37,12 +37,12 @@ export class ClassObject extends BaseBuildAffectingObject {
 
       this.mod.push(new BuildEffect({
          name: "class",
-         modifyingProperty: "skill",
+         property: "skill",
          effect: (b: Build) => applyToBuild(() => this.skill.inherent, k => b.skill[k] = true)
       }));
       this.mod.push(new BuildEffect({
          name: "class",
-         modifyingProperty: "savingThrow",
+         property: "savingThrow",
          effect: (b: Build) => applyToBuild(() => this.savingThrows, k => b.savingThrow[k] = true)
       }));
    }

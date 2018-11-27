@@ -40,16 +40,18 @@ function applyEffect(build: Build, be: BuildEffect): void {
     if(be /*&& obj.effect*/) {
         let prevValue = JSON.stringify(build[be.modifyingProperty]);
 
-        // use effect for BuildEffects that still use functions 
+        // use effect for BuildEffects that still use functions  TODO: remove when all BEs converted
         if (be.effect) {
             be.effect(build);
         }
-        // use eval for BuildEffects using new method
         else {
             if (be.condition) {
                 switch (be.operation) {
                     case BuildEffectOperation.Add:
                         build[be.modifyingProperty] += be.value;
+                        break;
+                    case BuildEffectOperation.Initialize:
+                        build[be.modifyingProperty] = be.value;
                         break;
                 }
             }
@@ -157,7 +159,7 @@ export class BuildEffect {
 const expresionStringInvalidCharacters = /[^a-zA-Z0-9\.\s=!<>&|+-/*?:]+/g;
 export function checkExpression(expression: string) {
     // Verify expression can only have limited set of characters.
-    console.log(expression);
+    // console.log(expression);
     if (expression && expression.match(expresionStringInvalidCharacters)) {
         let invlalidCharacters = expression.match(expresionStringInvalidCharacters).join();
         throw new Error(`The expression '${expression}' contains invalid characters '${invlalidCharacters}'`)

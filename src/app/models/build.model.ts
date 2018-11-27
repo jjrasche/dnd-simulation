@@ -1,5 +1,4 @@
 import { copyBuild } from "../utils/objectManipulation";
-import { ActionTypeEnum } from "../enum/action-type.enum";
 import { RaceObject } from "./race.model";
 import { ClassObject } from "./class.model";
 import { LevelObject } from "./level.model";
@@ -13,7 +12,7 @@ import { EquipmentObject } from "./equipment/equipment.model";
 import { SpellObject } from "./spell.model";
 import { ConditionObject } from "./condition.model";
 import { initializeObjects } from "./base.object.data";
-import { BuildAffectingObject, BuildEffect, RunBuildEffects, BuildEffectOperation, checkExpression } from "./build.object";
+import { BuildAffectingObject, BuildEffect, RunBuildEffects, checkExpression } from "./build.object";
 import { SubRaceObject } from "./subRace.model";
 import { DamageTypeEnum } from "../enum/damage.enum";
 import { Action } from "./action.model";
@@ -25,14 +24,13 @@ import { Action } from "./action.model";
 var handler = {
     get: function (build, prop) {
         let origValue = build[prop];
-        console.log(`1 getting property '${prop}' from build '${build.takeBase}'`);
+        // console.log(`1 getting property '${prop}' from build '${build.takeBase}'`);
         if (build.takeBase) {
             return origValue;
         }
-
-
         let buildCopy: Build = copyBuild(build);
         buildCopy.takeBase = true;
+
         // accumulate all modifiers
         buildCopy.addModification(buildCopy.race);
         buildCopy.addModification(buildCopy.subRace);
@@ -43,55 +41,43 @@ var handler = {
         buildCopy.addModifications(buildCopy.equipment);
         buildCopy.addModifications(buildCopy.spellsInAffect);
 
-        console.log(`${prop}\t\t${JSON.stringify(buildCopy.modifications)}`);
-        // applyEffects
-        // buildCopy.modifications.forEach((mod: BuildEffect) => {
-        //     buildCopy.applyEffect(mod);
-        // });
+        // apply BuildEffects
         RunBuildEffects(buildCopy);
-        console.log(`2 getting property '${prop}' from build '${build.takeBase}'. value was '${JSON.stringify(origValue)}' now '${JSON.stringify(build[prop])}'`);
-        // return buildProps[prop];
+        // console.log(`2 getting property '${prop}' from build '${build.takeBase}'. value was '${JSON.stringify(origValue)}' now '${JSON.stringify(build[prop])}'`);
         return buildCopy[prop];
     }
-    // ,
-    // set: function (build, prop, value): boolean {
-    //     // consider situation where damage is an attack roll happens agianst a build Damage: {num: __, type: __}
-    //     console.log(`setting property '${JSON.stringify(prop)}' on build to '${JSON.stringify(value)}'`);
-    //     build[prop] = value;
-    //     return true
-    // }
 };
 
+/**
+ *              Decision impacts 
+ * The un modified value of these variables, what you would get by calling JSON.stringify(build)
+ * represents the state of properties resulting from decisions made about this build.
+ * e.g. JSON.parse(JSON.stringify(build))["language"] will contain all the languages decisions that were specifically made for this build.
+ *  so if build.race.languages.selectable = {num: 1, options: [Language.Dwarvish, Language.Elvish]} and when prompted, the user picked Dwarvish,
+ *  JSON.parse(JSON.stringify(build))["language"] = [Language.Dwarvish]
+ * 
+ *              Object impacts
+ * The proxy will intercept all get requests and add all BuildEffects from BuildAffectingObjects.
+ * e.g if build.race.languages.inherent = [Language.Orc, Language.Goblin] then a call to build.languages will be intercepted by the proxy
+ * and the race BuildEffect will add both Orc and Goblin to build.languages.
+ *
+ *              Action impacts
+ * Actions can modify a build with BuildEffects. When these effects have a duration of affect they are
+ * IterimBuildEffects. The game engine will apply these effects at the startTime and unapply at the end of the duration.
+ * Any IterimBuildEffects that start at 0 will be applied by the ActionRunner.
+ * All others will be applied by the game engine which will also updated the IterimBuildEffect to reflect the passing of time units.
+ * e.g. a target is hit with a sword that poisons it for 3 rounds. 
+ * IterimBuildEffect({
+ *  name: "posioned by sword hit from ____",
+ *  modifyingProperty: "conditions",
+ *  operation: BuildEffectOperation.Push,
+ *  value: "Poisoned",
+ *  start: {type: Turn, num: 0},
+ *  duration: {type: Round, num: 3}
+ * })
+ * 
+ */
 export class Build {
-    /**
-     *              Decision impacts 
-     * The un modified value of these variables, what you would get by calling JSON.stringify(build)
-     * represents the state of properties resulting from decisions made about this build.
-     * e.g. JSON.parse(JSON.stringify(build))["language"] will contain all the languages decisions that were specifically made for this build.
-     *  so if build.race.languages.selectable = {num: 1, options: [Language.Dwarvish, Language.Elvish]} and when prompted, the user picked Dwarvish,
-     *  JSON.parse(JSON.stringify(build))["language"] = [Language.Dwarvish]
-     * 
-     *              Object impacts
-     * The proxy will intercept all get requests and add all BuildEffects from BuildAffectingObjects.
-     * e.g if build.race.languages.inherent = [Language.Orc, Language.Goblin] then a call to build.languages will be intercepted by the proxy
-     * and the race BuildEffect will add both Orc and Goblin to build.languages.
-     *
-     *              Action impacts
-     * Actions can modify a build with BuildEffects. When these effects have a duration of affect they are
-     * IterimBuildEffects. The game engine will apply these effects at the startTime and unapply at the end of the duration.
-     * Any IterimBuildEffects that start at 0 will be applied by the ActionRunner.
-     * All others will be applied by the game engine which will also updated the IterimBuildEffect to reflect the passing of time units.
-     * e.g. a target is hit with a sword that poisons it for 3 rounds. 
-     * IterimBuildEffect({
-     *  name: "posioned by sword hit from ____",
-     *  modifyingProperty: "conditions",
-     *  operation: BuildEffectOperation.Push,
-     *  value: "Poisoned",
-     *  start: {type: Turn, num: 0},
-     *  duration: {type: Round, num: 3}
-     * })
-     * 
-     */
     // build properties that involve an initial choice
     race: RaceObject;
     subRace: SubRaceObject;
@@ -205,30 +191,39 @@ export class Build {
        * 
        */
 
+
+    /**
+     * Evaluate both condition and value of BuildEffects as this is where
+     * eval has access to both Build and BuildAffectingObject
+     * @param obj the BuildAffectingObject that contains the BuildEffects that 
+     *  should be applied to the build.
+     */
     public addModification(obj: BuildAffectingObject): void {
         let build = this;
         if (obj && obj.mod) {
             // run eval when there is access to the BAO and build
             for (let index = 0; index < obj.mod.length; index++) {
                 let be = obj.mod[index];
-                // evaluate condition 
-                if (be.condition) {
+                if (be.condition != null) {
                     checkExpression(be.condition);
                     be.condition = eval(be.condition);
                 } else {
-                    be.condition = true;
+                    be.condition = true;    // default condition is true to run the BE
                 }
-                // evaluate value
-                if (be.value) {
+                
+                if (be.value != null) {
                     checkExpression(be.value);
                     be.value = eval(be.value);
                 }
             }
-
             this.modifications = [ ...this.modifications, ...obj.mod];
         }
     }
 
+    /**
+     * 
+     * @param objs grouping of BAOs to be applied to build.
+     */
     public addModifications(objs: BuildAffectingObject[]): void {
         if (objs) {
             objs.forEach((obj: BuildAffectingObject) => {

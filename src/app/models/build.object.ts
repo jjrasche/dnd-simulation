@@ -37,46 +37,42 @@ export abstract class BaseBuildAffectingObject extends BaseObject implements Bui
 
 
 function applyEffect(build: Build, be: BuildEffect): void {
-    if(be /*&& obj.effect*/) {
-        let prevValue = JSON.stringify(build[be.property]);
-
-        // use effect for BuildEffects that still use functions  TODO: remove when all BEs converted
-        if (be.effect) {
-            be.effect(build);
-        }
-        else {
-            if (be.condition) {
-                switch (be.operation) {
-                    case BuildEffectOperation.Add:
-                        build[be.property] += be.value;
-                        break;
-                    case BuildEffectOperation.Subtract:
-                        build[be.property] -= be.value;
-                        break;
-                    case BuildEffectOperation.Multiply:
-                        build[be.property] *= be.value;
-                        break;
-                    case BuildEffectOperation.Divide:
-                        build[be.property] /= be.value;
-                        break;
-                    case BuildEffectOperation.Initialize:
-                    case BuildEffectOperation.Override:
-                        build[be.property] = be.value;
-                        break;
-                    case BuildEffectOperation.Push:
-                        build[be.property].push(be.value);
-                        break;
-                    case BuildEffectOperation.Remove:
-                        delete build[be.property];
-                        break;
-                    default:
-                        throw new Error(`Invalid Build Effect Operation '${be.operation}'`);
-                }
+    if(be) {
+        let prevValue = JSON.stringify(getDeepProperty(build, be.property));
+        if (be.condition) {
+            switch (be.operation) {
+                case BuildEffectOperation.Add:
+                    setDeepProperty(build, be.property, (prop: number, key: string) => prop[key] += be.value);
+                    break;
+                case BuildEffectOperation.Subtract:
+                    setDeepProperty(build, be.property, (prop: number, key: string) => prop[key] -= be.value);
+                    break;
+                case BuildEffectOperation.Multiply:
+                    setDeepProperty(build, be.property, (prop: number, key: string) => prop[key] *= be.value);
+                    break;
+                case BuildEffectOperation.Divide:
+                    setDeepProperty(build, be.property, (prop: number, key: string) => prop[key] /= be.value);
+                    break;
+                case BuildEffectOperation.Initialize:
+                case BuildEffectOperation.Override:
+                    setDeepProperty(build, be.property, (prop: number, key: string) => prop[key] = be.value);
+                    break;
+                case BuildEffectOperation.Push:
+                    setDeepProperty(build, be.property, (prop: Array<any>) => prop.push(be.value))
+                    break;
+                case BuildEffectOperation.Remove:
+                    setDeepProperty(build, be.property, (prop: Array<any>) => {
+                        let index = prop.findIndex(p => p == be.value);
+                        prop.splice(index, 1);
+                    });
+                    break;
+                default:
+                    throw new Error(`Invalid Build Effect Operation '${be.operation}'`);
             }
         }
 
         if (be.condition) {
-            console.log(`${be.name} changed property ${be.property} from '${prevValue}' to '${JSON.stringify(build[be.property])}'`);
+            console.log(`${be.name} changed property ${be.property} from '${prevValue}' to '${JSON.stringify(getDeepProperty(build, be.property))}'`);
         }
     }
 }
@@ -169,7 +165,7 @@ export class BuildEffect {
         this.operation = obj.operation;
         this.value = obj.value;
         this.condition = obj.condition;
-        this.effect = obj.effect;
+        // this.effect = obj.effect;
     }
 }
 
@@ -257,3 +253,41 @@ export const applyToBuildFromObject = (getBaseObjectArray: () => Object, modifie
         });
     }
 };
+
+
+export function getDeepProperty(obj: Object, keyString: string): any {
+    let keys = keyString.split(".");
+    let ret: any = obj
+    for (let i = 0; i < keys.length; i++) {
+        const key = keys[i];
+        // console.log(`${JSON.stringify(ret)}   ${key}`);
+        ret = ret[key];
+        if (ret === undefined) {
+            throw new Error(`Could not find key '${keyString}' in object '${JSON.stringify(obj)}'`);
+        }
+    }
+    return ret;
+};
+
+export function setDeepProperty(obj: Object, keyString: string, operation: (prop: any, key?: string) => void): void {
+    let keys = keyString.split(".");
+    let ret: any = obj
+    for (let i = 0; i < keys.length; i++) {
+        const key = keys[i];
+        
+        let nextLevelValue = ret[key];
+        // console.log(`${JSON.stringify(ret)}  \n  ${key}  \n       ${JSON.stringify(nextLevelValue)}`);
+        if (typeof nextLevelValue !== "object") {
+            operation(ret, key);
+            return ret;
+        } else {
+            ret = ret[key];
+        }
+        if (ret === undefined) {
+            throw new Error(`Could not find key '${keyString}' in object '${JSON.stringify(obj)}'`);
+        }
+    }
+    operation(ret);
+    return ret;
+};
+

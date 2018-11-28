@@ -22,11 +22,10 @@ import { AbilityEnum } from '../enum/ability.enum';
 describe('BuildModel', () => {
 
     // single modifier effect
-    it("racial ability modifier: given a build with race specific and base ability, the result is the combination of both", () => {
+    xit("racial ability modifier: given a build with race specific and base ability, the result is the combination of both", () => {
         let build = new Build();
         build.ability = { Strength: 2, Dexterity: 1, Constitution: 2, Intelligence: 0, Wisdom: -3, Charisma: 0 };
         
-        build.ability.Wisdom += -5;
         console.log(build.ability.Wisdom)
         let race = new RaceObject({
             description: "",
@@ -44,7 +43,8 @@ describe('BuildModel', () => {
         let expected = { Strength: 3, Dexterity:2, Constitution: 4, Intelligence: 0, Wisdom: -3, Charisma: -1 };
         expect(build.ability).toEqual(expected);
     });
-    it("racial trait modifier: given a build with a race based darkvision to 120 feet and spell with dark vision to 60 feet, build.darkVision returns 120", () => {
+
+    xit("racial trait modifier: given a build with a race based darkvision to 120 feet and spell with dark vision to 60 feet, build.darkVision returns 120", () => {
         let build = new Build();
         build.darkVision = 10;
 
@@ -71,18 +71,18 @@ describe('BuildModel', () => {
 
         expect(build.darkVision).toEqual(120);
     });
+
     xit("spell modifier: given a build with a spell with dark vision to 60 feet, build.darkVision returns 60", () => {
         let build = new Build();
         build.darkVision = 0
 
         let spell = new SpellObject({
-            description: "A shimmering green arrow streaks toward a target within range and bursts in a spray of acid. Make a ranged spell attack against the target. On a hit, the target takes 4d4 acid damage immediately and 2d4 acid damage at the end of its next turn. On a miss, the arrow splashes the target with acid for half as much of the initial damage and no damage at the end of its next turn.",
+            description: null,
             mod: [new BuildEffect({
                 name: "condition",
-                property: "proficiencyBonus",
-                // (b: Build): void => { b.darkVision = 60 },
-                operation: BuildEffectOperation.Add,
-                value: 1
+                property: "darkVision",
+                operation: BuildEffectOperation.Initialize,
+                value: "60"
             })],
         });
         build.spellsInAffect.push(spell);
@@ -105,20 +105,18 @@ describe('BuildModel', () => {
         })
     });
 
-    xit("specific background modifier: given a build with a background that has a permenant invisible condition, build.condition contains Invisible", () => {
+    it("specific background modifier: given a build with a background that has a permenant invisible condition, build.condition contains Invisible", () => {
         let build = new Build();
 
-        let be = new BuildEffect({
-            name: "background",
-            property: "condition",
-            // (b: Build) => b.conditions.push(Condition.Invisible,
-            operation: BuildEffectOperation.Add,
-            value: 1
-            });
         let background = new BackgroundObject({
             description: "",
             skill: null,
-            mod: [be],
+            mod: [new BuildEffect({
+                name: "background",
+                property: "condition",
+                operation: BuildEffectOperation.Push,
+                value: Condition.Invisible.key
+            })]
         });
         build.background = background;
 

@@ -1,6 +1,6 @@
 import { Build } from "./build.model";
 import { SkillObject, Skill } from "./skill.model";
-import { applyToBuild, BaseBuildAffectingObject, BaseBuildAffectingConstructor, BuildEffect } from "./build.object";
+import { applyToBuild, BaseBuildAffectingObject, BaseBuildAffectingConstructor, BuildEffect, BuildEffectOperation } from "./build.object";
 import { settings } from "./setting.model";
 import { BackgroundEnum } from "../enum/background.enum";
 
@@ -16,11 +16,16 @@ export class BackgroundObject extends BaseBuildAffectingObject {
         super(obj);
         this.skill = obj.skill;
 
-        this.mod.push(new BuildEffect({
-            name: "background",
-            property: "skills", 
-            effect: (b: Build) => applyToBuild(() => this.skill.inherent, k => b.skill[k] = true)
-        }));
+        if (this.skill && this.skill.inherent) {
+            this.skill.inherent.forEach(skill => {
+                this.mod.push(new BuildEffect({
+                    name: "background",
+                    property: `skill.${skill.key}`,
+                    operation: BuildEffectOperation.Initialize,
+                    value: "true"
+                }));
+            });
+        }
     }
 }
 

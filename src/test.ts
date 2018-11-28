@@ -17,6 +17,7 @@ getTestBed().initTestEnvironment(
 // Then we find all the tests.
 // const context = require.context('./', true, /(number.service.spec.ts)/);
 const context = require.context('./', true, /(build.model.spec.ts)/);
+// const context = require.context('./', true, /(build.object.spec.ts)/);
 // const context = require.context('./', true, /(model-initialization.spec.ts)/);
 // const context = require.context('./', true, /\.spec\.ts$/);
 // And load the modules.
